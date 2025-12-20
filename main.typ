@@ -11,3 +11,4 @@
 #outline(title: "Table of Contents", depth: 2)
 
 #include "notes/01-introduction-to-stringology.typ"
+#include "notes/02-kmp-algorithm.typ"
