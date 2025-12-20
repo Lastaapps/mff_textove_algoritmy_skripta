@@ -1,0 +1,29 @@
+name: Build Typst Document
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Typst
+        uses: typst-community/setup-typst@v3
+        with:
+          version: '0.11.0' 
+
+      - name: Compile document
+        run: typst compile main.typ
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: text-algorithms-notes
+          path: main.pdf
