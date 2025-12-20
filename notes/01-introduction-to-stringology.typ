@@ -18,8 +18,7 @@ Stringology is a field of computer science that studies algorithms working with 
       - *Suffix*: The end of a string (e.g., `"llo"` in `"hello"`).
       - *Substring*: A part of a string (e.g., `"ell"` in `"hello"`).
     - *Periodicity*: A repeating pattern in a string. The string `"ababab"` has a period of 2 because the pattern `"ab"` repeats.
-  ]
-)
+])
 
 == Problems in Stringology
 
@@ -33,5 +32,4 @@ Stringology helps solve many computational problems.
     - *Longest Common Substring*: Finding the longest shared part of two strings.
     - *Data Compression*: Making files smaller by finding and replacing repeated patterns.
     - *Bioinformatics*: Analyzing DNA and protein sequences, which are very long strings.
-  ]
-)
+])

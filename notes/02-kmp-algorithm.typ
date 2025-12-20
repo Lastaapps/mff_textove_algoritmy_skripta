@@ -16,7 +16,7 @@ The simple, or "brute-force," way to find a pattern is to check every possible p
     3. Check at index 2: `CABCD` vs `ABCD`. Mismatch.
     4. Check at index 3: `ABCD` vs `ABCD`. Match found!
   ]
-)
+
 
 == The KMP Idea: Be Smart About Mismatches
 
@@ -36,7 +36,7 @@ The KMP algorithm is faster because it cleverly uses information from mismatches
     - `abab`: The longest is `"ab"`. Length is 2. `b[3] = 2`.
     - `ababa`: The longest is `"aba"`. Length is 3. `b[4] = 3`.
   ]
-)
+
 
 == How the KMP Algorithm Works
 
@@ -48,7 +48,7 @@ The KMP algorithm is faster because it cleverly uses information from mismatches
         - If characters match, advance both pointers.
         - If there is a mismatch, use the border array to determine how far to slide the pattern forward *without moving the text pointer backward*. This is the key to its speed.
   ]
-)
+
 
 == How Fast is KMP?
 
@@ -57,6 +57,6 @@ The KMP algorithm is faster because it cleverly uses information from mismatches
     - *Time Complexity*: $O(n + m)$, where $n$ is text length and $m$ is pattern length. This is a linear time complexity, which is very efficient.
     - *Space Complexity*: `O(m)` to store the border array for the pattern.
   ]
-)
+
 
 Because of its efficiency, KMP is a very important algorithm for pattern matching.
