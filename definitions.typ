@@ -10,6 +10,6 @@
         parbreak()
       }
       #body
-    ]
+    ],
   )
 }

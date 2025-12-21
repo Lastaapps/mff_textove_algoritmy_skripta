@@ -4,7 +4,7 @@
 #set text(lang: "en")
 
 #show outline.entry.where(
-  level: 1
+  level: 1,
 ): it => {
   v(1em)
   strong(it)
@@ -14,3 +14,4 @@
 
 #include "notes/01-introduction-to-stringology.typ"
 #include "notes/02-kmp-algorithm.typ"
+#include "notes/03-suffix-tree.typ"
