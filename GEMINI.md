@@ -39,7 +39,7 @@ If you want to use images, just add links to the images, do not try to download 
 4. Each chapter should start on a new page.
 5. When a greek letter or match symbols should be used, use them as a proper symbols. Use either Typst `#sym.alpha` syntax or math mode `$ alpha $`. Note that Typst syntax is different from LaTeX symbol syntax!
 6. Use math mode when needed (denoted by $$).
-7. To bolt text, use a single start `*bolt text*`. To create italics text, use a single underscore `_italic text_`.
+7. To bold text, use a single start `*bold text*`. To create italics text, use a single underscore `_italic text_`.
 
 ## How Typst works
 
