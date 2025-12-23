@@ -18,6 +18,7 @@ The primary goal is to produce high-quality lecture notes in English (B2 level) 
 ## Output Format
 
 The final study materials will be written in [Typst](https://typst.app/), a modern typesetting system. Each lecture is converted into a single file, which are then included in the main document.
+If you want to use images, just add links to the images, do not try to download them.
 
 ## Scope of Work
 
@@ -28,6 +29,7 @@ The final study materials will be written in [Typst](https://typst.app/), a mode
 5.  **Add examples/explain:** Add an example (inspired by the original presentation) and add key concepts.
 6.  **Add tasks:** Add numbered tasks inspired by each lecture topic that could occur in an exam based on presentation and your judgment. After tasks, add solution to the tasks on a new page.
 7.  **Format in Typst:** Create a `.typ` file for each topic, formatting the content using Typst's syntax. Always ensure that the syntax is correct, feel free to consult official documentation.
+8.  **Git:** Commit and push the changes.
 
 ## Text format
 
@@ -35,16 +37,15 @@ The final study materials will be written in [Typst](https://typst.app/), a mode
 2. Use bullet-point lists where possible, try to not use long sentences.
 3. Exclude all the history related notes.
 4. Each chapter should start on a new page.
-5. When a greek letter or match symbols should be used, use them as a proper symbols. Use Typst sym.{value} syntax. Note that Typst syntax is different from LaTeX symbol syntax!
+5. When a greek letter or match symbols should be used, use them as a proper symbols. Use either Typst `#sym.alpha` syntax or math mode `$ alpha $`. Note that Typst syntax is different from LaTeX symbol syntax!
 6. Use math mode when needed (denoted by $$).
+7. To bolt text, use a single start `*bolt text*`. To create italics text, use a single underscore `_italic text_`.
 
 ## How Typst works
 
-Important: NEVER USE LaTeX expressions prefixed by backslash!!!
+Important: NEVER EVER USE LaTeX expressions prefixed by backslash!!!
 In Typst, backslashes are only used for escaping, not for expressions nor symbols!!!
 
-In math mode, you just use the name of the character like: `$ pi $`. Outside of
-the match mode, you need to use `#sym.pi`.
 Dollars `$` that do not start the math mode should be prefixed by slash.
 Strings in math mode are enclosed in quotes. When quotes are supposed to be used in the math mode,
 they need to be enclosed in string and escaped.

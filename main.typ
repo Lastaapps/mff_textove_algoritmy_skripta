@@ -16,3 +16,4 @@
 #include "notes/02-kmp-algorithm.typ"
 #include "notes/03-suffix-tree.typ"
 #include "notes/04-suffix-tree-applications.typ"
+#include "notes/05-suffix-tree-construction.typ"
