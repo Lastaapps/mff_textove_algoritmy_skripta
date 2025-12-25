@@ -1,5 +1,7 @@
 # Text Algorithms Study Materials
 
+You can **download the latest version** of the PDF from the [GitHub Actions artifacts](https://github.com/Lastaapps/mff_textove_algoritmy_skripta/actions).
+
 This project contains study materials for the "Text Algorithms" course taught at the Faculty of Mathematics and Physics, Charles University in Prague (MFF CUNI).
 
 The goal of this project is to create high-quality lecture notes for each topic covered in the course.
@@ -17,8 +19,6 @@ typst compile main.typ
 ```
 
 This will create the `main.pdf` file in the root directory.
-
-Alternatively, you can download the latest version of the PDF from the [GitHub Actions artifacts](https.github.com/actions).
 
 ## Disclaimer
 
