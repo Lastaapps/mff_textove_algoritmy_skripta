@@ -11,6 +11,9 @@
   strong(it)
 }
 
+
+#include "title.typ"
+
 #outline(title: "Table of Contents", depth: 2)
 
 #include "notes/01-introduction-to-stringology.typ"
