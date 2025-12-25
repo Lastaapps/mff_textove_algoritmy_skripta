@@ -28,7 +28,9 @@
   #v(6cm)
 
   #text(size: 1.1em)[
-    #link("https://github.com/Lastaapps/mff_textove_algoritmy_skripta")[Newest version available at GitHub]
+    #link(
+      "https://github.com/Lastaapps/mff_textove_algoritmy_skripta",
+    )[Newest version available at GitHub]
   ]
   #v(0.5cm)
 
