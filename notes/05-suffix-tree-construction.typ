@@ -11,13 +11,22 @@ Ukkonen's algorithm is an online algorithm, which means it processes the input s
 
 - _Active Point:_ The active point is a triple `(active_node, active_edge, active_length)` that represents the current position in the tree where the next character should be inserted. `active_node` is the current node, `active_edge` is the first character of the edge to follow, and `active_length` is the distance to traverse along that edge.
 - _Suffix Links:_ A suffix link from a node `u` to a node `v` means that the path from the root to `u` spells a string `αw`, and the path from the root to `v` spells the string `w`, where `w` is a non-empty string and `α` is a single character. Suffix links are crucial for achieving linear time complexity.
-- _Rule 1 (Leaf Creation):_ and the next character in the string is not found, we create a new leaf node and a new edge.
-- *Rule 2 (Node Splitting):* If we are in the middle of an edge and the next character in the string does not match the character on the edge, we split the edge by creating a new internal node. A new leaf for the new suffix is created from this new internal node.
-- _Rule 3 (Show Stopper):_ If the character is already present, we do nothing. This is the "show stopper" condition.
+
+=== Ukkonen's Rules
+Ukkonen's algorithm is based on three extension rules that are applied at each step.
+
+#enum(start: 1)[
+  *Rule 1 (Leaf Creation):* If the path for the current suffix ends at a leaf and the next character in the string is not found on the edge, we create a new leaf node and a new edge from the end of the path.
+][
+  *Rule 2 (Node Splitting):* If we are in the middle of an edge and the next character in the string does not match the character on the edge, we split the edge by creating a new internal node. A new leaf for the new suffix is created from this new internal node.
+][
+  *Rule 3 (Show Stopper):* If the character is already present in the current path, we do nothing. This is the "show stopper" condition, which means the suffix is already implicitly in the tree.
+]
+
 
 === Example
 
-Let's trace Ukkonen's algorithm for the string `S = "banana"`. We will append the special character `\$` at the end, so `S = "banana\$"`.
+Let's trace Ukkonen's algorithm for the string `S = "banana"`. We will append the special character `$` at the end, so `S = "banana$"`.
 
 - _Phase 1 (b):_ Tree for "b" is created.
 - _Phase 2 (ba):_ Tree for "ba" is created.
@@ -53,10 +62,6 @@ Let's trace Ukkonen's algorithm for the string `S = "banana"`. We will append th
     - `active_edge`: The first character of the edge from `active_node` that the active point is on.
     - `active_length`: The number of characters to traverse along `active_edge` from `active_node`.
   ],
-  [
-    - *Rule 1 (Leaf Creation):* If the path for the current suffix ends at a leaf edge and the next character is not on that edge, a new leaf is created to represent the new suffix.
-    _Rule 2 (Node Splitting):_ If the path for the current suffix ends within an edge and the next character of the string does not match the character on the edge, the edge is split. A new internal node is created, and from this node, a new leaf edge for the new suffix is created.
-    - _Rule 3 (Show Stopper):_ If the character for the current suffix is already implicitly present in the tree, no change is needed. This is a "show stopper", and the algorithm can proceed to the next phase.
-  ],
+  [Ukkonen's algorithm uses three rules to extend the suffix tree at each phase. These rules, as described in the "Ukkonen's Rules" section, are leaf creation, node splitting, and the show-stopper condition. They handle all possible scenarios when a new character is introduced.],
   [The construction of the suffix tree for `S = "ababa\$"` would proceed in phases, one for each character. It's a detailed process involving the active point and the three rules. A full step-by-step walkthrough would be quite long, but the key is to apply the rules at each step, updating the active point and using suffix links to navigate the tree efficiently as the string is processed character by character.],
 )
