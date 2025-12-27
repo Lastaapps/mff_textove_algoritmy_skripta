@@ -6,6 +6,8 @@
 
 #set heading(numbering: "1.1")
 
+#import "../definitions.typ": *
+
 = Suffix Automaton
 
 == Introduction
@@ -23,10 +25,7 @@ For a given text `$T$`, its suffix automaton is a directed acyclic graph where:
 
 A key property is that it contains the minimum number of states to represent all substrings of `$T$`.
 
-#box(
-  stroke: 1pt + black,
-  inset: 8pt,
-)[
+#example_box[
   *Example:*
   For the text `$T = "ab"`, the substrings are `{"a", "b", "ab"}`. The suffixes are `{"ab", "b"}`.
   The suffix automaton would have paths for "a", "b", and "ab".

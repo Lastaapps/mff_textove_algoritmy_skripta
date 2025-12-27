@@ -6,6 +6,8 @@
 
 #set heading(numbering: "1.1")
 
+#import "../definitions.typ": *
+
 = Shift-Or Algorithm
 
 == Introduction

@@ -13,3 +13,21 @@
     ],
   )
 }
+
+#let example_box(body) = {
+  box(
+    stroke: 1pt + black,
+    inset: 8pt,
+    body,
+  )
+}
+
+#let code_box(body) = {
+  rect(
+    width: 100%,
+    inset: 8pt,
+    fill: luma(240),
+    radius: 4pt,
+    body,
+  )
+}

@@ -6,6 +6,8 @@
 
 #set heading(numbering: "1.1")
 
+#import "../definitions.typ": *
+
 = String Distance Metrics
 
 == Introduction
@@ -16,10 +18,7 @@ In many applications, we need to quantify how different two strings are. This is
 
 The *Hamming distance* is defined for two strings of *equal length*. It is the number of positions at which the corresponding characters are different.
 
-#box(
-  stroke: 1pt + black,
-  inset: 8pt,
-)[
+#example_box[
   *Example:*
   - `d_H("karolin", "kathrin") = 3` (differences at positions 2, 4, 5).
   - `d_H("apple", "apply") = 1`.
@@ -31,10 +30,7 @@ The *Levenshtein distance* is defined for two strings of *any length*. It is the
 
 - `d_L(s1, s2)` = minimum number of insertions and deletions to transform `s1` to `s2`.
 
-#box(
-  stroke: 1pt + black,
-  inset: 8pt,
-)[
+#example_box[
   *Example:*
   To transform "saturday" to "sunday":
   1. "saturday" $arrow.r$ "s*u*turday" (delete 'a', 't')

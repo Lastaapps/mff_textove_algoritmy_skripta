@@ -9,6 +9,7 @@ The primary goal is to produce high-quality lecture notes in English (B2 level) 
 ## Project Structure
 
 - `main.typ`: The main Typst file that combines all chapters.
+- `definitions.typ`: Specifies common types of boxes and other common logic.
 - `notes/`: This directory contains the individual chapter files in Typst format.
 - `lectures/`: This directory contains the source PDF presentations for each lecture.
 - `main.pdf`: The compiled output of the project. This file is not versioned.

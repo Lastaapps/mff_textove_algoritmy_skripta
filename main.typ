@@ -1,4 +1,4 @@
-#import "definitions.typ": info_box
+#import "definitions.typ": *
 
 #set document(title: "Text Algorithms", author: "Gemini")
 #set text(lang: "en")

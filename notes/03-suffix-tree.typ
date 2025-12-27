@@ -1,4 +1,4 @@
-#import "../definitions.typ": info_box
+#import "../definitions.typ": *
 #set text(lang: "en")
 
 = Suffix Tree

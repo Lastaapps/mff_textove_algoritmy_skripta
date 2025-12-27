@@ -1,4 +1,4 @@
-#import "../definitions.typ": info_box
+#import "../definitions.typ": *
 
 = The Knuth-Morris-Pratt (KMP) Algorithm
 

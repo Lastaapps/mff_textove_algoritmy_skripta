@@ -1,3 +1,5 @@
+#import "../definitions.typ": *
+
 #set page(
   numbering: "1",
   number-align: center,
@@ -28,18 +30,12 @@ To find all occurrences of a pattern $P$ in a text $sigma$:
 - Locate the node $v$ in $T(sigma)$ that corresponds to the string $P$. If $P$ is not explicitly represented as a node, it will be an implicit node on an edge.
 - All leaves in the subtree rooted at $v$ represent occurrences of $P$. The indices associated with these leaves are the starting positions of $P$ in $sigma$.
 
-#box(
-  fill: luma(240),
-  inset: 10pt,
-  radius: 4pt,
-  width: 100%,
-  [
-    - *Complexity:*
-      - Preprocessing (building $T(sigma)$): $O(N)$
-      - Search (finding $P$ and its occurrences): $O(M + Z)$, where $N$ is text length, $M$ is pattern length, and $Z$ is the number of occurrences.
-      - Compared to KMP algorithm, suffix trees offer better performance for multiple pattern searches after initial construction.
-  ],
-)
+#info_box[
+  - *Complexity:*
+    - Preprocessing (building $T(sigma)$): $O(N)$
+    - Search (finding $P$ and its occurrences): $O(M + Z)$, where $N$ is text length, $M$ is pattern length, and $Z$ is the number of occurrences.
+    - Compared to KMP algorithm, suffix trees offer better performance for multiple pattern searches after initial construction.
+]
 
 === Finding All Occurrences of Multiple Patterns
 
@@ -48,18 +44,12 @@ To find all occurrences of a set of patterns {$P_1, P_2, dots, P_k$} in $sigma$:
 - This can be done by repeating the single pattern search for each $P_i$.
 - Alternatively, for a set of patterns, generalized suffix trees or Aho-Corasick algorithm might be more suitable.
 
-#box(
-  fill: luma(240),
-  inset: 10pt,
-  radius: 4pt,
-  width: 100%,
-  [
-    - *Complexity:*
-      - Preprocessing: $O(N)$
-      - Search: $O(M + Z)$, where $N$ is text length, $M = sum |P_i|$, and $Z$ is total number of occurrences.
-      - Compared to Aho-Corasick: Aho-Corasick has $O(M)$ preprocessing and $O(N)$ search, which can be faster if $Z$ is large.
-  ],
-)
+#info_box[
+  - *Complexity:*
+    - Preprocessing: $O(N)$
+    - Search: $O(M + Z)$, where $N$ is text length, $M = sum |P_i|$, and $Z$ is total number of occurrences.
+    - Compared to Aho-Corasick: Aho-Corasick has $O(M)$ preprocessing and $O(N)$ search, which can be faster if $Z$ is large.
+]
 
 === Counting Distinct Substrings
 
@@ -77,16 +67,10 @@ To determine $"LCF"(sigma, tau)$:
 - Construct a generalized suffix tree for $sigma$ and $tau$ with unique terminators. For example, $T(sigma + #sym.dollar, tau + #sym.hash)$.
 - The LCF corresponds to the deepest node in this generalized suffix tree that has descendants from both $sigma$ and $tau$.
 
-#box(
-  fill: luma(240),
-  inset: 10pt,
-  radius: 4pt,
-  width: 100%,
-  [
-    - *Challenge:* The generalized suffix tree also contains substrings that "cross" the boundary between the original strings, which are not true common factors.
-    - *Solution:* To find LCF, identify the node $v$ which is an ancestor to leaves representing suffixes from both $sigma$ and $tau$, and has the greatest string depth. If we have $T(sigma, tau)$, the node representing $"LCF"(sigma, tau)$ is the highest node that has descendant leaves from both $sigma$ and $tau$.
-  ],
-)
+#info_box[
+  - *Challenge:* The generalized suffix tree also contains substrings that "cross" the boundary between the original strings, which are not true common factors.
+  - *Solution:* To find LCF, identify the node $v$ which is an ancestor to leaves representing suffixes from both $sigma$ and $tau$, and has the greatest string depth. If we have $T(sigma, tau)$, the node representing $"LCF"(sigma, tau)$ is the highest node that has descendant leaves from both $sigma$ and $tau$.
+]
 
 == Generalized Suffix Tree $T(sigma, tau)$
 
@@ -95,17 +79,11 @@ A generalized suffix tree for two strings $sigma$ and $tau$ is a compact suffix 
 - Let $n = |sigma| + |tau|$.
 - It can be constructed in $O(n)$ time using extensions of Ukkonen's algorithm.
 
-#box(
-  fill: luma(240),
-  inset: 10pt,
-  radius: 4pt,
-  width: 100%,
-  [
-    - *Problems with labels:*
-      - Edge labels may refer to either $sigma$ or $tau$. A third index might be needed to identify the original string.
-      - A leaf node can represent a suffix common to both $sigma$ and $tau$. Such a leaf would store references to both original strings.
-  ],
-)
+#info_box[
+  - *Problems with labels:*
+    - Edge labels may refer to either $sigma$ or $tau$. A third index might be needed to identify the original string.
+    - A leaf node can represent a suffix common to both $sigma$ and $tau$. Such a leaf would store references to both original strings.
+]
 
 === LCF using $T(sigma, tau)$
 
@@ -140,16 +118,10 @@ A maximal repeat is an exact repeat that cannot be extended to the left or right
 - #underline[Non-Right Extendible (NRE):] A repeat $S$ is NRE if for its two occurrences starting at $i$ and $j$, $S[i+|S|] != S[j+|S|]$. That is, the characters immediately following the occurrences are different.
 - #underline[Non-Left Extendible (NLE):] A repeat $S$ is NLE if for its two occurrences starting at $i$ and $j$, $S[i-1] != S[j-1]$. That is, the characters immediately preceding the occurrences are different.
 
-#box(
-  fill: luma(240),
-  inset: 10pt,
-  radius: 4pt,
-  width: 100%,
-  [
-    - *Observation:* Maximal repeats correspond to specific internal nodes in the suffix tree with NLE property.
-    - In a string of length $N$, there are at most $N$ maximal repeats.
-  ],
-)
+#info_box[
+  - *Observation:* Maximal repeats correspond to specific internal nodes in the suffix tree with NLE property.
+  - In a string of length $N$, there are at most $N$ maximal repeats.
+]
 
 === Node Marking for Maximal Repeats
 
@@ -189,17 +161,11 @@ LCA queries can be reduced to RMQ queries.
 - Perform a Depth First Search (DFS) traversal of the suffix tree, recording the depth of each node visited in an array.
 - For any two nodes $alpha$ and $beta$, their LCA$(alpha, beta)$ corresponds to a Range Minimum Query on this depth array within the range of visits to $alpha$ and $beta$.
 
-#box(
-  fill: luma(240),
-  inset: 10pt,
-  radius: 4pt,
-  width: 100%,
-  [
-    - *RMQ in O(N log N) time:*
-      - Preprocessing can be done in $O(N log N)$ time and space.
-      - Queries can then be answered in $O(1)$ time.
-  ],
-)
+#info_box[
+  - *RMQ in O(N log N) time:*
+    - Preprocessing can be done in $O(N log N)$ time and space.
+    - Queries can then be answered in $O(1)$ time.
+]
 
 === RMQ±1 in O(N)
 
@@ -211,15 +177,9 @@ For arrays where adjacent elements differ by exactly $plus.minus 1$ ($|A[i] - A[
   - Preprocessing: $O(N)$ time and space.
   - Query: $O(1)$ time.
 
-#box(
-  fill: luma(240),
-  inset: 10pt,
-  radius: 4pt,
-  width: 100%,
-  [
-    - *Conclusion:* By combining suffix trees with RMQ±1 techniques, LCP queries can be answered in constant time after linear time and space preprocessing.
-  ],
-)
+#info_box[
+  - *Conclusion:* By combining suffix trees with RMQ±1 techniques, LCP queries can be answered in constant time after linear time and space preprocessing.
+]
 
 == Maximal Palindromic Substring
 
@@ -259,16 +219,10 @@ Suffix trees can be adapted to dynamic text scenarios, such as a sliding window.
   - Time complexity: $O(1)$ amortized.
 - These techniques allow maintaining a suffix tree for a text within a fixed-size sliding window efficiently.
 
-#box(
-  fill: luma(240),
-  inset: 10pt,
-  radius: 4pt,
-  width: 100%,
-  [
-    - *Challenge:* Efficiently updating pointers within the sliding window.
-    - *Solution:* "Percolating update" mechanisms have been developed (Fiala, Greene 1989; Larsson 1999; Senft 2005) for amortized $O(1)$ updates.
-  ],
-)
+#info_box[
+  - *Challenge:* Efficiently updating pointers within the sliding window.
+  - *Solution:* "Percolating update" mechanisms have been developed (Fiala, Greene 1989; Larsson 1999; Senft 2005) for amortized $O(1)$ updates.
+]
 
 == Data Compression: LZ77 Algorithm
 
@@ -277,27 +231,21 @@ The LZ77 algorithm, developed by Jacob Ziv and Abraham Lempel (1977), is a found
 - #underline[Idea:] Replace repeating sequences of characters with pointers to their previous occurrences in the text.
 - It uses a _sliding window_ that consists of a _search buffer_ (already processed text) and a _look-ahead buffer_ (text to be compressed).
 
-#box(
-  fill: luma(240),
-  inset: 10pt,
-  radius: 4pt,
-  width: 100%,
-  [
-    - *Process:*
-      - Initialize the search buffer (e.g., with spaces) and load the beginning of the input into the look-ahead buffer.
-      - Find the longest match $S$ that is a prefix of the look-ahead buffer and exists in the search buffer.
-      - Encode $S$ as a triplet $(3, 5, "d")$:
-        - `offset`: Distance from the current position to the start of $S$ in the search buffer.
-        - `length`: The length of $S$.
-        - `next_char`: The character immediately following $S$ in the look-ahead buffer.
-      - Shift the sliding window by `length + 1` characters.
-    - *Example:*
-      - Text: `accabracadabrarrar`
-      - Find `cabra` (length 5) at offset 3 in search buffer, followed by `d`.
-      - Encoded as $(3, 5, "d")$.
-    - *Gzip implementation:* Uses a sliding window of $2^{15}$ bytes (search buffer) and a look-ahead buffer of $256$ bytes.
-  ],
-)
+#info_box[
+  - *Process:*
+    - Initialize the search buffer (e.g., with spaces) and load the beginning of the input into the look-ahead buffer.
+    - Find the longest match $S$ that is a prefix of the look-ahead buffer and exists in the search buffer.
+    - Encode $S$ as a triplet $(3, 5, "d")$:
+      - `offset`: Distance from the current position to the start of $S$ in the search buffer.
+      - `length`: The length of $S$.
+      - `next_char`: The character immediately following $S$ in the look-ahead buffer.
+    - Shift the sliding window by `length + 1` characters.
+  - *Example:*
+    - Text: `accabracadabrarrar`
+    - Find `cabra` (length 5) at offset 3 in search buffer, followed by `d`.
+    - Encoded as $(3, 5, "d")$.
+  - *Gzip implementation:* Uses a sliding window of $2^{15}$ bytes (search buffer) and a look-ahead buffer of $256$ bytes.
+]
 
 === Implementation of Sliding Window
 

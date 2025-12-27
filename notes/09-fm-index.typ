@@ -5,6 +5,8 @@
 
 #set heading(numbering: "1.1")
 
+#import "../definitions.typ": *
+
 = FM-Index
 
 == Introduction
@@ -20,12 +22,9 @@ The $"BWT"$ is a reversible permutation of a text. The $"BWT"$ of a text $T$ is 
 2. Sort the rows of this matrix lexicographically.
 3. The $"BWT"$ is the last column of the sorted matrix.
 
-#box(
-  stroke: 1pt + black,
-  inset: 8pt,
-)[
+#example_box[
   *Example:*
-  For $T = "banana"$, append a special end-of-string character "\$" which is lexicographically smaller than any other character. $T = "banana$"$.
+  For $T = "banana"$, append a special end-of-string character "\$" which is lexicographically smaller than any other character. $T = "banana\$"$.
 
   Sorted rotations:
   ```

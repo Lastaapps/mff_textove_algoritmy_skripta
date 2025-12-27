@@ -1,3 +1,5 @@
+#import "../definitions.typ": *
+
 = Suffix Tree Construction
 
 #set par(justify: true)
@@ -59,11 +61,7 @@ A simple but powerful trick is to represent edge labels not as explicit strings,
 Here is a more detailed high-level overview of Ukkonen's algorithm that highlights the use of suffix links:
 
 #v(0.5em)
-#let block(content) = {
-  rect(width: 100%, inset: 8pt, fill: luma(240), radius: 4pt, content)
-}
-
-#block[
+#code_box[
   ```
   Ukkonen(S):
     Initialize tree, active_point = (root, null, 0)
