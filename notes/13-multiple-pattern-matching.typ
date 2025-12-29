@@ -1,4 +1,3 @@
-
 #set page(
   paper: "a4",
   margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
@@ -12,7 +11,7 @@
 
 == Introduction
 
-*Multiple Pattern Matching* is the problem of finding all occurrences of a set of patterns `$P = {p_1, p_2, ..., p_k}$` in a text `$T$`. A naive approach would be to search for each pattern separately, but this is inefficient. Specialized algorithms can solve this problem much faster.
+*Multiple Pattern Matching* is the problem of finding all occurrences of a set of patterns $P = {p_1, p_2, ..., p_k}$ in a text $T$. A naive approach would be to search for each pattern separately, but this is inefficient. Specialized algorithms can solve this problem much faster.
 
 == Aho-Corasick Algorithm
 
@@ -22,11 +21,11 @@ The algorithm builds a finite automaton from the set of patterns and then uses t
 
 === Data Structures
 
-1. *Trie:* A trie (prefix tree) is built from all the patterns in the set `$P$`. Each node in the trie represents a prefix of one or more patterns.
+1. *Trie:* A trie (prefix tree) is built from all the patterns in the set $P$. Each node in the trie represents a prefix of one or more patterns.
 
-2. *Failure Links (fail function):* Each node in the trie has a failure link. For a node `$u$` representing prefix `$s$`, `fail(u)` points to the node representing the longest proper suffix of `$s$` that is also a prefix of some pattern. This is analogous to the failure function in KMP.
+2. *Failure Links (fail function):* Each node in the trie has a failure link. For a node $u$ representing prefix $s$, `fail(u)` points to the node representing the longest proper suffix of $s$ that is also a prefix of some pattern. This is analogous to the failure function in KMP.
 
-3. *Output Function (out):* Each node `$u$` has an output function `out(u)` which stores the set of patterns that end at this node. To find all matches, the output links are followed as well. If `fail(u)` corresponds to a pattern, this pattern is also considered a match.
+3. *Output Function (out):* Each node $u$ has an output function `out(u)` which stores the set of patterns that end at this node. To find all matches, the output links are followed as well. If `fail(u)` corresponds to a pattern, this pattern is also considered a match.
 
 === The Algorithm
 
@@ -36,15 +35,15 @@ The algorithm builds a finite automaton from the set of patterns and then uses t
   - Compute the output function for all nodes.
 
 2. *Searching:*
-  - Process the text `$T$` character by character, starting from the root of the trie.
+  - Process the text $T$ character by character, starting from the root of the trie.
   - For each character, follow the corresponding edge in the trie.
   - If no edge exists for the current character, follow the failure links until a valid transition can be made or the root is reached.
   - At each node visited, check the output function to report any patterns that end at the current position.
 
 === Complexity
 
-- *Preprocessing:* `$O(m log alpha)`, where `$m$` is the total length of all patterns and `$alpha$` is the alphabet size.
-- *Searching:* `$O(n log alpha + z)`, where `$n$` is the text length and `$z$` is the number of matches. For an indexed alphabet, this becomes `$O(n + m + z)$`.
+- *Preprocessing:* $O(m log alpha)$, where $m$ is the total length of all patterns and $alpha$ is the alphabet size.
+- *Searching:* $O(n log alpha + z)$, where $n$ is the text length and $z$ is the number of matches. For an indexed alphabet, this becomes $O(n + m + z)$.
 
 == Commentz-Walter Algorithm
 

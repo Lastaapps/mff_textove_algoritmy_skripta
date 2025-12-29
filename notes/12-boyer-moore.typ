@@ -1,4 +1,3 @@
-
 #set page(
   paper: "a4",
   margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
@@ -24,16 +23,16 @@ Unlike KMP or brute-force, Boyer-Moore aligns the pattern with the text and comp
 
 == Bad Character Heuristic
 
-When a mismatch occurs at text character `$T[i]$` (which corresponds to pattern character `$P[j]$`), and `$T[i] = c$`, the bad character heuristic proposes a shift based on the last occurrence of character `$c$` in the pattern `$P$`.
+When a mismatch occurs at text character $T[i]$ (which corresponds to pattern character $P[j]$), and $T[i] = c$, the bad character heuristic proposes a shift based on the last occurrence of character $c$ in the pattern $P$.
 
-- If `$c$` appears in `$P$` to the left of position `$j$`, the pattern is shifted to align this last occurrence of `$c$` with `$T[i]$`.
-- If `$c$` does not appear in `$P$` at all, the pattern can be shifted completely past `$T[i]$`.
+- If $c$ appears in $P$ to the left of position $j$, the pattern is shifted to align this last occurrence of $c$ with $T[i]$.
+- If $c$ does not appear in $P$ at all, the pattern can be shifted completely past $T[i]$.
 
-A *Bad Character (BC)* table is precomputed to store the shift for each character in the alphabet. `$BC[c]` is the distance from the end of the pattern to the last occurrence of `$c$`.
+A *Bad Character (BC)* table is precomputed to store the shift for each character in the alphabet. $"BC"[c]$ is the distance from the end of the pattern to the last occurrence of $c$.
 
 == Good Suffix Heuristic
 
-This heuristic is used when a partial match is found. Suppose the comparison stops at pattern position `$j$` because of a mismatch, but the suffix of the pattern from `$j+1$` to `$m$` (the "good suffix") matched the text.
+This heuristic is used when a partial match is found. Suppose the comparison stops at pattern position $j$ because of a mismatch, but the suffix of the pattern from $j+1$ to $m$ (the "good suffix") matched the text.
 
 The good suffix heuristic proposes a shift to align the pattern with the text such that:
 1. Another occurrence of the good suffix in the pattern aligns with the matched text segment.
@@ -52,7 +51,7 @@ A *Good Suffix (GS)* table is precomputed to store the shift for each possible g
   - Align the pattern with the start of the text.
   - Compare the pattern with the text from right to left.
   - If the whole pattern matches, report an occurrence.
-  - If a mismatch occurs at `$T[i]` with `$P[j]`, shift the pattern by the maximum of the values given by `$BC[T[i]]$` and `$GS[j]$`.
+  - If a mismatch occurs at $T[i]$ with $P[j]$, shift the pattern by the maximum of the values given by $"BC"[T[i]]$ and $"GS"[j]$.
   - Repeat until the end of the text is reached.
 
 == Boyer-Moore-Horspool
@@ -63,7 +62,7 @@ A simpler variant of the Boyer-Moore algorithm, proposed by Nigel Horspool in 19
 
 == Tasks
 
-1. For the pattern `$P = "needle"`, and a mismatch with the character 'e' in the text, what would the Bad Character shift be?
+1. For the pattern $P = "needle"$, and a mismatch with the character 'e' in the text, what would the Bad Character shift be?
 2. What is the main advantage of the right-to-left scan in the Boyer-Moore algorithm?
 3. How does the Boyer-Moore-Horspool algorithm simplify the original Boyer-Moore algorithm?
 
@@ -73,9 +72,9 @@ A simpler variant of the Boyer-Moore algorithm, proposed by Nigel Horspool in 19
 
 === Task 1: Bad Character Shift for "needle"
 
-Pattern `$P = "needle"`. Let's say the comparison is with a text window and the mismatching character is 'e'.
+Pattern $P = "needle"$. Let's say the comparison is with a text window and the mismatching character is 'e'.
 The last occurrence of 'e' in "needle" is at index 4 (0-indexed). The length of the pattern is 6.
-The distance from the end is `$m - 1 - 4 = 6 - 1 - 4 = 1$`.
+The distance from the end is $m - 1 - 4 = 6 - 1 - 4 = 1$.
 The Bad Character table for 'e' would indicate a shift of 1. So, the pattern would be shifted one position to the right.
 
 === Task 2: Advantage of Right-to-Left Scan

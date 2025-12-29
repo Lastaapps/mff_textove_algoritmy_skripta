@@ -9,7 +9,7 @@ The primary goal is to produce high-quality lecture notes in English (B2 level) 
 ## Project Structure
 
 - `main.typ`: The main Typst file that combines all chapters.
-- `definitions.typ`: Specifies common types of boxes and other common logic.
+- `definitions.typ`: Specifies common types of boxes and other common logic. This should be included in every file and boxes and other styles from this file should be used.
 - `notes/`: This directory contains the individual chapter files in Typst format.
 - `lectures/`: This directory contains the source PDF presentations for each lecture.
 - `main.pdf`: The compiled output of the project. This file is not versioned.
@@ -50,6 +50,12 @@ In Typst, backslashes are only used for escaping, not for expressions nor symbol
 Dollars `$` that do not start the math mode should be prefixed by slash.
 Strings in math mode are enclosed in quotes. When quotes are supposed to be used in the math mode,
 they need to be enclosed in string and escaped.
+
+### Math Mode Variables and Subscripts
+
+-   Variables in math mode should be directly written, e.g., `$T$`, `$n$`, `$P$`. Do NOT wrap them in backticks (e.g., `\`$T\`` or `\`$n\``), as backticks are for literal code.
+-   Multi-character subscripts or superscripts in math mode should be enclosed in parentheses, e.g., `$h_(new)$`, `$T^(text)$`.
+-   Literal strings within math mode must be enclosed in double quotes, e.g., `$"substring"$.
 
 ## Process
 

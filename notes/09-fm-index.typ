@@ -61,7 +61,7 @@ The $"Occ"(c, i)$ function returns the number of occurrences of character $c$ in
 
 == LF-Mapping (Last-to-First Mapping)
 
-The core of the FM-index search is the LF-mapping property. For the `$i$`-th character of the BWT (which is $T["SA"[i]-1]$), its corresponding character in the first column is at index `$j = "C"["BWT"[i]] + "Occ"("BWT"[i], i)$`. This allows us to move from a character in the last column to its corresponding position in the first column.
+The core of the FM-index search is the LF-mapping property. For the $i$-th character of the BWT (which is $T["SA"[i]-1]$), its corresponding character in the first column is at index $j = C["BWT"[i]] + "Occ"("BWT"[i], i)$. This allows us to move from a character in the last column to its corresponding position in the first column.
 
 == Pattern Search
 
@@ -89,21 +89,21 @@ The *Burrows-Wheeler Transform* groups identical characters together in the $"BW
 === Task 2: Starting a search for "ana"
 
 Given BWT = `"annb$aa"`.
-Let's assume a simplified C-table for the alphabet `{$, a, b, n}`:
-- `$C[$] = 0$`
-- `$C[a] = 1$` (one '\$')
-- `$C[b] = 4$` (one '\$' + three 'a's)
-- `$C[n] = 5$` (one '\$' + three 'a's + one 'b')
+Let's assume a simplified C-table for the alphabet `{"\$", "a", "b", "n"}`:
+- $C["\$"] = 0$
+- $C[a] = 1$ (one '\$')
+- $C[b] = 4$ (one '\$' + three 'a's)
+- $C[n] = 5$ (one '\$' + three 'a's + one 'b')
 
 Search for "ana":
 1. Start with the last character, 'a'.
-2. From the C-table, the range for 'a' is `[C[a], C[b]-1] = [1, 3]`. So, the suffixes starting with 'a' are at indices 1, 2, and 3 in the sorted list.
-3. Next, look for 'n' preceding 'a'. We apply the LF-mapping to the range `[1, 3]`.
-  - For the 'a' at BWT[1]='n', the new index would be `$C['n'] + Occ('n', 1) = 5 + 0 = 5$`.
-  - For the 'a' at BWT[2]='n', the new index would be `$C['n'] + Occ('n', 2) = 5 + 1 = 6$`.
+2. From the C-table, the range for 'a' is $[C[a], C[b]-1] = [1, 3]$. So, the suffixes starting with 'a' are at indices 1, 2, and 3 in the sorted list.
+3. Next, look for 'n' preceding 'a'. We apply the LF-mapping to the range $[1, 3]$.
+  - For the 'a' at BWT[1]='n', the new index would be $C['n'] + "Occ"('n', 1) = 5 + 0 = 5$.
+  - For the 'a' at BWT[2]='n', the new index would be $C['n'] + "Occ"('n', 2) = 5 + 1 = 6$.
   - For the 'a' at BWT[3]='b', this does not match 'n', so we discard it.
-  The new range for "na" would be `[5, 6]`.
-4. The process continues with the next character 'a' and the new range `[5, 6]`.
+  The new range for "na" would be $[5, 6]$.
+4. The process continues with the next character 'a' and the new range $[5, 6]$.
 
 === Task 3: Backward Search
 

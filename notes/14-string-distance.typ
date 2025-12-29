@@ -1,4 +1,3 @@
-
 #set page(
   paper: "a4",
   margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
@@ -49,23 +48,23 @@ Usually, the cost of each operation is 1.
 
 == Wagner-Fischer Algorithm
 
-The edit distance is commonly computed using a dynamic programming approach known as the *Wagner-Fischer algorithm*. It uses a matrix `D` of size `(m+1) x (n+1)`, where `m` and `n` are the lengths of the two strings.
+The edit distance is commonly computed using a dynamic programming approach known as the *Wagner-Fischer algorithm*. It uses a matrix `D` of size `(m+1) x (n+1)`, where $m$ and $n$ are the lengths of the two strings.
 
 - `D[i, j]` stores the edit distance between the first `i` characters of string 1 and the first `j` characters of string 2.
 - The matrix is filled based on the recurrence relation:
-  `$D[i, j] = min(
-      D[i-1, j] + 1, // deletion
-      D[i, j-1] + 1, // insertion
-      D[i-1, j-1] + cost(s1[i], s2[j])
-  )$`
+  $D[i, j] = min(
+    D[i-1, j] + 1, // deletion
+    D[i, j-1] + 1, // insertion
+    D[i-1, j-1] + "cost"("s1"[i], "s2"[j])
+  )$
   where `cost` is 0 if the characters are the same, and 1 otherwise.
 
-The value `D[m, n]` contains the edit distance between the two full strings. The time and space complexity is `$O(m*n)$`.
+The value $D[m, n]$ contains the edit distance between the two full strings. The time and space complexity is $O(m*n)$.
 
 == Longest Common Subsequence (LCS)
 
 The problem of finding the *Longest Common Subsequence (LCS)* is closely related to edit distance. The length of the LCS of two strings can be calculated from their Levenshtein distance.
-- `|LCS(s1, s2)| = ( |s1| + |s2| - d_L(s1, s2) ) / 2`
+- $|"LCS"("s1", "s2")| = ( |"s1"| + |"s2"| - d_L("s1", "s2") ) / 2$
 
 == Tasks
 
@@ -97,18 +96,18 @@ Each of these operations is typically assigned a cost of 1.
 
 === Task 3: DP Matrix for "cat" and "dog"
 
-Let `s1 = "cat"` and `s2 = "dog"`. The matrix `D` will be 4x4.
+Let `s1 = "cat"` and `s2 = "dog"`. The matrix $D$ will be 4x4.
 The first row and column are initialized based on the cost of insertions and deletions to transform a prefix into an empty string.
 
-- `D[0, 0] = 0` (distance from empty to empty is 0).
+- $D[0, 0] = 0$ (distance from empty to empty is 0).
 - First row (deletions from "cat" to empty):
-  - `D[0, 1] = 1` ("c" to "")
-  - `D[0, 2] = 2` ("ca" to "")
-  - `D[0, 3] = 3` ("cat" to "")
+  - $D[0, 1] = 1$ ("c" to "")
+  - $D[0, 2] = 2$ ("ca" to "")
+  - $D[0, 3] = 3$ ("cat" to "")
 - First column (insertions to create "dog" from empty):
-  - `D[1, 0] = 1` ("" to "d")
-  - `D[2, 0] = 2` ("" to "do")
-  - `D[3, 0] = 3` ("" to "dog")
+  - $D[1, 0] = 1$ ("" to "d")
+  - $D[2, 0] = 2$ ("" to "do")
+  - $D[3, 0] = 3$ ("" to "dog")
 
 The initialized matrix would start like this:
 ```
