@@ -23,23 +23,85 @@ Unlike KMP or brute-force, Boyer-Moore aligns the pattern with the text and comp
 
 == Bad Character Heuristic
 
-When a mismatch occurs at text character $T[i]$ (which corresponds to pattern character $P[j]$), and $T[i] = c$, the bad character heuristic proposes a shift based on the last occurrence of character $c$ in the pattern $P$.
+When a mismatch occurs, suppose the text character is $c$ and it aligns with pattern character $p$. The "bad character" is $c$. The heuristic proposes a shift based on the last occurrence of $c$ in the pattern *before* the mismatch position.
 
-- If $c$ appears in $P$ to the left of position $j$, the pattern is shifted to align this last occurrence of $c$ with $T[i]$.
-- If $c$ does not appear in $P$ at all, the pattern can be shifted completely past $T[i]$.
+- Let the mismatch occur at index $j$ of the pattern $P$. We look for the rightmost occurrence of character $c$ in $P[0..j-1]$. Let this be at index $k$. The pattern is shifted so that $P[k]$ aligns with text character $c$. Shift = $j-k$.
+- If $c$ does not appear in $P[0..j-1]$, the pattern is shifted completely past the mismatch position. Shift = $j+1$.
 
-A *Bad Character (BC)* table is precomputed to store the shift for each character in the alphabet. $"BC"[c]$ is the distance from the end of the pattern to the last occurrence of $c$.
+In practice, a simpler version is often used where the shift is based on the rightmost occurrence of $c$ anywhere in the pattern (this is the Boyer-Moore-Horspool variant).
+
+#example_box[
+  *Example: Bad Character Heuristic*
+
+  Let Text `T = ...G*A*TTAG...` and Pattern `P = C*A*BTAA`.
+  The scan goes from right to left.
+  - `A` vs `G`: Mismatch. The bad character in the text is `G`. `G` does not appear in `P`. We can shift the entire pattern past this point. Shift = length of P = 6.
+]
+
 
 == Good Suffix Heuristic
 
-This heuristic is used when a partial match is found. Suppose the comparison stops at pattern position $j$ because of a mismatch, but the suffix of the pattern from $j+1$ to $m$ (the "good suffix") matched the text.
+This heuristic is triggered when a mismatch occurs after a partial match. Let $t$ be the suffix of the pattern that matched the text correctly (the "good suffix"). The algorithm proposes a shift based on other occurrences of this good suffix.
 
-The good suffix heuristic proposes a shift to align the pattern with the text such that:
-1. Another occurrence of the good suffix in the pattern aligns with the matched text segment.
-2. If such an occurrence does not exist, the pattern is shifted by the smallest amount to align a prefix of the pattern with a suffix of the good suffix.
-3. If no such alignment is possible, the pattern can be shifted completely past the matched segment.
+#info_box(title: "The Two Cases of Good Suffix Shift")[
+  *Case 1: The good suffix appears elsewhere in the pattern.*
+  Shift the pattern to align the text's good suffix with the *rightmost* other occurrence of that same suffix in the pattern. This other occurrence must not be a suffix of the pattern itself.
 
-A *Good Suffix (GS)* table is precomputed to store the shift for each possible good suffix length.
+  *Case 2: The good suffix does not appear elsewhere, but a prefix of the pattern matches a suffix of the good suffix.*
+  If an exact match for the good suffix is not found, shift the pattern to the right to align the longest prefix of the pattern that is also a suffix of the good suffix.
+]
+
+The algorithm always takes the maximum of the shifts proposed by the Bad Character and Good Suffix heuristics.
+
+#example_box[
+  *Example: Good Suffix Heuristic (Case 1)*
+
+  Let Text `T = ...CTA*G*TAG...` and Pattern `P = GTA*A*TAG`.
+  - Mismatch at `A` vs `G`. The good suffix `t` that matched is `"TAG"`.
+  - The algorithm looks for another occurrence of `"TAG"` in `P`. It finds one at the beginning: `P = G*TAA*TAG`.
+  - The pattern is shifted right to align this second occurrence with the text. The shift is 4.
+
+  ```
+  Text:    ...CTA*G*TAG...
+  Pattern:   GTA*A*TAG
+  Shift ->       GTAATAG
+  ```
+]
+
+#example_box[
+  *Example: Good Suffix Heuristic (Case 2)*
+
+  Let Text `T = ...GCA*T*AAGC...` and Pattern `P = TTA*A*AAGC`.
+  - Mismatch at `A` vs `T`. The good suffix is `t = "AAGC"`.
+  - Let's assume `"AAGC"` does not appear elsewhere in `P`.
+  - Now, we check for a prefix of `P` that is a suffix of `t`. The longest such prefix is `"AAGC"` -> `"AGC"` -> `"GC"` -> `"C"`. Let's say `P` starts with `GC...`: `P = GC...TAAAAGC`.
+  - The pattern is shifted to align the prefix `GC` with the suffix `GC` of the matched part of the text.
+
+  ```
+  Text:    ...GCATA*A*AGC...
+  Pattern:   TTAAA*A*AGC
+  Shift ->       TTAAAAGC  // (Assuming no other rule gives a larger shift)
+  ```
+]
+
+
+=== Preprocessing
+
+==== Bad Character Table
+A table `bc` of size $|Sigma|$ is created. `bc[c]` stores the index of the rightmost occurrence of character `c` in the pattern. If `c` is not in the pattern, it's set to -1. This takes $O(m + |Sigma|)$ time.
+
+==== Good Suffix Table
+This is more complex and requires two arrays, `gs` (the good suffix shifts) and a helper array `suff`.
+
+1. *Compute `suff` array:* `suff[i]` is the length of the longest suffix of $P$ that starts at position $i$. This can be computed in $O(m)$ time by comparing the pattern with its suffixes. A simpler way is to note that `suff[i]` is the length of the longest common prefix between $P$ and $P[i..m-1]$.
+
+2. *Compute `gs` for Case 1:*
+  For each $i$ from $0$ to $m-1$, if `suff[i] > 0`, it means we found a good suffix of length `k = suff[i]` ending at position $i+k-1$. We can set `gs[m-k]` to the shift `m - 1 - i`. We iterate from right to left to ensure we get the rightmost occurrence.
+
+3. *Compute `gs` for Case 2:*
+  For this case, we need the lengths of the pattern's borders (prefixes that are also suffixes). Let `j` be the length of the longest border of $P$. For all positions in `gs` that were not filled by Case 1, we set the shift to `m - j`. This is the safe shift that aligns the pattern's border with the tail of the good suffix.
+
+This entire preprocessing for the `gs` table can be done in $O(m)$ time.
 
 == The Algorithm
 
