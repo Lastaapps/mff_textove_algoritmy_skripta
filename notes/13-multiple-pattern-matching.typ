@@ -15,35 +15,105 @@
 
 == Aho-Corasick Algorithm
 
-The *Aho-Corasick algorithm* is a highly efficient algorithm for this problem, developed by Alfred V. Aho and Margaret J. Corasick in 1975. It can be seen as a generalization of the Knuth-Morris-Pratt (KMP) algorithm.
+The *Aho-Corasick algorithm* is a highly efficient algorithm for this problem, developed by Alfred V. Aho and Margaret J. Corasick in 1975. It finds all occurrences of a set of patterns in a text in time proportional to the text length plus the number of matches.
 
-The algorithm builds a finite automaton from the set of patterns and then uses this automaton to process the text in a single pass.
+The algorithm first builds a finite automaton from the set of patterns and then uses this automaton to process the text in a single pass.
 
-=== Data Structures
+=== Core Concepts
 
-1. *Trie:* A trie (prefix tree) is built from all the patterns in the set $P$. Each node in the trie represents a prefix of one or more patterns.
+1. *Trie:* A trie (prefix tree) is built from all the patterns. Each node represents a prefix. Paths from the root spell out prefixes of the patterns.
 
-2. *Failure Links (fail function):* Each node in the trie has a failure link. For a node $u$ representing prefix $s$, `fail(u)` points to the node representing the longest proper suffix of $s$ that is also a prefix of some pattern. This is analogous to the failure function in KMP.
+2. *Failure Links (fail function):* Each node $u$ has a failure link, $f(u)$, that points to another node. $f(u)$ points to the node corresponding to the longest proper suffix of the string represented by $u$ that is also a prefix of some pattern in the dictionary. This is a generalization of the KMP failure function.
 
-3. *Output Function (out):* Each node $u$ has an output function `out(u)` which stores the set of patterns that end at this node. To find all matches, the output links are followed as well. If `fail(u)` corresponds to a pattern, this pattern is also considered a match.
+3. *Output Function (out):* Each node $u$ has an output set, $"out"(u)$, which contains any patterns that end at state $u$. To find all possible matches, we must also consider patterns ending at states reachable by following failure links.
 
-=== The Algorithm
+=== Preprocessing: Building the Automaton
 
-1. *Preprocessing:*
-  - Build a trie from the set of patterns.
-  - Compute the failure links for all nodes in the trie. This is typically done using a breadth-first traversal.
-  - Compute the output function for all nodes.
+The preprocessing phase constructs the trie and computes the failure and output links.
 
-2. *Searching:*
-  - Process the text $T$ character by character, starting from the root of the trie.
-  - For each character, follow the corresponding edge in the trie.
-  - If no edge exists for the current character, follow the failure links until a valid transition can be made or the root is reached.
-  - At each node visited, check the output function to report any patterns that end at the current position.
+==== Trie Construction
+This is a standard procedure. We iterate through each pattern in the dictionary and add it to the trie. For each node, we also initialize its $"out"$ set.
+- Create a root node (state 0).
+- For each pattern $p$:
+  - Start from the root. For each character in $p$, follow the corresponding edge. If an edge doesn't exist, create a new node.
+  - Add the pattern $p$ to the $"out"$ set of the final node for $p$.
+This takes $O(M)$ time, where $M$ is the total length of all patterns.
 
-=== Complexity
+==== Failure Function Computation
+The failure links are computed using a Breadth-First Search (BFS) starting from the root.
+- The failure link of the root is set to itself.
+- We process nodes level by level. For each node $u$ and for each character $c$ that leads to a child $v$:
+  1. Start at `f(u)` and follow its failure links until a node `w` is found that has a transition on character `c`. Let this transition lead to state $w'$.
+  2. Set `f(v) = w'`.
+  3. If no such `w` is found (i.e., we reach the root and it has no transition on `c`), set `f(v)` to the root.
+This process also takes $O(M)$ time.
 
-- *Preprocessing:* $O(m log alpha)$, where $m$ is the total length of all patterns and $alpha$ is the alphabet size.
-- *Searching:* $O(n log alpha + z)$, where $n$ is the text length and $z$ is the number of matches. For an indexed alphabet, this becomes $O(n + m + z)$.
+==== Output Function Computation
+The initial `out(u)` only contains patterns that *exactly* end at state `u`. However, a match also occurs if a suffix of the current string is a pattern. For example, if we match `"she"`, we have also matched `"he"`. This is handled by "chaining" the outputs along the failure links.
+
+During the search, when we are at a state `u`, we report all patterns in `out(u)`, then we traverse the failure links `f(u)`, `f(f(u))`, and so on, reporting all patterns in their `out` sets until we reach the root. This ensures all dictionary suffixes are found. The cost of this is accounted for by the $z$ term in the search complexity.
+
+=== Example of Aho-Corasick
+Let the dictionary be $P = {"he", "she", "his", "hers"}$.
+
+==== Trie and Failure Links
+First, we build the trie. Then, we compute the failure links (f).
+- `f(1)` (for "h"): root(0)
+- `f(2)` (for "s"): root(0)
+- `f(3)` (for "he"): `f(1)` is root, which has no 'e' transition. So `f(3)` is root(0).
+- `f(4)` (for "sh"): `f(2)` is root. root has a transition on 'h' to state 1. So `f(4) = 1`.
+- `f(5)` (for "hi"): `f(1)` is root. root has a transition on 'i' to nowhere. So `f(5)` is root(0).
+- and so on...
+
+#example_box[
+  *Trie and Failure Links for {"he", "she", "his", "hers"}*
+  ```
+        (0) --h--> (1) --e--> (3){he} --r--> (8){hers} --s--> (9)
+         |          |
+         |          --i--> (5){his} --s--> (6)
+         |
+         --s--> (2) --h--> (4) --e--> (7){she}
+  ```
+  *Failure Links Table:*
+  #table(
+    columns: 4,
+    inset: 10pt,
+    align: (center, left, center, left),
+    [*State (string)*],
+    [*Failure Link (f)*],
+    [*Output ("out")*],
+    [*Chained Output*],
+
+    [0 (root)], [0], [\{\}], [\{\}],
+    [1 ("h")], [0], [\{\}], [\{\}],
+    [2 ("s")], [0], [\{\}], [\{\}],
+    [3 ("he")], [0], [{"he"}], [{"he"}],
+    [4 ("sh")], [1], [\{\}], [\{\}],
+    [5 ("hi")], [0], [{"his"}], [{"his"}],
+    [6 ("his")], [2], [\{\}], [\{\}],
+    [7 ("she")], [3], [{"she"}], [{"she", "he"}],
+    [8 ("her")], [0], [\{\}], [\{\}],
+    [9 ("hers")], [2], [{"hers"}], [{"hers"}],
+  )
+
+  *Note on Chained Output:* When we reach state 7 ("she"), we report "she". We then follow its fail link, f(7)=3. State 3 is an output node for "he", so we report "he" as well. This finds all dictionary suffixes.
+]
+
+=== Complexity Analysis
+Let $N$ be the length of the text, $M$ be the total length of all patterns, and $z$ be the total number of occurrences of all patterns in the text.
+
+- *Preprocessing Time:*
+  - Trie construction: $O(M)$.
+  - Failure link computation: $O(M)$.
+  - *Total Preprocessing: $O(M)$*.
+
+- *Search Time:*
+  - The algorithm traverses the text once, making $N$ character transitions.
+  - The total number of times failure links are followed during the search is amortized to $O(N)$.
+  - At each position, we may report several matches by following output links. The total cost of reporting all matches is proportional to the total number of matches, $z$.
+  - *Total Search Time: $O(N+z)$*.
+
+This makes the Aho-Corasick algorithm extremely efficient for a fixed dictionary.
 
 == Commentz-Walter Algorithm
 
