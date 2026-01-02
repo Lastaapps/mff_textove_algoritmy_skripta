@@ -112,14 +112,14 @@ The operation $>>> B$ is a logical right shift of the entire state vector by $B$
   - $t['b'] = [000, 000, 000, 001]$ (match, match, match, mismatch)
 
   Let's trace the first few steps:
-  1. *Initial state:* $s_{-1} = [000, 000, 000, 000]$.
+  1. *Initial state:* $s_(-1) = [000, 000, 000, 000]$.
   2. *i=0, T[0]='a':*
-    $s_0 = (s_{-1} >>> 3) + t['a']$
+    $s_0 = (s_(-1) >>> 3) + t['a']$
     $s_0 = [000, 000, 000, 000] + [001, 001, 001, 000] = [001, 001, 001, 000]$.
   3. *i=1, T[1]='b':*
     $s_1 = (s_0 >>> 3) + t['b']$
     $s_1 = [000, 001, 001, 001] + [000, 000, 000, 001] = [000, 001, 001, 010]$.
-    The last counter $s_1[4]$ is 2, indicating 2 errors for matching "bbba" against "ab".
+    The last counter $s_1 [4]$ is 2, indicating 2 errors for matching "bbba" against "ab".
 
   This continues for the entire text. A match is reported whenever the last counter's value is $<= k$.
 ])
@@ -153,7 +153,7 @@ The update becomes more complex, involving checks for overflow and propagating i
 === Task 1: DP Matrix Difference
 
 The main difference is in the interpretation and initialization.
-- In the standard *edit distance* calculation between two full strings $"s1"$ and $"s2"$, the cell $D[i,j]$ stores the distance between the prefix $"s1"[1..i]$ and $"s2"[1..j]$. The first row and column are initialized with increasing costs (0, 1, 2, ...).
+- In the standard *edit distance* calculation between two full strings $s^1$ and $s^2$, the cell $D[i,j]$ stores the distance between the prefix $s^1[1..i]$ and $s^2[1..j]$. The first row and column are initialized with increasing costs (0, 1, 2, ...).
 - In *approximate string matching*, we are looking for the best match of a pattern $P$ against *any* substring of the text $T$. The cell $c[i,j]$ stores the minimum distance between $P[1..j]$ and any substring of $T$ ending at position $i$. Because of this, the first column $c[i,0]$ (matching an empty pattern) is always initialized to 0. This allows a potential match to start at any position in the text.
 
 === Task 2: Counters in Approximate Shift-Or
