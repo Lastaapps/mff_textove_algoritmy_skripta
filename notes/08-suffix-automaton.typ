@@ -1,10 +1,3 @@
-#set page(
-  paper: "a4",
-  margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
-)
-
-#set heading(numbering: "1.1")
-
 #import "../definitions.typ": *
 
 = Suffix Automaton
@@ -87,26 +80,30 @@ A *Compacted DAWG (CDAWG)* is a further compressed version of the DAWG. It is cr
 
 == Tasks
 
-1. What is the main difference between a suffix trie and a suffix automaton for the same text?
-2. How many states and transitions can a suffix automaton for the text $T = "banana"$ (length 6) have at most?
-3. What is the primary advantage of a suffix automaton over a suffix tree?
+=== Task 1
+What is the main difference between a suffix trie and a suffix automaton for the same text?
+
+=== Task 2
+How many states and transitions can a suffix automaton for the text $T = "banana"$ (length 6) have at most?
+
+=== Task 3
+What is the primary advantage of a suffix automaton over a suffix tree?
 
 #pagebreak()
 
 == Solutions
 
-=== Task 1: Suffix Trie vs. Suffix Automaton
-
+=== Solution 1
 - *Suffix Trie*: A tree structure that represents all suffixes of a text. Each edge is labeled with a single character. Different occurrences of the same substring might correspond to different paths from the root. It can have up to $O(n^2)$ nodes.
 - *Suffix Automaton*: A minimized graph where all paths starting from the initial state that spell out the same substring lead to the same state. It has a linear number of states and transitions in the length of the text. It is a more compact representation.
 
-=== Task 2: States and Transitions for "banana"
-
+=== Solution 2
 For $T = "banana"$, $n=6$.
 - Maximum number of states: $2n + 1 = 2 * 6 + 1 = 13$.
 - Maximum number of transitions: $3n = 3 * 6 = 18$.
 The actual number of states and transitions for a given string is usually smaller than this theoretical maximum.
 
-=== Task 3: Advantage of Suffix Automaton over Suffix Tree
-
+=== Solution 3
 The primary advantage of a suffix automaton is its size. While both can be built in linear time and can solve many of the same problems, the suffix automaton is smaller. A suffix automaton has at most $2n+1$ states, while a suffix tree can have up to $2n-1$ nodes (for a string of length $n>1$). However, the suffix automaton is a more complex structure, and for some applications, the suffix tree can be conceptually simpler to use.
+
+#pagebreak()

@@ -1,10 +1,3 @@
-#set page(
-  paper: "a4",
-  margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
-)
-
-#set heading(numbering: "1.1")
-
 #import "../definitions.typ": *
 
 = FM-Index
@@ -107,20 +100,23 @@ To find a pattern $P$, the *FM-index* performs a backward search:
 
 == Tasks
 
-1. What is the purpose of the *Burrows-Wheeler Transform* in the context of the *FM-Index*?
-2. Given the $"BWT"$ string `"annb$aa"` and a *C-table*, explain how you would start a search for the pattern `"ana"`.
-3. Why is the search in the *FM-index* performed backward (from the last character of the pattern to the first)?
+=== Task 1
+What is the purpose of the *Burrows-Wheeler Transform* in the context of the *FM-Index*?
+
+=== Task 2
+Given the $"BWT"$ string `"annb$aa"` and a *C-table*, explain how you would start a search for the pattern `"ana"`.
+
+=== Task 3
+Why is the search in the *FM-index* performed backward (from the last character of the pattern to the first)?
 
 #pagebreak()
 
 == Solutions
 
-=== Task 1: Purpose of BWT
-
+=== Solution 1
 The *Burrows-Wheeler Transform* groups identical characters together in the $"BWT"$ string. For example, all 'a's in the original text tend to be clustered in the $"BWT"$. This property is crucial for compression. In the context of the *FM-index*, the $"BWT"$ enables the *LF-mapping* property, which is the core mechanism for the efficient backward search algorithm. It allows us to find the occurrences of a pattern by iteratively refining a range in the suffix array without explicitly storing the suffix array itself.
 
-=== Task 2: Starting a search for "ana"
-
+=== Solution 2
 Given BWT = `"annb$aa"`.
 Let's assume a simplified C-table for the alphabet `{"\$", "a", "b", "n"}`:
 - $C["\$"] = 0$
@@ -138,6 +134,7 @@ Search for "ana":
   The new range for "na" would be $[5, 6]$.
 4. The process continues with the next character 'a' and the new range $[5, 6]$.
 
-=== Task 3: Backward Search
-
+=== Solution 3
 The search is performed backward because of the way the LF-mapping works. The BWT gives us the character *preceding* a suffix in the original text. When we are at a certain range of suffixes (all starting with, say, string $S$), the BWT characters corresponding to this range tell us what characters precede $S$ in the text. This allows us to extend our match backward, for example to find suffixes starting with $c"S"$. A forward search would require a different, less efficient mapping.
+
+#pagebreak()

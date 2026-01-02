@@ -2,8 +2,6 @@
 
 = Suffix Tree Construction
 
-#set par(justify: true)
-
 The construction of a suffix tree is a fundamental task in stringology. While a naive approach of inserting suffixes one by one is too slow (quadratic time), Ukkonen's algorithm provides a clever and efficient solution to build a suffix tree in linear time. This algorithm is online, meaning it processes the string character by character, maintaining a valid suffix tree for the prefix seen so far.
 
 == Implicit Suffix Trees
@@ -110,26 +108,40 @@ The combination of these factors ensures that the total number of operations is 
 
 == Tasks
 
-#enum(
-  [What is the difference between an implicit and an explicit suffix tree?],
-  [Explain the role of the "active point" in Ukkonen's algorithm.],
-  [What are the three extension rules in Ukkonen's algorithm, and how do they affect the active point?],
-  [What is a suffix link and why is it important?],
-  [How does the representation of edge labels as `(start, end)` pairs contribute to the efficiency of the algorithm?],
-)
+=== Task 1
+What is the difference between an implicit and an explicit suffix tree?
+
+=== Task 2
+Explain the role of the "active point" in Ukkonen's algorithm.
+
+=== Task 3
+What are the three extension rules in Ukkonen's algorithm, and how do they affect the active point?
+
+=== Task 4
+What is a suffix link and why is it important?
+
+=== Task 5
+How does the representation of edge labels as `(start, end)` pairs contribute to the efficiency of the algorithm?
 
 #pagebreak()
 
 == Solutions
 
-#enum(
-  [An explicit suffix tree represents all suffixes of a string ending with a unique terminal symbol, and every suffix corresponds to a path from the root to a leaf. An implicit suffix tree is for a string without a terminal symbol, and some suffixes may end at internal nodes or on edges.],
-  [The active point `(active_node, active_edge, active_length)` tracks the current position in the tree. It allows the algorithm to avoid restarting from the root for each new suffix extension, making the process much faster.],
-  [
-    - *Rule 1 (Leaf Extension):* Extends a leaf edge. The active point is unchanged.
-    - *Rule 2 (Node Splitting):* Splits an edge and creates a new leaf. The active point is updated to the new internal node.
-    - *Rule 3 (Show Stopper):* Finds the suffix already in the tree. The active point is updated to the end of the suffix's path, and the current phase ends early.
-  ],
-  [A suffix link from a node `u` representing `αw` to a node `v` representing `w` allows for quick traversal between suffixes. This is a key optimization for achieving linear-time complexity.],
-  [Representing edge labels as `(start, end)` pairs, especially with a global "end" for leaf edges, avoids the need to update every leaf edge in every phase. This implicit extension is a major source of efficiency.],
-)
+=== Solution 1
+An explicit suffix tree represents all suffixes of a string ending with a unique terminal symbol, and every suffix corresponds to a path from the root to a leaf. An implicit suffix tree is for a string without a terminal symbol, and some suffixes may end at internal nodes or on edges.
+
+=== Solution 2
+The active point `(active_node, active_edge, active_length)` tracks the current position in the tree. It allows the algorithm to avoid restarting from the root for each new suffix extension, making the process much faster.
+
+=== Solution 3
+- *Rule 1 (Leaf Extension):* Extends a leaf edge. The active point is unchanged.
+- *Rule 2 (Node Splitting):* Splits an edge and creates a new leaf. The active point is updated to the new internal node.
+- *Rule 3 (Show Stopper):* Finds the suffix already in the tree. The active point is updated to the end of the suffix's path, and the current phase ends early.
+
+=== Solution 4
+A suffix link from a node `u` representing `αw` to a node `v` representing `w` allows for quick traversal between suffixes. This is a key optimization for achieving linear-time complexity.
+
+=== Solution 5
+Representing edge labels as `(start, end)` pairs, especially with a global "end" for leaf edges, avoids the need to update every leaf edge in every phase. This implicit extension is a major source of efficiency.
+
+#pagebreak()

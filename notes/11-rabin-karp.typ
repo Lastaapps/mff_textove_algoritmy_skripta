@@ -1,10 +1,3 @@
-#set page(
-  paper: "a4",
-  margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
-)
-
-#set heading(numbering: "1.1")
-
 #import "../definitions.typ": *
 
 = Rabin-Karp Algorithm
@@ -75,16 +68,20 @@ This probabilistic guarantee makes Rabin-Karp very effective in practice.
 
 == Tasks
 
-1. If you are searching for a pattern of length 3 in a text, and the hash of $T[0..2]$ is $H$. How do you compute the hash of $T[1..3]$ in $O(1)$ time?
-2. What is a "spurious hit" in the context of the Rabin-Karp algorithm?
-3. Why is the choice of the prime number $q$ important?
+=== Task 1
+If you are searching for a pattern of length 3 in a text, and the hash of $T[0..2]$ is $H$. How do you compute the hash of $T[1..3]$ in $O(1)$ time?
+
+=== Task 2
+What is a "spurious hit" in the context of the Rabin-Karp algorithm?
+
+=== Task 3
+Why is the choice of the prime number $q$ important?
 
 #pagebreak()
 
 == Solutions
 
-=== Task 1: Computing the Next Hash
-
+=== Solution 1
 Let the hash of $T[0..2]$ be $H = (T[0]*b^2 + T[1]*b^1 + T[2]*b^0) mod q$.
 To compute the hash of $T[1..3]$, we first remove the contribution of $T[0]$:
 $H' = H - T[0]*b^2$
@@ -92,14 +89,14 @@ Then, we shift the remaining part to the left (multiply by $b$) and add the new 
 $H_"new" = (H' * b + T[3]) mod q = ((H - T[0]*b^2) * b + T[3]) mod q$
 The term $b^2$ can be pre-calculated. This update step takes $O(1)$ time.
 
-=== Task 2: Spurious Hit
-
+=== Solution 2
 A "spurious hit" (or hash collision) occurs when the hash value of a text substring matches the hash value of the pattern, but the substring itself is different from the pattern.
 $hash("substring") = hash("pattern")$ but $"substring" != "pattern"$.
 Because hash functions map a large space of strings to a smaller space of numbers, collisions are possible. To handle this, the Rabin-Karp algorithm must perform a character-by-character comparison whenever the hash values match to confirm a true occurrence.
 
-=== Task 3: Importance of the Prime `q`
-
+=== Solution 3
 The choice of the prime number $q$ is important for two reasons:
 1. *Minimizing Collisions*: A larger $q$ reduces the probability of hash collisions. If $q$ is too small, many different strings will map to the same hash value, leading to frequent spurious hits and degrading the algorithm's performance towards the worst-case scenario.
 2. *Avoiding Overflow*: The value of $q$ should be chosen such that intermediate calculations (like $T[i] * b^(m-1)$) do not overflow the standard integer types of the programming language. Often, $q$ is chosen to be a large prime that fits within a machine word.
+
+#pagebreak()

@@ -1,10 +1,3 @@
-#set page(
-  paper: "a4",
-  margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
-)
-
-#set heading(numbering: "1.1")
-
 #import "../definitions.typ": *
 
 = Approximate String Matching II: The Wu-Manber Algorithm
@@ -154,30 +147,35 @@ This ensures that for any position $j$ where $e[j]=1$, the state bit $s'[q, j]$ 
 
 == Tasks
 
-1. What is the main innovation of the Wu-Manber algorithm compared to the standard dynamic programming approach?
-2. In the Wu-Manber algorithm, what does the bit vector $s[q]$ represent?
-3. How would you modify the preprocessing step (character masks) to handle the wildcard `?` in a pattern like $"a?c"$?
-4. Explain the strategy to find the single best approximate match of a pattern $P$ in a text $T$, not just all matches with at most $k$ errors.
-5. When searching for multiple patterns by concatenating them, what is the purpose of the boundary mask $M$?
+=== Task 1
+What is the main innovation of the Wu-Manber algorithm compared to the standard dynamic programming approach?
+
+=== Task 2
+In the Wu-Manber algorithm, what does the bit vector $s[q]$ represent?
+
+=== Task 3
+How would you modify the preprocessing step (character masks) to handle the wildcard `?` in a pattern like $"a?c"$?
+
+=== Task 4
+Explain the strategy to find the single best approximate match of a pattern $P$ in a text $T$, not just all matches with at most $k$ errors.
+
+=== Task 5
+When searching for multiple patterns by concatenating them, what is the purpose of the boundary mask $M$?
 
 #pagebreak()
 
 == Solutions
 
-=== Task 1: Wu-Manber Innovation
-
+=== Solution 1
 The main innovation of the Wu-Manber algorithm is the application of *bit parallelism* to the dynamic programming solution for approximate string matching. Instead of calculating each cell of the DP matrix one by one ($O(m n)$), it represents entire columns or diagonals as bit vectors. It then computes the next set of vectors using a constant number of fast, word-level bitwise operations (shifts, ANDs, ORs). This parallelizes the computation and reduces the complexity, making it significantly faster when the pattern length $m$ is not much larger than the machine word size.
 
-=== Task 2: Bit Vector s[q]
-
+=== Solution 2
 The bit vector $s[q]$ (for $q$ from 0 to $k$) is a state vector where the $j$-th bit being 0 indicates that the prefix of the pattern of length $j$, $P[1..j]$, can be matched with a substring of the text ending at the current position with an edit distance of *at most* $q$. A 1 indicates the distance is greater than $q$. When the last bit, $s[k,m]$, is 0, the entire pattern has been matched with at most $k$ errors.
 
-=== Task 3: Handling Wildcards
-
+=== Solution 3
 To handle a wildcard `?` at position $j$ in the pattern (e.g., in $"a?c"$), you would modify the precomputation of the character masks. For the wildcard position $j$, the $j$-th bit in *every* character mask $t[c]$ would be set to 0. This ensures that regardless of the current character $T[i]$ in the text, the $| t[T[i]]$ operation in the update formula will always result in a 0 at position $j$, simulating a "free" match.
 
-=== Task 4: Finding the Best Match
-
+=== Solution 4
 To find the single best match (i.e., the one with the minimum edit distance), you can use an iterative approach with the Wu-Manber algorithm:
 1. Initialize a variable `best_k` to infinity and `best_position` to null.
 2. Iterate $k$ from 0 up to a reasonable maximum (or the pattern length $m$).
@@ -190,9 +188,10 @@ To find the single best match (i.e., the one with the minimum edit distance), yo
 
 This works because the first $k$ for which a match is found is, by definition, the minimum possible edit distance.
 
-=== Task 5: Multiple Pattern Boundary Mask
-
+=== Solution 5
 When searching for a set of patterns concatenated into a single super-pattern, the boundary mask $M$ is crucial for managing the divisions between the original patterns. Its primary purposes are:
 - It prevents a single match from incorrectly spanning across the boundary of two adjacent sub-patterns.
 - For exact matches ($q=0$), it ensures that a match for a sub-pattern can only begin at its designated starting position within the super-pattern.
 - For approximate matches ($q > 0$), it is used to correctly allow for errors (like deletions or substitutions) at the very beginning of a sub-pattern, which would otherwise be treated as a continuation of the previous sub-pattern.
+
+#pagebreak()

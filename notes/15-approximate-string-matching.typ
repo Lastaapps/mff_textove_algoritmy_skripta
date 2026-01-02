@@ -1,10 +1,3 @@
-#set page(
-  paper: "a4",
-  margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
-)
-
-#set heading(numbering: "1.1")
-
 #import "../definitions.typ": *
 
 = Approximate String Matching
@@ -141,33 +134,36 @@ The update becomes more complex, involving checks for overflow and propagating i
 
 == Tasks
 
-1. How does the dynamic programming matrix for approximate matching differ from the one for simple edit distance calculation?
-2. In the approximate Shift-Or algorithm, why does each entry in the bit vector need to be a counter instead of a single bit?
-3. What is the main limitation of the basic DP approach for approximate string matching?
-4. Construct the DP matrix for approximate string matching with $T = "bananabandana"$, $P = "bana"$, and $k=1$. Identify all occurrences.
+=== Task 1
+How does the dynamic programming matrix for approximate matching differ from the one for simple edit distance calculation?
+
+=== Task 2
+In the approximate Shift-Or algorithm, why does each entry in the bit vector need to be a counter instead of a single bit?
+
+=== Task 3
+What is the main limitation of the basic DP approach for approximate string matching?
+
+=== Task 4
+Construct the DP matrix for approximate string matching with $T = "bananabandana"$, $P = "bana"$, and $k=1$. Identify all occurrences.
 
 #pagebreak()
 
 == Solutions
 
-=== Task 1: DP Matrix Difference
-
+=== Solution 1
 The main difference is in the interpretation and initialization.
 - In the standard *edit distance* calculation between two full strings $s^1$ and $s^2$, the cell $D[i,j]$ stores the distance between the prefix $s^1[1..i]$ and $s^2[1..j]$. The first row and column are initialized with increasing costs (0, 1, 2, ...).
 - In *approximate string matching*, we are looking for the best match of a pattern $P$ against *any* substring of the text $T$. The cell $c[i,j]$ stores the minimum distance between $P[1..j]$ and any substring of $T$ ending at position $i$. Because of this, the first column $c[i,0]$ (matching an empty pattern) is always initialized to 0. This allows a potential match to start at any position in the text.
 
-=== Task 2: Counters in Approximate Shift-Or
-
+=== Solution 2
 In the exact Shift-Or algorithm, each bit in the vector $s$ represents a binary state: either a prefix of the pattern matches perfectly (0) or it doesn't (1).
 
 In the approximate version, we need to keep track of the *number* of errors (mismatches). A single bit is not enough to store this information. Therefore, each entry $s[j]$ becomes a counter that stores the accumulated number of errors for the match of the pattern prefix $P[1..j]$. If this counter exceeds $k$, it can be capped at $k+1$, as we are only interested in matches with at most $k$ errors. This requires multiple bits per entry, making the state vector larger.
 
-=== Task 3: Limitation of the DP Approach
-
+=== Solution 3
 The main limitation of the basic dynamic programming approach for approximate string matching is its time and space complexity of $O(n m)$. For long texts and patterns, this can be very slow and memory-intensive. While it is very general and can handle different scoring schemes, its quadratic complexity makes it impractical for many large-scale applications, such as searching for a pattern in a large genome database. More advanced algorithms, like the bit-parallel ones (e.g., approximate Shift-Or) or filtration methods, are used to achieve better performance, especially when the number of allowed errors $k$ is small.
 
-=== Task 4: DP Matrix for "bananabandana"
-
+=== Solution 4
 We construct the matrix $c[0..13, 0..4]$. The last column, $c[i, 4]$, gives the minimum distance between "bana" and any substring of T ending at position $i-1$.
 
 #table(
@@ -199,3 +195,5 @@ To find the occurrences, we scan the last column for values $v <= k=1$:
 - $c[11, 4] = 1$: Match with 1 error found ending at index 10 ("bananabanda").
 - $c[12, 4] = 1$: Match with 1 error found ending at index 11 ("bananabandan").
 - $c[13, 4] = 1$: Match with 1 error found ending at index 12 ("bananabandana").
+
+#pagebreak()

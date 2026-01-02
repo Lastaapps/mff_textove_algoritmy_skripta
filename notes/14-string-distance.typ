@@ -1,10 +1,3 @@
-#set page(
-  paper: "a4",
-  margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
-)
-
-#set heading(numbering: "1.1")
-
 #import "../definitions.typ": *
 
 = String Distance Metrics
@@ -158,17 +151,26 @@ This value represents the total number of insertions and deletions needed to tra
 
 == Tasks
 
-1. Calculate the Hamming distance between "PALE" and "POLE".
-2. Using the Wagner-Fischer algorithm, compute the full dynamic programming matrix to find the Levenshtein distance (with substitutions) between the strings "CAT" and "CAR".
-3. Explain the Diagonal Property of the edit distance DP matrix. Why is this property useful for creating faster algorithms?
-4. What is the main advantage of the Ukkonen-Myers algorithm over the standard Wagner-Fischer algorithm, and in what scenario is it most beneficial?
-5. What is the relationship between the LCS Distance and the strict Levenshtein distance (which only allows insertions and deletions)? Provide the formula.
+=== Task 1
+Calculate the Hamming distance between "PALE" and "POLE".
+
+=== Task 2
+Using the Wagner-Fischer algorithm, compute the full dynamic programming matrix to find the Levenshtein distance (with substitutions) between the strings "CAT" and "CAR".
+
+=== Task 3
+Explain the Diagonal Property of the edit distance DP matrix. Why is this property useful for creating faster algorithms?
+
+=== Task 4
+What is the main advantage of the Ukkonen-Myers algorithm over the standard Wagner-Fischer algorithm, and in what scenario is it most beneficial?
+
+=== Task 5
+What is the relationship between the LCS Distance and the strict Levenshtein distance (which only allows insertions and deletions)? Provide the formula.
 
 #pagebreak()
 
 == Solutions
 
-=== Task 1: Hamming Distance
+=== Solution 1
 The strings "PALE" and "POLE" have the same length (4). We compare them character by character:
 - P vs P (same)
 - A vs O (different)
@@ -176,7 +178,7 @@ The strings "PALE" and "POLE" have the same length (4). We compare them characte
 - E vs E (same)
 There is one position with different characters. The Hamming distance is 1.
 
-=== Task 2: DP Matrix for "CAT" and "CAR"
+=== Solution 2
 We compute the matrix $D$ for $A="CAT"$ and $B="CAR"$. The cost of insertion, deletion, and substitution is 1.
 
 #table(
@@ -190,16 +192,18 @@ We compute the matrix $D$ for $A="CAT"$ and $B="CAR"$. The cost of insertion, de
 )
 The final edit distance is $D\[3,3]=1$, which corresponds to substituting 'T' with 'R'.
 
-=== Task 3: Diagonal Property
+=== Solution 3
 The Diagonal Property states that for any cell $(i,j)$ in the Levenshtein DP matrix, the value $D\[i,j]$ differs from the value of the previous diagonal cell $D\[i-1,j-1]$ by either 0 or 1.
 - *Usefulness:* This property is crucial because it means we don't have to compute every cell value from scratch. If we know the value of a cell on a diagonal, we know the next cell on that diagonal will have the same value or be one greater. Algorithms like the Ukkonen-Myers algorithm exploit this to avoid filling the entire $O(n m)$ matrix, instead only tracking the changes along diagonals, which leads to significant speedups, especially when the edit distance is small.
 
-=== Task 4: Ukkonen-Myers Advantage
+=== Solution 4
 The main advantage of the Ukkonen-Myers algorithm is its improved time complexity. While Wagner-Fischer is always $O(n m)$, Ukkonen-Myers runs in $O(k d)$, where $d$ is the length of the strings and $k$ is the actual edit distance.
 - *Most Beneficial Scenario:* It is most beneficial when the two strings are very similar, meaning the edit distance `k` is small. For example, in DNA sequencing, where one might be looking for matches with only a few mutations, `k` would be much smaller than `n` or `m`, making the algorithm significantly faster than Wagner-Fischer.
 
-=== Task 5: LCS and Levenshtein (ins/del only)
+=== Solution 5
 The strict Levenshtein distance that only allows insertions and deletions is equivalent to the LCS distance.
 The formula is:
 $d_L(A, B) = |A| + |B| - 2 * |"LCS"(A, B)|$
 This formula works because the most efficient way to make two strings equal using only insertions and deletions is to find their longest common subsequence, keep those characters, and delete all other characters from both strings. The number of deletions is $|A| - |"LCS"|$ and the number of insertions is $|B| - |"LCS"|$. Summing these gives the formula.
+
+#pagebreak()

@@ -1,5 +1,4 @@
 #import "../definitions.typ": *
-#set text(lang: "en")
 
 = Suffix Tree
 
@@ -233,61 +232,65 @@ For very large texts that do not fit into RAM, specialized external memory algor
 
 == Tasks
 
-1. *Task:* Construct the suffix trie for the string `banana$`. Clearly show all nodes, edges, and leaf nodes. Then, transform this suffix trie into a compressed suffix trie (suffix tree). Highlight the differences and the compaction achieved.
+=== Task 1
+Construct the suffix trie for the string `banana$`. Clearly show all nodes, edges, and leaf nodes. Then, transform this suffix trie into a compressed suffix trie (suffix tree). Highlight the differences and the compaction achieved.
 
-2. *Task:* Explain why a unique terminator character (e.g., #sym.dollar) is appended to a string before constructing its suffix tree. Provide an example where the absence of a terminator would lead to ambiguity or an incorrect suffix tree structure.
+=== Task 2
+Explain why a unique terminator character (e.g., #sym.dollar) is appended to a string before constructing its suffix tree. Provide an example where the absence of a terminator would lead to ambiguity or an incorrect suffix tree structure.
 
-3. *Task:* Compare and contrast the space complexity of a standard suffix trie versus a suffix tree for a string of length $n$. Briefly explain the mechanism that allows suffix trees to achieve better space efficiency.
+=== Task 3
+Compare and contrast the space complexity of a standard suffix trie versus a suffix tree for a string of length $n$. Briefly explain the mechanism that allows suffix trees to achieve better space efficiency.
 
-#pagebreak(weak: true)
+#pagebreak()
 
 == Solutions
 
-1. *Solution:*
-  - *Suffix Trie for `banana$`:*
-    (This would ideally be a diagram. Textual representation is difficult but let's describe key paths)
-    - Root
-      - b -> a -> n -> a -> n -> a -> \$ (leaf for "banana\$")
-      - a -> n -> a -> n -> a -> \$ (leaf for "anana\$")
-      - n -> a -> n -> a -> \$ (leaf for "nana\$")
-      - a -> n -> a -> \$ (leaf for "ana\$")
-      - n -> a -> \$ (leaf for "na\$")
-      - a -> \$ (leaf for "a\$")
-      - \$ (leaf for "\$")
+=== Solution 1
+- *Suffix Trie for `banana$`:*
+  (This would ideally be a diagram. Textual representation is difficult but let's describe key paths)
+  - Root
+    - b -> a -> n -> a -> n -> a -> \$ (leaf for "banana\$")
+    - a -> n -> a -> n -> a -> \$ (leaf for "anana\$")
+    - n -> a -> n -> a -> \$ (leaf for "nana\$")
+    - a -> n -> a -> \$ (leaf for "ana\$")
+    - n -> a -> \$ (leaf for "na\$")
+    - a -> \$ (leaf for "a\$")
+    - \$ (leaf for "\$")
+  Each character is an edge. Many nodes would have only one child.
 
-    Each character is an edge. Many nodes would have only one child.
-
-  - *Compressed Suffix Trie (Suffix Tree) for `banana$`:*
-    (Again, a diagram is best. Description of compressed paths)
-    - Root
-      - `banana$` (leaf)
-      - `a`
-        - `nana$` (leaf)
-        - `na$` (leaf)
-        - `$` (leaf)
+- *Compressed Suffix Trie (Suffix Tree) for `banana$`:*
+  (Again, a diagram is best. Description of compressed paths)
+  - Root
+    - `banana$` (leaf)
+    - `a`
+      - `nana$` (leaf)
       - `na$` (leaf)
       - `$` (leaf)
+    - `na$` (leaf)
+    - `$` (leaf)
 
-    This is still a bit simplified without showing all intermediate compressed paths, but the key is that edges are labeled with *substrings* instead of single characters, eliminating nodes that have only one child. For example, `b` -> `a` -> `n` would become a single edge `ban`.
+  This is still a bit simplified without showing all intermediate compressed paths, but the key is that edges are labeled with *substrings* instead of single characters, eliminating nodes that have only one child. For example, `b` -> `a` -> `n` would become a single edge `ban`.
 
-2. *Solution:*
-  - *Why a unique terminator?*
-    A unique terminator character (e.g., #sym.dollar) is appended to the string ($sigma$#sym.dollar) to ensure that:
-    1. *Every suffix ends at a unique leaf node:* Without a terminator, if one suffix is a prefix of another (e.g., "ban" is a prefix of "banana"), the shorter suffix would end at an internal node, not a leaf. This violates a fundamental property of suffix trees where each suffix corresponds to a unique path from the root to a leaf.
-    2. *No suffix is a prefix of another:* This property is crucial for algorithms that rely on traversing the tree to find suffixes. The terminator guarantees that all suffixes are distinct and clearly delimited.
+=== Solution 2
+- *Why a unique terminator?*
+  A unique terminator character (e.g., #sym.dollar) is appended to the string ($sigma$#sym.dollar) to ensure that:
+  1. *Every suffix ends at a unique leaf node:* Without a terminator, if one suffix is a prefix of another (e.g., "ban" is a prefix of "banana"), the shorter suffix would end at an internal node, not a leaf. This violates a fundamental property of suffix trees where each suffix corresponds to a unique path from the root to a leaf.
+  2. *No suffix is a prefix of another:* This property is crucial for algorithms that rely on traversing the tree to find suffixes. The terminator guarantees that all suffixes are distinct and clearly delimited.
 
-  - *Example of ambiguity:*
-    Consider the string `banana`.
-    - Suffixes: `banana`, `anana`, `nana`, `ana`, `na`, `a`.
-    - Here, `a` is a suffix, and `ana` starts with `a`. If there's no terminator, the path for `a` would end at an internal node from which the path for `ana` continues. This makes it impossible to distinguish between the end of the suffix `a` and an intermediate point in the suffix `ana`.
-    - With `banana$`, all suffixes become `banana$`, `anana$`, `nana$`, `ana$`, `na$`, `a$`, `$` – ensuring unique paths to distinct leaf nodes.
+- *Example of ambiguity:*
+  Consider the string `banana`.
+  - Suffixes: `banana`, `anana`, `nana`, `ana`, `na`, `a`.
+  - Here, `a` is a suffix, and `ana` starts with `a`. If there's no terminator, the path for `a` would end at an internal node from which the path for `ana` continues. This makes it impossible to distinguish between the end of the suffix `a` and an intermediate point in the suffix `ana`.
+  - With `banana$`, all suffixes become `banana$`, `anana$`, `nana$`, `ana$`, `na$`, `a$`, `$` – ensuring unique paths to distinct leaf nodes.
 
-3. *Solution:*
-  - *Space Complexity Comparison:*
-    - *Standard Suffix Trie:* For a string of length $n$ over an alphabet $Sigma$, the worst-case space complexity is $O(n^2)$. This is because, in the worst case (e.g., a string like `aaaaa`), the trie can have $O(n^2)$ nodes and edges, as each suffix adds nodes.
-    - *Suffix Tree:* For a string of length $n$, the space complexity is $O(n)$. This is a significant improvement to linear space.
+=== Solution 3
+- *Space Complexity Comparison:*
+  - *Standard Suffix Trie:* For a string of length $n$ over an alphabet $Sigma$, the worst-case space complexity is $O(n^2)$. This is because, in the worst case (e.g., a string like `aaaaa`), the trie can have $O(n^2)$ nodes and edges, as each suffix adds nodes.
+  - *Suffix Tree:* For a string of length $n$, the space complexity is $O(n)$. This is a significant improvement to linear space.
 
-  - *Mechanism for Space Efficiency:*
-    The improved space efficiency of suffix trees is achieved through *path compression*.
-    1. *Elimination of Redundant Nodes:* In a standard suffix trie, any node that has only one child (and is not a leaf or the root) can be eliminated. The edges leading into and out of such a node are merged into a single edge.
-    2. *Edge Label Representation:* Instead of labeling edges with single characters, suffix trees label edges with *substrings* of the original text. These substring labels are not explicitly stored as separate strings. Instead, they are represented by a pair of indices `(start_index, end_index)` that point to the corresponding portion within the original string. This means that an edge label, no matter how long the substring it represents, only takes constant space (two integers) to store. This compact representation is the primary reason for the linear space complexity.
+- *Mechanism for Space Efficiency:*
+  The improved space efficiency of suffix trees is achieved through *path compression*.
+  1. *Elimination of Redundant Nodes:* In a standard suffix trie, any node that has only one child (and is not a leaf or the root) can be eliminated. The edges leading into and out of such a node are merged into a single edge.
+  2. *Edge Label Representation:* Instead of labeling edges with single characters, suffix trees label edges with *substrings* of the original text. These substring labels are not explicitly stored as separate strings. Instead, they are represented by a pair of indices `(start_index, end_index)` that point to the corresponding portion within the original string. This means that an edge label, no matter how long the substring it represents, only takes constant space (two integers) to store. This compact representation is the primary reason for the linear space complexity.
+
+#pagebreak()

@@ -1,10 +1,3 @@
-#set page(
-  paper: "a4",
-  margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
-)
-
-#set heading(numbering: "1.1")
-
 #import "../definitions.typ": *
 
 = Multiple Pattern Matching
@@ -129,29 +122,33 @@ The Rabin-Karp algorithm can be extended to search for multiple patterns, especi
 
 == Tasks
 
-1. What is the role of the failure links in the Aho-Corasick algorithm?
-2. How is the Aho-Corasick algorithm a generalization of KMP?
-3. When would you prefer to use a multi-pattern Rabin-Karp approach over Aho-Corasick?
+=== Task 1
+What is the role of the failure links in the Aho-Corasick algorithm?
+
+=== Task 2
+How is the Aho-Corasick algorithm a generalization of KMP?
+
+=== Task 3
+When would you prefer to use a multi-pattern Rabin-Karp approach over Aho-Corasick?
 
 #pagebreak()
 
 == Solutions
 
-=== Task 1: Role of Failure Links
-
+=== Solution 1
 Failure links are crucial for the efficiency of the Aho-Corasick algorithm. When a mismatch occurs while traversing the trie (i.e., the current text character does not correspond to any edge from the current node), the failure link provides an immediate jump to another node in the trie. This new node represents the longest proper suffix of the current prefix that is also a prefix of some pattern. This is equivalent to "shifting" the patterns in a way that avoids re-scanning the text, similar to the failure function in KMP. It ensures that the algorithm processes the text in a single pass without backtracking.
 
-=== Task 2: Aho-Corasick as a Generalization of KMP
-
+=== Solution 2
 The KMP algorithm preprocesses a single pattern to create a failure function that identifies the longest proper suffix of a prefix that is also a prefix of the pattern. The Aho-Corasick algorithm extends this concept to a set of patterns.
 - The trie in Aho-Corasick represents the prefixes of all patterns, analogous to the single pattern in KMP.
 - The failure links in Aho-Corasick are a generalization of the KMP failure function, defined over the states of the trie instead of the positions in a single pattern.
 Essentially, Aho-Corasick builds a KMP-like automaton for a whole dictionary of patterns simultaneously.
 
-=== Task 3: Rabin-Karp vs. Aho-Corasick
-
+=== Solution 3
 The Rabin-Karp approach for multiple patterns is particularly attractive when:
 - All patterns are of the same length. This simplifies the rolling hash calculation, as the window size is constant.
 - The set of patterns is dynamic, i.e., patterns are frequently added or removed. In Rabin-Karp, adding or removing a pattern just means adding or removing its hash from a hash table, which is very fast. In Aho-Corasick, the entire automaton would need to be rebuilt, which is a much more expensive operation.
 - Simplicity of implementation is a concern. The basic Rabin-Karp algorithm is often easier to implement than Aho-Corasick.
 However, for a fixed set of patterns of varying lengths, Aho-Corasick generally offers better worst-case performance guarantees.
+
+#pagebreak()

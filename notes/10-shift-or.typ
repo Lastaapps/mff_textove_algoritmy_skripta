@@ -1,10 +1,3 @@
-#set page(
-  paper: "a4",
-  margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
-)
-
-#set heading(numbering: "1.1")
-
 #import "../definitions.typ": *
 
 = Shift-Or Algorithm
@@ -58,16 +51,20 @@ This table can be precomputed in $O(alpha * m)$ time, where $alpha$ is the size 
 
 == Tasks
 
-1. For the pattern $P = "aba"$ and alphabet {"a", "b"}, what would the precomputed masks be?
-2. Using the Shift-Or algorithm, trace the state vector $s$ while searching for $P = "aba"$ in the text $T = "ababa"$.
-3. When is the Shift-Or algorithm not recommended?
+=== Task 1
+For the pattern $P = "aba"$ and alphabet {"a", "b"}, what would the precomputed masks be?
+
+=== Task 2
+Using the Shift-Or algorithm, trace the state vector $s$ while searching for $P = "aba"$ in the text $T = "ababa"$.
+
+=== Task 3
+When is the Shift-Or algorithm not recommended?
 
 #pagebreak()
 
 == Solutions
 
-=== Task 1: Precomputed Masks for "aba"
-
+=== Solution 1
 Pattern $P = "aba"$, length $m=3$. Alphabet {"a", "b"}.
 The masks are bit vectors of length 3.
 
@@ -78,8 +75,7 @@ The masks are bit vectors of length 3.
 - For any other character $c$, there are no matches.
   `mask[c] = 111`
 
-=== Task 2: Tracing Shift-Or
-
+=== Solution 2
 Pattern $P = "aba"$, Text $T = "ababa"$.
 Initial state: $s = 111$.
 `mask['a'] = 010`, `mask['b'] = 101`.
@@ -101,10 +97,11 @@ Initial state: $s = 111$.
 
 The algorithm correctly finds matches ending at positions 2 and 4.
 
-=== Task 3: When Shift-Or is Not Recommended
-
+=== Solution 3
 The Shift-Or algorithm's performance depends on the pattern length $m$ relative to the machine word size $w$.
 - If $m > w$, the algorithm requires multiple words to store the state vector, and the complexity becomes $O(ceil(m/w) * n)$. For very long patterns, this can be slower than other algorithms like Boyer-Moore.
 - It is also not recommended for very large alphabets because the space for the precomputed mask table ($O(alpha * m)$) can become very large.
 
 Therefore, for large patterns or large alphabets, other algorithms might be more suitable.
+
+#pagebreak()

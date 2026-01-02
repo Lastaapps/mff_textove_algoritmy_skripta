@@ -1,5 +1,4 @@
 #import "../definitions.typ": *
-#set text(lang: "en")
 
 = Introduction to Stringology
 
@@ -41,4 +40,4 @@ Stringology helps solve many computational problems.
   - *Data Compression*: Making files smaller by finding and replacing repeated patterns.
   - *Bioinformatics*: Analyzing DNA and protein sequences, which are very long strings.
 ]
-#pagebreak(weak: true)
+#pagebreak()

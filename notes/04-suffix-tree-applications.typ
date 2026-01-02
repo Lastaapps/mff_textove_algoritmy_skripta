@@ -1,12 +1,5 @@
 #import "../definitions.typ": *
 
-#set page(
-  numbering: "1",
-  number-align: center,
-)
-
-#set text(lang: "en")
-
 = Suffix Tree Applications
 
 This chapter explores various applications of suffix trees, a powerful data structure for string processing.
@@ -267,32 +260,36 @@ The LZ77 algorithm, developed by Jacob Ziv and Abraham Lempel (1977), is a found
 
   == Tasks
 
-1. Given a text `$T$`, how can you use a suffix tree to find the longest substring that appears at least twice?
-2. Explain how you would find the shortest unique substring of a text `$T$` using its suffix tree.
-3. How does a suffix tree help in the LZ77 compression algorithm?
+=== Task 1
+Given a text `$T$`, how can you use a suffix tree to find the longest substring that appears at least twice?
+
+=== Task 2
+Explain how you would find the shortest unique substring of a text `$T$` using its suffix tree.
+
+=== Task 3
+How does a suffix tree help in the LZ77 compression algorithm?
 
 #pagebreak()
 
 == Solutions
 
-=== Task 1: Longest Repeating Substring
-
+=== Solution 1
 The longest substring that appears at least twice in a text corresponds to the deepest internal node in the suffix tree of that text.
 1. *Build the Suffix Tree:* Construct the suffix tree for the text `$T$`.
 2. *Traverse the Tree:* Perform a traversal (like DFS) of the tree to find the string-depth of every node. An internal node represents a substring that is repeated.
 3. *Find Deepest Node:* The internal node with the greatest string-depth represents the longest repeated substring. The path from the root to this node spells out the substring.
 
-=== Task 2: Shortest Unique Substring
-
+=== Solution 2
 A unique substring corresponds to a path in the suffix tree that leads to a leaf node and is not a prefix of any other suffix. The shortest unique substring is found by identifying the shallowest leaf node.
 1. *Build the Suffix Tree:* Construct the suffix tree for `$T$`.
 2. *Find Shallowest Leaf:* Traverse the tree to find the leaf node with the minimum string-depth. A leaf node represents a suffix that occurs once. We are interested in the shortest prefix of a suffix that is unique. This corresponds to the path to a leaf node.
 3. *Identify the Substring:* The path from the root to this shallowest leaf spells out a suffix. The shortest unique substring is the path from the root to the parent of that leaf, plus one character. More simply, any path that ends at a leaf represents a unique suffix. The shortest such unique substring is the one corresponding to the path to the leaf with the smallest string depth.
 
-=== Task 3: Suffix Trees in LZ77
-
+=== Solution 3
 The LZ77 compression algorithm works by finding the longest prefix of the look-ahead buffer that has occurred previously in the search buffer. A suffix tree can be used to make this search very efficient.
 1. *Data Structure:* A suffix tree is built for the contents of the search buffer.
 2. *Searching:* To find the longest match, you can traverse the suffix tree with the characters from the look-ahead buffer. The longest path you can trace from the root corresponds to the longest match found in the search buffer.
 3. *Updating:* As the sliding window moves, characters are added to and removed from the buffers. This requires a dynamic suffix tree that can be updated efficiently. While conceptually elegant, this is complex. In practice, hash tables are often used as a simpler and very fast alternative for finding matches in LZ77 implementations.
+
+#pagebreak()
 

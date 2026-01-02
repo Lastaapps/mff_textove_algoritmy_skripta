@@ -1,10 +1,3 @@
-#set page(
-  paper: "a4",
-  margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
-)
-
-#set heading(numbering: "1.1")
-
 #import "../definitions.typ": *
 
 = Boyer-Moore Algorithm
@@ -124,25 +117,29 @@ A simpler variant of the Boyer-Moore algorithm, proposed by Nigel Horspool in 19
 
 == Tasks
 
-1. For the pattern $P = "needle"$, and a mismatch with the character 'e' in the text, what would the Bad Character shift be?
-2. What is the main advantage of the right-to-left scan in the Boyer-Moore algorithm?
-3. How does the Boyer-Moore-Horspool algorithm simplify the original Boyer-Moore algorithm?
+=== Task 1
+For the pattern $P = "needle"$, and a mismatch with the character 'e' in the text, what would the Bad Character shift be?
+
+=== Task 2
+What is the main advantage of the right-to-left scan in the Boyer-Moore algorithm?
+
+=== Task 3
+How does the Boyer-Moore-Horspool algorithm simplify the original Boyer-Moore algorithm?
 
 #pagebreak()
 
 == Solutions
 
-=== Task 1: Bad Character Shift for "needle"
-
+=== Solution 1
 Pattern $P = "needle"$. Let's say the comparison is with a text window and the mismatching character is 'e'.
 The last occurrence of 'e' in "needle" is at index 4 (0-indexed). The length of the pattern is 6.
 The distance from the end is $m - 1 - 4 = 6 - 1 - 4 = 1$.
 The Bad Character table for 'e' would indicate a shift of 1. So, the pattern would be shifted one position to the right.
 
-=== Task 2: Advantage of Right-to-Left Scan
-
+=== Solution 2
 The right-to-left scan allows the algorithm to make larger jumps. When a mismatch occurs early in the comparison (i.e., far to the right of the pattern), the algorithm can use information about the text character to shift the pattern by a significant amount. For example, if the mismatched text character does not appear in the pattern at all, the pattern can be shifted completely past that character, skipping many potential alignments that a left-to-right scan would have to check.
 
-=== Task 3: Boyer-Moore-Horspool Simplification
-
+=== Solution 3
 The Boyer-Moore-Horspool algorithm simplifies the original Boyer-Moore algorithm by completely eliminating the Good Suffix Heuristic. It relies solely on a modified version of the Bad Character Heuristic. The shift is always based on the text character that aligns with the last character of the pattern. This makes the preprocessing and the main loop simpler, as there is no need to compute the complex Good Suffix table or to calculate the maximum of two different shift values.
+
+#pagebreak()

@@ -1,11 +1,3 @@
-
-#set page(
-  paper: "a4",
-  margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
-)
-
-#set heading(numbering: "1.1")
-
 #import "../definitions.typ": *
 
 = Suffix Array Construction
@@ -44,16 +36,20 @@ The overall time complexity of the DC3 algorithm is $O(n)$.
 
 == Tasks
 
-1. For the text $T = "yabbadabbado"$, what are the suffixes at positions $i mod 3 != 0$?
-2. In the DC3 algorithm, how are the suffixes at positions $i mod 3 = 0$ sorted?
-3. Why is the recursive call in the DC3 algorithm on a string of length $2n/3$?
+=== Task 1
+For the text $T = "yabbadabbado"$, what are the suffixes at positions $i mod 3 != 0$?
+
+=== Task 2
+In the DC3 algorithm, how are the suffixes at positions $i mod 3 = 0$ sorted?
+
+=== Task 3
+Why is the recursive call in the DC3 algorithm on a string of length $2n/3$?
 
 #pagebreak()
 
 == Solutions
 
-=== Task 1: Suffixes for $i mod 3 != 0$
-
+=== Solution 1
 For $T = "yabbadabbado"$, length $n=12$.
 The positions $i$ where $i mod 3 != 0$ are 1, 2, 4, 5, 7, 8, 10, 11.
 The suffixes are:
@@ -66,15 +62,15 @@ The suffixes are:
 - $i=10$: $"do"$
 - $i=11$: $"o"$
 
-=== Task 2: Sorting Suffixes for $i mod 3 = 0$
-
+=== Solution 2
 The suffixes at positions $i mod 3 = 0$ are sorted based on pairs of values: $(T[i], "ISA"[i+1])$.
 - $T[i]$ is the first character of the suffix.
 - $"ISA"[i+1]$ is the lexicographical rank of the suffix starting at $i+1$. Since $(i+1) mod 3 = 1$, this rank is known from the first step of the algorithm (the sorting of suffixes at positions not divisible by 3).
 A stable sorting algorithm, such as radix sort, is used to sort these pairs, which gives the sorted order of the $i mod 3 = 0$ suffixes.
 
-=== Task 3: Length of Recursive String
-
+=== Solution 3
 The recursive call in the DC3 algorithm is made on a string that represents the ranks of the suffixes at positions $i mod 3 != 0$.
 - The number of such suffixes is approximately $2/3$ of the total number of suffixes, so the length of this new string is $2n/3$.
 - The algorithm's recurrence relation is $T(n) = T(2n/3) + O(n)$, which solves to $T(n) = O(n)$. This is why the algorithm achieves linear time complexity.
+
+#pagebreak()

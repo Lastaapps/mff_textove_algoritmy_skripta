@@ -371,3 +371,4 @@ The naive approach of checking every substring takes $O(n^3)$ or $O(n^2)$ with o
   - You must explain the preprocessing step of inserting '\#' and why it's useful (to handle even/odd palindromes uniformly).
   - The core optimization is using previously computed palindrome radii (`P` array) to avoid redundant comparisons. Explaining the "center" `C` and "right boundary" `R` is key to showing you understand the optimization.
 ]
+#pagebreak()

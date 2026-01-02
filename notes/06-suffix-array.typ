@@ -1,11 +1,4 @@
-#set page(
-  paper: "a4",
-  margin: (left: 2cm, right: 2cm, top: 2cm, bottom: 2cm),
-)
-
-#set heading(numbering: "1.1")
-
-#import "../definitions.typ": example_box
+#import "../definitions.typ": *
 
 = Suffix Array
 
@@ -142,17 +135,23 @@ A pattern $P$ of length $m$ can be found in the text $T$ by performing a binary 
 
 == Tasks
 
-1. Construct the Suffix Array ($"SA"$) for the text $T = "abracadabra$"$ using the naive $O(n^2 log n)$ method.
-2. Given the $"SA"$ from the previous task, construct the Inverse Suffix Array ($"ISA"$).
-3. Construct the LCP array for $T = "abracadabra$"$ using Kasai's algorithm. Show the steps.
-4. How would you find the number of occurrences of the pattern "abra" in "abracadabra\$" using the suffix array?
+=== Task 1
+Construct the Suffix Array ($"SA"$) for the text $T = "abracadabra$"$ using the naive $O(n^2 log n)$ method.
+
+=== Task 2
+Given the $"SA"$ from the previous task, construct the Inverse Suffix Array ($"ISA"$).
+
+=== Task 3
+Construct the LCP array for $T = "abracadabra$"$ using Kasai's algorithm. Show the steps.
+
+=== Task 4
+How would you find the number of occurrences of the pattern "abra" in "abracadabra\$" using the suffix array?
 
 #pagebreak()
 
 == Solutions
 
-=== Task 1: Suffix Array for "abracadabra\$"
-
+=== Solution 1
 Text $T = "abracadabra\$"$, length $n=12$.
 Suffixes:
 - 0: "abracadabra\$"
@@ -184,8 +183,7 @@ Sorted suffixes:
 
 Suffix Array $"SA" = (11, 10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2)$.
 
-=== Task 2: Inverse Suffix Array for "abracadabra\$"
-
+=== Solution 2
 Using $"SA" = (11, 10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2)$:
 - $"ISA"[11] = 0$
 - $"ISA"[10] = 1$
@@ -202,8 +200,7 @@ Using $"SA" = (11, 10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2)$:
 
 Inverse Suffix Array $"ISA" = (3, 7, 11, 4, 8, 5, 9, 2, 6, 10, 1, 0)$.
 
-=== Task 3: LCP Array for "abracadabra\$" using Kasai's Algorithm
-
+=== Solution 3
 We have $T$, $"SA"$, and $"ISA"$. We iterate $i$ from 0 to 11.
 - $h=0$
 - $i=0 (T_0="abracadabra$")$: $"ISA"[0]=3$. prev suffix is $"SA"[2]=7$ ("abra\$"). LCP is 4. $"LCP"[3]=4$. $h=3$.
@@ -221,8 +218,7 @@ We have $T$, $"SA"$, and $"ISA"$. We iterate $i$ from 0 to 11.
 
 Final LCP array: $"LCP" = (0, 0, 1, 4, 1, 1, 0, 3, 0, 0, 0, 2)$.
 
-=== Task 4: Find occurrences of "abra"
-
+=== Solution 4
 1. Binary search for "abra" in the suffix array.
 2. All suffixes starting with "abra" will form a contiguous block in the sorted suffix array.
 3. We find the first occurrence ("abra\$") at $"SA"[2]=7$.
@@ -230,3 +226,5 @@ Final LCP array: $"LCP" = (0, 0, 1, 4, 1, 1, 0, 3, 0, 0, 0, 2)$.
 5. The suffixes from index 2 to 3 in the SA start with "abra".
 6. The number of occurrences is $3 - 2 + 1 = 2$.
 7. The starting positions are $"SA"[2]=7$ and $"SA"[3]=0$.
+
+#pagebreak()
