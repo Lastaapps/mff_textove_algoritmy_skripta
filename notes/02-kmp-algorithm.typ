@@ -22,10 +22,10 @@ The simple, or "brute-force," way to find a pattern is to check every possible p
 
 The KMP algorithm is faster because it cleverly uses information from mismatches. Instead of re-checking every character, it uses a pre-computed table about the *pattern* to skip ahead.
 
-== The Border Array
+== The Border Array (or Failure Function)
 
 #info_box(
-  title: "The Border Array (or Failure Function)",
+  title: "The Border Array",
 )[
   The core of KMP is a _border array_ (or _failure function_), let's call it `b`.
 
@@ -60,6 +60,30 @@ The KMP algorithm is faster because it cleverly uses information from mismatches
     - If there is a mismatch, use the border array to determine how far to slide the pattern forward *without moving the text pointer backward*. This is the key to its speed.
 ]
 
+#code_box([
+  #smallcaps([KMP-Search]) ($P$, $T$, $b$)
+  ```
+  j = 0  // Length of current match
+  for i from 0 to n-1:
+    while j > 0 and T[i] != P[j]:
+      j = b[j-1]  // Fall back using border array
+
+    if T[i] == P[j]:
+      j = j + 1
+
+    if j == m:
+      report match at i - m + 1
+      j = b[j-1] // Continue searching for more matches
+  ```
+])
+
+=== The `while` loop
+A common question is why the algorithm uses a `while` loop to handle mismatches, rather than a simple `if` statement.
+- When a mismatch occurs at `T[i]` and `P[j]`, we shift the pattern by setting `j = b[j-1]`.
+- An `if` statement would perform this shift once and then proceed to the next character in the text.
+- However, the new prefix of the pattern (of length `b[j-1]`) might *still* not match the character `T[i]`.
+- The `while` loop is necessary to handle this. It repeatedly applies the border array logic, effectively trying all possible shorter prefixes of the pattern that are also suffixes, until it finds one that can be extended by `T[i]`, or until the pattern is fully reset (`j=0`).
+
 
 == How Fast is KMP?
 
@@ -72,6 +96,56 @@ The KMP algorithm is faster because it cleverly uses information from mismatches
     $O(m)$ to store the border array for the pattern.
   - *Use case*:
     Searching a single needle in multiple haystacks.
+]
+
+== Linear Time Complexity
+
+The linear time complexity of the KMP search phase is not immediately obvious because of the `while` loop inside the main `for` loop. A simple analysis would suggest a complexity higher than $O(n)$. However, an amortized analysis shows that the algorithm is indeed linear.
+
+#info_box(
+  title: "Proof of Linear Time Complexity",
+)[
+  - The `for` loop runs $n$ times (the length of the text). The pointer `i` is always incremented.
+  - The `while` loop body (where `j` is updated to `b[j]`) can execute multiple times for a single `i`. Each execution corresponds to a "shift" of the pattern.
+  - The key insight is that the total number of these "shifts" (executions of `j = b[j]`) across the entire run of the algorithm is limited. The pointer `j` is incremented at most $n$ times (once for each character of the text in case of a match). Each time the `while` loop body executes, `j` is decreased. Since `j` can only be decreased as many times as it has been increased, the total number of `j = b[j]` executions cannot exceed the total number of increments.
+  - Therefore, the total number of comparisons and operations is bounded by $2n$, which gives a time complexity of $O(n)$ for the search phase.
+]
+
+== Improved Border Array
+
+The standard KMP algorithm can be optimized to avoid some redundant comparisons.
+
+- When a mismatch occurs between `P[j]` and `T[i]`, the algorithm sets `j = b[j-1]`.
+- It then compares `P[j]` with `T[i]` again.
+- However, if `P[j]` (the new `j`) is the same as `P[b[j-1]]` (the old `j`), this comparison is guaranteed to fail if the original mismatch was with a character different from `P[j]`.
+
+#info_box(
+  title: "The Solution: Improved Border Array (b')",
+)[
+  We can define an improved border array, `b'`, that skips these useless comparisons. `b'` is defined as follows:
+  - `b'[j] = b[j]` if `P[b[j]] != P[j]`
+  - `b'[j] = b'[b[j]]` if `P[b[j]] == P[j]` (recursive definition)
+
+  This means that after a shift, the new character to be compared, `P[b'[j]]`, is guaranteed to be different from the character `P[j]` that caused the mismatch. This avoids the redundant comparison.
+
+  The improved border array can be computed in $O(m)$ time. One way is to first compute the standard border array `b`, and then compute `b'` from it.
+
+  #code_box([
+    #smallcaps([Compute-Improved-Border-Array]) ($P$, $b$)
+    ```
+    m = length(P)
+    b_prime = array of size m
+    b_prime[0] = b[0]
+    for j from 1 to m-1:
+      if P[b[j]] != P[j]:
+        b_prime[j] = b[j]
+      else:
+        b_prime[j] = b_prime[b[j]]
+    return b_prime
+    ```
+  ])
+
+  The search algorithm remains the same, just using `b'` instead of `b`. This optimization reduces the total number of comparisons to a maximum of $2n - m$.
 ]
 
 
