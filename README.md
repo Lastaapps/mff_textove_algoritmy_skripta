@@ -4,7 +4,7 @@ You can **download the latest version** of the PDF from the [GitHub Actions arti
 
 This project contains study materials for the "Text Algorithms" course taught at the Faculty of Mathematics and Physics, Charles University in Prague (MFF CUNI).
 
-The goal of this project is to create high-quality lecture notes for each topic covered in the course.
+The goal of this project is to create good enough lecture notes for each topic covered in the course.
 
 ## Source Materials
 
@@ -22,4 +22,4 @@ This will create the `main.pdf` file in the root directory.
 
 ## Disclaimer
 
-These materials are created with the help of an AI model and are intended for study purposes only. They may not be a perfect representation of the original lectures and may contain errors. Please use them in conjunction with the official course materials.
+These materials are created with the help of an AI model and are intended for study purposes only. They may not be a perfect representation of the original lectures and may contain errors. Please use them in conjunction with the official course materials. The materials where human (student) reviewed, feel free to fix any mistakes or improve the text.

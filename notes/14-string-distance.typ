@@ -17,7 +17,7 @@ The *Hamming distance* is defined for two strings of *equal length*. It is the n
 The *Levenshtein distance*, in some strict definitions, considers the minimum number of single-character *insertions* and *deletions* required to change one string into the other. This version does not allow substitutions.
 
 This metric is equivalent to the *LCS distance*, which is based on the Longest Common Subsequence. The distance is the total number of characters in both strings that are not part of the LCS:
-$d_L(A, B) = |A| + |B| - 2 * |"LCS"(A, B)|$.
+$d_L(A, B) = |A| + |B| - 2 |"LCS"(A, B)|$
 
 == Edit Distance
 
@@ -146,7 +146,7 @@ The length of the LCS can be found using dynamic programming, similar to edit di
 
 ==== LCS Distance
 The LCS length can be used to define a distance metric. This metric counts the number of characters that are *not* part of the LCS.
-$d_"LCS"(A, B) = |A| + |B| - 2 * |"LCS"(A, B)|$
+$d_"LCS"(A, B) = |A| + |B| - 2 |"LCS"(A, B)|$
 This value represents the total number of insertions and deletions needed to transform A to B if no substitutions are allowed.
 
 == Tasks
@@ -203,7 +203,7 @@ The main advantage of the Ukkonen-Myers algorithm is its improved time complexit
 === Solution 5
 The strict Levenshtein distance that only allows insertions and deletions is equivalent to the LCS distance.
 The formula is:
-$d_L(A, B) = |A| + |B| - 2 * |"LCS"(A, B)|$
+$d_L(A, B) = |A| + |B| - 2 |"LCS"(A, B)|$
 This formula works because the most efficient way to make two strings equal using only insertions and deletions is to find their longest common subsequence, keep those characters, and delete all other characters from both strings. The number of deletions is $|A| - |"LCS"|$ and the number of insertions is $|B| - |"LCS"|$. Summing these gives the formula.
 
 #pagebreak()

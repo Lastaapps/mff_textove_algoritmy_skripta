@@ -6,7 +6,7 @@
 
 The *Shift-Or* algorithm is an exact string matching algorithm that uses bit parallelism to make comparisons faster. It was introduced by Baeza-Yates and Gonnet in 1992. Instead of reducing the number of comparisons like Boyer-Moore or KMP, Shift-Or optimizes the comparison process itself. It is particularly efficient for small patterns and alphabets.
 
-The time complexity is $O(ceil(m/w) * n)$, where $m$ is the pattern length, $n$ is the text length, and $w$ is the machine word size (e.g., 64 bits).
+The time complexity is $O(ceil(m/w) dot n)$, where $m$ is the pattern length, $n$ is the text length, and $w$ is the machine word size (e.g., 64 bits).
 
 == Bit Parallelism
 
@@ -36,7 +36,7 @@ For each character $c$ in the alphabet, a bitmask of length $m$ is precomputed.
 - $"mask"[c][j] = 0$ if $P[j] == c$.
 - $"mask"[c][j] = 1$ if $P[j] != c$.
 
-This table can be precomputed in $O(alpha * m)$ time, where $alpha$ is the size of the alphabet.
+This table can be precomputed in $O(alpha m)$ time, where $alpha$ is the size of the alphabet.
 
 == The Algorithm
 
@@ -99,8 +99,8 @@ The algorithm correctly finds matches ending at positions 2 and 4.
 
 === Solution 3
 The Shift-Or algorithm's performance depends on the pattern length $m$ relative to the machine word size $w$.
-- If $m > w$, the algorithm requires multiple words to store the state vector, and the complexity becomes $O(ceil(m/w) * n)$. For very long patterns, this can be slower than other algorithms like Boyer-Moore.
-- It is also not recommended for very large alphabets because the space for the precomputed mask table ($O(alpha * m)$) can become very large.
+- If $m > w$, the algorithm requires multiple words to store the state vector, and the complexity becomes $O(ceil(m/w) dot n)$. For very long patterns, this can be slower than other algorithms like Boyer-Moore.
+- It is also not recommended for very large alphabets because the space for the precomputed mask table ($O(alpha m)$) can become very large.
 
 Therefore, for large patterns or large alphabets, other algorithms might be more suitable.
 

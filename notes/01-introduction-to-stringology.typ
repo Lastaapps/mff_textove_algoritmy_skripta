@@ -24,7 +24,7 @@ Stringology is a field of computer science that studies algorithms working with 
       A part of a string (e.g., `"ell"` in `"hello"`).
   / *Periodicity*:
     A repeating pattern in a string. The string `"ababab"` has a period of 2 because the pattern `"ab"` repeats.
-])
+]
 
 == Problems in Stringology
 

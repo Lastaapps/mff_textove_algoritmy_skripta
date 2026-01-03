@@ -99,8 +99,8 @@ What is the primary advantage of a suffix automaton over a suffix tree?
 
 === Solution 2
 For $T = "banana"$, $n=6$.
-- Maximum number of states: $2n + 1 = 2 * 6 + 1 = 13$.
-- Maximum number of transitions: $3n = 3 * 6 = 18$.
+- Maximum number of states: $2n + 1 = 2 dot 6 + 1 = 13$.
+- Maximum number of transitions: $3n = 3 dot 6 = 18$.
 The actual number of states and transitions for a given string is usually smaller than this theoretical maximum.
 
 === Solution 3

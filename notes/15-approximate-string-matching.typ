@@ -98,7 +98,7 @@ The operation $>>> B$ is a logical right shift of the entire state vector by $B$
   *Example: Counter-based Shift-Or*
 
   Let $P = "bbba"$, $T = "abbac... "$, $k=2$.
-  Here $m=4$. We need $B = ceil(log_2(5)) = 3$ bits per counter. The state vector $s$ has $4 * 3 = 12$ bits.
+  Here $m=4$. We need $B = ceil(log_2(5)) = 3$ bits per counter. The state vector $s$ has $4 dot 3 = 12$ bits.
 
   The mask table $t$ for characters 'a' and 'b' would look like this (showing only relevant entries):
   - $t['a'] = [001, 001, 001, 000]$ (mismatch, mismatch, mismatch, match)

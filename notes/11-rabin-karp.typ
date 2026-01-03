@@ -17,12 +17,12 @@ The core idea is to compute a "signature" or hash value for the pattern and for 
 To be efficient, the algorithm needs a way to compute the hash of the next substring in constant time, rather than re-calculating it from scratch. This is achieved using a *rolling hash*.
 
 A common rolling hash function treats a string as a number in a base-`b` system, where `b` is the size of the alphabet. The hash of a string $S$ of length $m$ is:
-$h(S) = (S[0] * b^(m-1) + S[1] * b^(m-2) + ... + S[m-1] * b^0) mod q$
+$h(S) = (S[0] dot b^(m-1) + S[1] dot b^(m-2) + ... + S[m-1] dot b^0) mod q$
 where $q$ is a large prime number to keep the values manageable.
 
 To compute the hash of the next substring, we can subtract the term for the first character and add the term for the new last character in $O(1)$ time.
 If $h_i$ is the hash of $T[i..i+m-1]$, then $h_(i+1)$ can be computed as:
-$h_"new" = ((h_i - T[i] * b^(m-1)) * b + T[i+m]) mod q$
+$h_"new" = ((h_i - T[i] dot b^(m-1)) dot b + T[i+m]) mod q$
 
 == The Algorithm
 
@@ -86,7 +86,7 @@ Let the hash of $T[0..2]$ be $H = (T[0]*b^2 + T[1]*b^1 + T[2]*b^0) mod q$.
 To compute the hash of $T[1..3]$, we first remove the contribution of $T[0]$:
 $H' = H - T[0]*b^2$
 Then, we shift the remaining part to the left (multiply by $b$) and add the new character $T[3]$:
-$H_"new" = (H' * b + T[3]) mod q = ((H - T[0]*b^2) * b + T[3]) mod q$
+$H_"new" = (H' dot b + T[3]) mod q = ((H - T[0] dot b^2) dot b + T[3]) mod q$
 The term $b^2$ can be pre-calculated. This update step takes $O(1)$ time.
 
 === Solution 2
@@ -97,6 +97,6 @@ Because hash functions map a large space of strings to a smaller space of number
 === Solution 3
 The choice of the prime number $q$ is important for two reasons:
 1. *Minimizing Collisions*: A larger $q$ reduces the probability of hash collisions. If $q$ is too small, many different strings will map to the same hash value, leading to frequent spurious hits and degrading the algorithm's performance towards the worst-case scenario.
-2. *Avoiding Overflow*: The value of $q$ should be chosen such that intermediate calculations (like $T[i] * b^(m-1)$) do not overflow the standard integer types of the programming language. Often, $q$ is chosen to be a large prime that fits within a machine word.
+2. *Avoiding Overflow*: The value of $q$ should be chosen such that intermediate calculations (like $T[i] dot b^(m-1)$) do not overflow the standard integer types of the programming language. Often, $q$ is chosen to be a large prime that fits within a machine word.
 
 #pagebreak()

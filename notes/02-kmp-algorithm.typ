@@ -6,7 +6,7 @@ The Knuth-Morris-Pratt (KMP) algorithm is a fast way to find a pattern (a "needl
 
 == The Problem with the Simple Way
 
-The simple, or "brute-force," way to find a pattern is to check every possible position in the text. This can be very slow, taking up to $n \cdot m$ steps (text length \* pattern length).
+The simple, or "brute-force," way to find a pattern is to check every possible position in the text. This can be very slow, taking up to $O(n m)$ steps (text length $dot$ pattern length).
 
 #example_box[
   *Example: The Simple Way*
