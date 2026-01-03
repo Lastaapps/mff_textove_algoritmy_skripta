@@ -16,7 +16,7 @@ A Trie, also known as a prefix tree or character tree, is a specialized tree-lik
 
 A Suffix Trie for a word $sigma$ of length $n$ is a trie built on the set of all suffixes of $sigma$.
 
-#info_box(title: "Key Concept: Suffix Trie", [
+#info_box(title: "Suffix Trie", [
   - It stores all suffixes of a given string $sigma$.
   - The set of strings stored in the trie is all suffixes of $sigma$.
   - A special terminator character, usually #sym.dollar, is appended to the string ($sigma dollar$) to ensure that every suffix ends at a unique leaf node in the trie. This prevents one suffix from being a prefix of another suffix.
@@ -26,21 +26,19 @@ A Suffix Trie for a word $sigma$ of length $n$ is a trie built on the set of all
 
 When using a Suffix Trie to check if a needle $iota$ is a substring of a haystack $sigma$:
 
-#info_box(title: "Trie Performance", [
+#info_box[
   - *Advantage: Time Complexity*
     - Membership can be decided in $O(m)$ time, where $m = |iota|$.
     - This assumes $O(1)$ time for branching operations (i.e., traversing an edge based on a character).
   - *Disadvantage: Space Complexity*
     - Tries can consume significant memory, especially for large alphabets or long strings, due to the number of nodes and pointers required.
-])
+]
 
 === Space Complexity Problem
 
-#info_box(title: "Problem: Suffix Trie Space Requirement", [
-  - In the worst case, a Suffix Trie for a word of length $n$ over an alphabet $Sigma$ requires $Omega(n^2)$ space.
-  - This can occur regardless of whether $Sigma$ is infinite, finite, or a specific small alphabet like $\{0,1\}$.
-  - The $Omega(n^2)$ space complexity is a significant drawback for Suffix Tries.
-])
+- In the worst case, a Suffix Trie for a word of length $n$ over an alphabet $Sigma$ requires $Omega(n^2)$ space.
+- This can occur regardless of whether $Sigma$ is infinite, finite, or a specific small alphabet like $\{0,1\}$.
+- The $Omega(n^2)$ space complexity is a significant drawback for Suffix Tries.
 
 == Compressed Tries and Suffix Trees
 
@@ -174,17 +172,19 @@ $T(sigma)$ involves traversing the tree. Two main approaches are discussed:
     1. Start at the root of $T(sigma)$.
     2. For the current node and the current character $iota[i]$ of the pattern, select an outgoing edge whose label matches the next character(s) of $iota$.
     3. Proceed along that edge.
+])
 
-  - *Slowscan Approach*:
-    - After selecting an edge, compare the remaining characters of the pattern $iota[i+1:]$ with the characters $gamma[1:]$ on the edge label, character by character.
-    - *Time Complexity*: $O(B dot m)$, where $B$ is the time for branching (selecting an edge, e.g., $O(1)$, $O(log alpha)$, $O(alpha)$) and $m = |iota|$ is the length of the pattern. This can be slow if $m$ is large and $B$ is not $O(1)$.
+#info_box(title: "Slowscan", [
+  - After selecting an edge, compare the remaining characters of the pattern $iota[i+1:]$ with the characters $gamma[1:]$ on the edge label, character by character.
+  - *Time Complexity*: $O(B dot m)$, where $B$ is the time for branching (selecting an edge, e.g., $O(1)$, $O(log alpha)$, $O(alpha)$) and $m = |iota|$ is the length of the pattern. This can be slow if $m$ is large and $B$ is not $O(1)$.
+])
 
-  - *Fastscan Approach (Optimized)*:
-    - This approach is used when we assume the pattern $iota$ is already known to be a substring of $sigma$, and we only need to locate the corresponding node.
-    - Instead of character-by-character comparison along the edge (Step 2 above), we only need to ensure the correct edge is chosen. Once an edge $gamma$ is chosen, we know how many characters ($|gamma|$) it consumes from the pattern.
-    - If $|gamma| < |iota[i:]|$: Advance the pattern pointer $i$ by $|gamma|$ and continue the traversal from the child node.
-    - If $|gamma| == |iota[i:]|$ (or $iota[i:]$ is a prefix of $gamma$): The search ends; the pattern is found (either at a node or implicitly along an edge).
-    - *Time Complexity*: $O(B dot k)$, where $B$ is the branching time, and $k$ is the number of visited nodes. Since $k <= |iota|$, this is more efficient as character comparisons along edges are avoided.
+#info_box(title: "Fastscan", [
+  - This approach is used when we assume the pattern $iota$ is already known to be a substring of $sigma$, and we only need to locate the corresponding node.
+  - Instead of character-by-character comparison along the edge (Step 2 above), we only need to ensure the correct edge is chosen. Once an edge $gamma$ is chosen, we know how many characters ($|gamma|$) it consumes from the pattern.
+  - If $|gamma| < |iota[i:]|$: Advance the pattern pointer $i$ by $|gamma|$ and continue the traversal from the child node.
+  - If $|gamma| == |iota[i:]|$ (or $iota[i:]$ is a prefix of $gamma$): The search ends; the pattern is found (either at a node or implicitly along an edge).
+  - *Time Complexity*: $O(B dot k)$, where $B$ is the branching time, and $k$ is the number of visited nodes. Since $k <= |iota|$, this is more efficient as character comparisons along edges are avoided.
 ])
 
 == Suffix Tree Construction Algorithms
@@ -193,40 +193,36 @@ Constructing a Suffix Tree efficiently is crucial for its practical applications
 
 === In-Memory Construction Algorithms
 
-#info_box(title: "Key In-Memory Algorithms", [
-  - _Weiner (1973)_:
-    - *Time Complexity*: $O(n dot log alpha)$ over an ordered alphabet.
-  - _McCreight (1976)_:
-    - An improvement on Weiner's algorithm.
-    - *Time Complexity*: $O(n dot log alpha)$ over an ordered alphabet.
-    - Constructs the tree by incrementally inserting suffixes $sigma[i:] + dollar$ for $i = 0..n$.
-  - _Ukkonen (1992)_:
-    - *Time Complexity*: $O(n dot log alpha)$ over an ordered alphabet.
-    - Often considered a bit slower than McCreight in practice but more space-efficient.
-    - An _on-line algorithm_: It can construct $T(sigma + "char")$ from $T(sigma)$ in amortized $O(log alpha)$ time.
-    - Constructs the tree by incrementally inserting prefixes $sigma[:i]$ for $i = 1..n$ and finally the #sym.dollar terminator.
-  - _Farach (1997)_:
-    - *Time Complexity*: $O(n)$ over an indexed alphabet (a significant theoretical improvement to linear time).
-    - Uses a divide-and-conquer approach, combining trees built for even and odd positions.
-    - Primarily of theoretical interest due to its complexity.
-])
+- _Weiner (1973)_:
+  - *Time Complexity*: $O(n dot log alpha)$ over an ordered alphabet.
+- _McCreight (1976)_:
+  - An improvement on Weiner's algorithm.
+  - *Time Complexity*: $O(n dot log alpha)$ over an ordered alphabet.
+  - Constructs the tree by incrementally inserting suffixes $sigma[i:] + dollar$ for $i = 0..n$.
+- _Ukkonen (1992)_:
+  - *Time Complexity*: $O(n dot log alpha)$ over an ordered alphabet.
+  - Often considered a bit slower than McCreight in practice but more space-efficient.
+  - An _on-line algorithm_: It can construct $T(sigma + "char")$ from $T(sigma)$ in amortized $O(log alpha)$ time.
+  - Constructs the tree by incrementally inserting prefixes $sigma[:i]$ for $i = 1..n$ and finally the #sym.dollar terminator.
+- _Farach (1997)_:
+  - *Time Complexity*: $O(n)$ over an indexed alphabet (a significant theoretical improvement to linear time).
+  - Uses a divide-and-conquer approach, combining trees built for even and odd positions.
+  - Primarily of theoretical interest due to its complexity.
 
 === External Memory Construction Algorithms
 
 For very large texts that do not fit into RAM, specialized external memory algorithms are required.
 
-#info_box(title: "External Memory Algorithms", [
-  - _Tian, Tata, Hankins, Patel (2004) TDD_:
-    - *Time Complexity*: $O(n^2)$ over an ordered alphabet.
-    - Designed for large trees in external memory, though input is assumed to fit into RAM.
-    - Utilizes virtual memory structure, claiming fast performance even in RAM.
-    - A later evaluation by Peter Bašista (2012) suggested it's faster than Ukkonen/McCreight on random data, but not necessarily on real-world data.
-    - Example application: Human genome (`approx. 3GB`).
-  - _Other Disk-Oriented Algorithms_:
-    - *Phoophakdee, Zaki (2007) TRELLIS*.
-    - *Barsky, Stege, Thomo, Upton (DiGeST 2008, B2ST 2009)*: These handle cases where the input itself does not fit into RAM.
-    - *Mansour, Allam, Skiadopoulos, Kalnis (ERA 2011)*: Offered sequential and parallel versions for building suffix trees on human genome files, achieving construction times of around 19 minutes on an 8-core PC (16 GB RAM) and 8.3 minutes on a Linux cluster (16 nodes, 1 core/node, 4 GB RAM/node).
-])
+- _Tian, Tata, Hankins, Patel (2004) TDD_:
+  - *Time Complexity*: $O(n^2)$ over an ordered alphabet.
+  - Designed for large trees in external memory, though input is assumed to fit into RAM.
+  - Utilizes virtual memory structure, claiming fast performance even in RAM.
+  - A later evaluation by Peter Bašista (2012) suggested it's faster than Ukkonen/McCreight on random data, but not necessarily on real-world data.
+  - Example application: Human genome (`approx. 3GB`).
+- _Other Disk-Oriented Algorithms_:
+  - *Phoophakdee, Zaki (2007) TRELLIS*.
+  - *Barsky, Stege, Thomo, Upton (DiGeST 2008, B2ST 2009)*: These handle cases where the input itself does not fit into RAM.
+  - *Mansour, Allam, Skiadopoulos, Kalnis (ERA 2011)*: Offered sequential and parallel versions for building suffix trees on human genome files, achieving construction times of around 19 minutes on an 8-core PC (16 GB RAM) and 8.3 minutes on a Linux cluster (16 nodes, 1 core/node, 4 GB RAM/node).
 
 #pagebreak(weak: true)
 
