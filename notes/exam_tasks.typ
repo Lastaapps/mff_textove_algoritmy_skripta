@@ -174,7 +174,7 @@ Let $L[i, j]$ be the length of the LCS of the prefixes $A[1..i]$ and $B[1..j]$.
     $L[i, j] = max(L[i-1, j], L[i, j-1])$
 ]
 
-The length of the LCS for the full strings is $L[|A|, |B|]$. To reconstruct the actual subsequence, one can backtrack from this cell.
+The length of the LCS for the full strings is $L[ |A|, |B| ]$. To reconstruct the actual subsequence, one can backtrack from this cell.
 
 *Complexity:*
 - *Time:* $O(|A| dot |B|)$.

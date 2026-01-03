@@ -50,21 +50,6 @@ Every distinct substring of a text $sigma$ corresponds to a unique path from the
 
 - The number of distinct substrings can be found by summing the lengths of all paths from the root to each node (explicit and implicit), considering each unique path as a distinct substring.
 - More simply, it is the total number of nodes (explicit and implicit) in the suffix tree.
-
-== Longest Common Factor (LCF)
-
-The longest common factor (LCF) of two strings $sigma$ and $tau$ is the longest string that is a substring of both $sigma$ and $tau$.
-
-To determine $"LCF"(sigma, tau)$:
-
-- Construct a generalized suffix tree for $sigma$ and $tau$ with unique terminators. For example, $T(sigma + #sym.dollar, tau + #sym.hash)$.
-- The LCF corresponds to the deepest node in this generalized suffix tree that has descendants from both $sigma$ and $tau$.
-
-#info_box[
-  - *Challenge:* The generalized suffix tree also contains substrings that "cross" the boundary between the original strings, which are not true common factors.
-  - *Solution:* To find LCF, identify the node $v$ which is an ancestor to leaves representing suffixes from both $sigma$ and $tau$, and has the greatest string depth. If we have $T(sigma, tau)$, the node representing $"LCF"(sigma, tau)$ is the highest node that has descendant leaves from both $sigma$ and $tau$.
-]
-
 == Generalized Suffix Tree $T(sigma, tau)$
 
 A generalized suffix tree for two strings $sigma$ and $tau$ is a compact suffix trie of all suffixes of $sigma$ and $tau$.
@@ -78,13 +63,17 @@ A generalized suffix tree for two strings $sigma$ and $tau$ is a compact suffix 
     - A leaf node can represent a suffix common to both $sigma$ and $tau$. Such a leaf would store references to both original strings.
 ]
 
-=== LCF using $T(sigma, tau)$
+== Longest Common Factor (LCF)
 
+The longest common factor (LCF) of two strings $sigma$ and $tau$ is the longest string that is a substring of both $sigma$ and $tau$.
 To find $"LCF"(sigma, tau)$ using $T(sigma, tau)$:
 
 - Mark each internal node $v$ based on whether its subtree contains leaves from $sigma$ (mark 1) or $tau$ (mark 2).
 - Any internal node marked with both 1 and 2 represents a common factor.
 - The deepest such node represents the $"LCF"(sigma, tau)$.
+
+
+
 
 == Generalized Suffix Trees for Multiple Strings
 
@@ -108,7 +97,7 @@ An exact repeat is a substring that occurs at least twice in a text.
 
 A maximal repeat is an exact repeat that cannot be extended to the left or right without losing its exact repeat property.
 
-- #underline[Non-Right Extendible (NRE):] A repeat $S$ is NRE if for its two occurrences starting at $i$ and $j$, $S[i+|S|] != S[j+|S|]$. That is, the characters immediately following the occurrences are different.
+- #underline[Non-Right Extendible (NRE):] A repeat $S$ is NRE if for its two occurrences starting at $i$ and $j$, $S[i+|S| ] != S[j+|S| ]$. That is, the characters immediately following the occurrences are different.
 - #underline[Non-Left Extendible (NLE):] A repeat $S$ is NLE if for its two occurrences starting at $i$ and $j$, $S[i-1] != S[j-1]$. That is, the characters immediately preceding the occurrences are different.
 
 #info_box[
@@ -197,7 +186,7 @@ A bi-palindrome is a string that reads the same forwards and backward under a co
 
 - For DNA sequences, the alphabet is {C, G, A, T}.
 - Complementary pairs: $C <=> G$, $A <=> T$.
-- A string $sigma$ is a bi-palindrome if $sigma^{c R} = sigma$, where $sigma^c$ is the complement of $sigma$, and $sigma^R$ is the reverse of $sigma$.
+- A string $sigma$ is a bi-palindrome if $sigma^(c R) = sigma$, where $sigma^c$ is the complement of $sigma$, and $sigma^R$ is the reverse of $sigma$.
 
 == Suffix Trees in a Sliding Window
 
@@ -237,7 +226,7 @@ The LZ77 algorithm, developed by Jacob Ziv and Abraham Lempel (1977), is a found
     - Text: `accabracadabrarrar`
     - Find `cabra` (length 5) at offset 3 in search buffer, followed by `d`.
     - Encoded as $(3, 5, "d")$.
-  - *Gzip implementation:* Uses a sliding window of $2^{15}$ bytes (search buffer) and a look-ahead buffer of $256$ bytes.
+  - *Gzip implementation:* Uses a sliding window of $2^15$ bytes (search buffer) and a look-ahead buffer of $256$ bytes.
 ]
 
 === Implementation of Sliding Window
@@ -258,13 +247,13 @@ The LZ77 algorithm, developed by Jacob Ziv and Abraham Lempel (1977), is a found
 - High space complexity: Typically requires $10N$ to $30N$ bytes in practice for a text of length $N$.
   - Research efforts (e.g., Stefan Kurtz) have focused on reducing this space requirement, achieving around $10.1N$ on average and $20N$ in the worst case.
 
-  == Tasks
+== Tasks
 
 === Task 1
-Given a text `$T$`, how can you use a suffix tree to find the longest substring that appears at least twice?
+Given a text $T$, how can you use a suffix tree to find the longest substring that appears at least twice?
 
 === Task 2
-Explain how you would find the shortest unique substring of a text `$T$` using its suffix tree.
+Explain how you would find the shortest unique substring of a text $T$ using its suffix tree.
 
 === Task 3
 How does a suffix tree help in the LZ77 compression algorithm?
@@ -275,13 +264,13 @@ How does a suffix tree help in the LZ77 compression algorithm?
 
 === Solution 1
 The longest substring that appears at least twice in a text corresponds to the deepest internal node in the suffix tree of that text.
-1. *Build the Suffix Tree:* Construct the suffix tree for the text `$T$`.
+1. *Build the Suffix Tree:* Construct the suffix tree for the text $T$.
 2. *Traverse the Tree:* Perform a traversal (like DFS) of the tree to find the string-depth of every node. An internal node represents a substring that is repeated.
 3. *Find Deepest Node:* The internal node with the greatest string-depth represents the longest repeated substring. The path from the root to this node spells out the substring.
 
 === Solution 2
 A unique substring corresponds to a path in the suffix tree that leads to a leaf node and is not a prefix of any other suffix. The shortest unique substring is found by identifying the shallowest leaf node.
-1. *Build the Suffix Tree:* Construct the suffix tree for `$T$`.
+1. *Build the Suffix Tree:* Construct the suffix tree for $T$.
 2. *Find Shallowest Leaf:* Traverse the tree to find the leaf node with the minimum string-depth. A leaf node represents a suffix that occurs once. We are interested in the shortest prefix of a suffix that is unique. This corresponds to the path to a leaf node.
 3. *Identify the Substring:* The path from the root to this shallowest leaf spells out a suffix. The shortest unique substring is the path from the root to the parent of that leaf, plus one character. More simply, any path that ends at a leaf represents a unique suffix. The shortest such unique substring is the one corresponding to the path to the leaf with the smallest string depth.
 
@@ -292,4 +281,3 @@ The LZ77 compression algorithm works by finding the longest prefix of the look-a
 3. *Updating:* As the sliding window moves, characters are added to and removed from the buffers. This requires a dynamic suffix tree that can be updated efficiently. While conceptually elegant, this is complex. In practice, hash tables are often used as a simpler and very fast alternative for finding matches in LZ77 implementations.
 
 #pagebreak()
-
