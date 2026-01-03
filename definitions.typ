@@ -14,11 +14,17 @@
   )
 }
 
-#let example_box(body) = {
+#let example_box(title: none, body) = {
   box(
     stroke: 1pt + black,
     inset: 8pt,
-    body,
+    [
+      #if title != none {
+        text(weight: "bold", title)
+        parbreak()
+      }
+      #body
+    ],
   )
 }
 

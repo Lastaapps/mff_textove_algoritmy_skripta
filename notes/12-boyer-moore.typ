@@ -23,8 +23,7 @@ When a mismatch occurs, suppose the text character is $c$ and it aligns with pat
 
 In practice, a simpler version is often used where the shift is based on the rightmost occurrence of $c$ anywhere in the pattern (this is the Boyer-Moore-Horspool variant).
 
-#example_box[
-  *Example: Bad Character Heuristic*
+#example_box(title: "Example: Bad Character Heuristic")[
 
   Let Text `T = ...G*A*TTAG...` and Pattern `P = C*A*BTAA`.
   The scan goes from right to left.
@@ -46,8 +45,7 @@ This heuristic is triggered when a mismatch occurs after a partial match. Let $t
 
 The algorithm always takes the maximum of the shifts proposed by the Bad Character and Good Suffix heuristics.
 
-#example_box[
-  *Example: Good Suffix Heuristic (Case 1)*
+#example_box(title: "Example: Good Suffix Heuristic (Case 1)")[
 
   Let Text `T = ...CTA*G*TAG...` and Pattern `P = GTA*A*TAG`.
   - Mismatch at `A` vs `G`. The good suffix `t` that matched is `"TAG"`.
@@ -61,8 +59,7 @@ The algorithm always takes the maximum of the shifts proposed by the Bad Charact
   ```
 ]
 
-#example_box[
-  *Example: Good Suffix Heuristic (Case 2)*
+#example_box(title: "Example: Good Suffix Heuristic (Case 2)")[
 
   Let Text `T = ...GCA*T*AAGC...` and Pattern `P = TTA*A*AAGC`.
   - Mismatch at `A` vs `T`. The good suffix is `t = "AAGC"`.

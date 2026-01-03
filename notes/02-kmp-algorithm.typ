@@ -8,8 +8,7 @@ The Knuth-Morris-Pratt (KMP) algorithm is a fast way to find a pattern (a "needl
 
 The simple, or "brute-force," way to find a pattern is to check every possible position in the text. This can be very slow, taking up to $O(n m)$ steps (text length $dot$ pattern length).
 
-#example_box[
-  *Example: The Simple Way*
+#example_box(title: "Example: The Simple Way")[
 
   Let's find the pattern `ABCD` in the text `ABCABCD`.
   - Check at index 0: `ABCABCD` vs `ABCD`. Mismatch.
@@ -23,10 +22,10 @@ The simple, or "brute-force," way to find a pattern is to check every possible p
 
 The KMP algorithm is faster because it cleverly uses information from mismatches. Instead of re-checking every character, it uses a pre-computed table about the *pattern* to skip ahead.
 
-== The Border Array (or Failure Function)
+== The Border Array
 
 #info_box(
-  title: "Key Concept: The Border Array",
+  title: "The Border Array (or Failure Function)",
 )[
   The core of KMP is a _border array_ (or _failure function_), let's call it `b`.
 
@@ -34,8 +33,10 @@ The KMP algorithm is faster because it cleverly uses information from mismatches
     For each position $j$ in the pattern, $b[j]$ is the length of the longest _proper prefix_ of $P[0...j]$ that is also a _suffix_ of $P[0...j]$.
   - *Proper Prefix*:
     A proper prefix is not the whole string.
+]
 
-  *Example*: For pattern `ababaca`, the border array is ${0, 0, 1, 2, 3, 0, 1}$.
+#example_box(title: "Example")[
+  For pattern `ababaca`, the border array is ${0, 0, 1, 2, 3, 0, 1}$.
   - `aba`:
     The longest proper prefix that is also a suffix is `"a"`. Length is 1. $b[2] = 1$.
   - `abab`:
@@ -118,7 +119,7 @@ The border array for `abacaba` is `{0, 0, 1, 0, 1, 2, 3}`.
 - The comparison then restarts from the current text position with the pattern pointer at index 0.
 
 === Solution 3
-- *Naive Algorithm Time Complexity:* $O(n \cdot m)$, where $n$ is text length and $m$ is pattern length.
+- *Naive Algorithm Time Complexity:* $O(n dot m)$, where $n$ is text length and $m$ is pattern length.
 - *KMP Algorithm Time Complexity:* $O(n + m)$.
 - *Significant Advantage:* KMP offers a significant advantage when:
   - The text is very long ($n$ is large).

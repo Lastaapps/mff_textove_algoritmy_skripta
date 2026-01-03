@@ -71,8 +71,7 @@ where $t[c]$ is the precomputed character mask for character $c$.
   ```
 ])
 
-#example_box([
-  *Example: Wu-Manber Trace*
+#example_box(title: "Example: Wu-Manber Trace")[
 
   Let $P = "bbba"$, $T = "bbac..."$, $k=2$, and distance is edit distance ($d_E$).
   $m=4$. We need $k+1=3$ state vectors: $s[0], s[1], s[2]$.
@@ -93,7 +92,7 @@ where $t[c]$ is the precomputed character mask for character $c$.
 
   *Step 2: i=1, T[1]='b'*
   - The process repeats. If at any point $s_i [2]$ has its last bit as 0, a match is found. For example, if $s_i [2] = 0100$, it means a substring matches "bbba" with at most 2 errors.
-])
+]
 
 == Extensions and Variations
 

@@ -15,8 +15,7 @@ The $"BWT"$ is a reversible permutation of a text. The $"BWT"$ of a text $T$ is 
 2. Sort the rows of this matrix lexicographically.
 3. The $"BWT"$ is the last column of the sorted matrix.
 
-#example_box[
-  *Example:*
+#example_box(title: "Example")[
   For $T = "banana"$, append a special end-of-string character "\$" which is lexicographically smaller than any other character. $T = "banana$"$.
 
   Sorted rotations:
@@ -77,8 +76,7 @@ A more powerful and standard solution is to use a *wavelet tree*. A wavelet tree
 
 The core of the FM-index search is the LF-mapping property. For the $i$-th character of the BWT (which is $T["SA"[i]-1]$), its corresponding character in the first column is at index $j = C["BWT"[i]] + "Occ"("BWT"[i], i)$. This allows us to move from a character in the last column to its corresponding position in the first column.
 
-#example_box[
-  *LF-Mapping Example:*
+#example_box(title: "LF-Mapping Example")[
   Let's use our example where $T = "banana$"$ and BWT = "annb\$aa". The C-table is $C = ('\$': 0, 'a': 1, 'b': 4, 'n': 5)$.
 
   Let's find the mapping for index $i=5$. The character is $"BWT"[5] = 'a'$.

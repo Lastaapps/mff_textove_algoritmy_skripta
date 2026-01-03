@@ -58,8 +58,7 @@ First, we build the trie. Then, we compute the failure links (f).
 - `f(5)` (for "hi"): `f(1)` is root. root has a transition on 'i' to nowhere. So `f(5)` is root(0).
 - and so on...
 
-#example_box[
-  *Trie and Failure Links for {"he", "she", "his", "hers"}*
+#example_box(title: `Trie and Failure Links for {"he", "she", "his", "hers"}`)[
   ```
         (0) --h--> (1) --e--> (3){he} --r--> (8){hers} --s--> (9)
          |          |

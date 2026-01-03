@@ -131,7 +131,7 @@ The method chosen to represent the children of a node in a Suffix Tree significa
 #info_box(title: "Node Representation Strategies", [
   - *1. Linked List*:
     - *Branching Time*: $O(alpha)$ (proportional to the number of children $alpha$ of the current node).
-    - *Total Search Time*: $O(m \cdot alpha)$, where $m$ is pattern length.
+    - *Total Search Time*: $O(m dot alpha)$, where $m$ is pattern length.
   - *2. Ordered List*:
     - Children are stored in a sorted list.
     - *Branching Time*: $O(log alpha)$ using binary search.
@@ -142,7 +142,7 @@ The method chosen to represent the children of a node in a Suffix Tree significa
     - *Branching Time*: $O(log alpha)$.
     - Useful when $alpha$ is large.
     - *Additional Space*: $O(alpha)$.
-    - *Total Search Time*: $O(m \cdot log alpha)$.
+    - *Total Search Time*: $O(m dot log alpha)$.
   - *4. Array Indexed by Alphabet (Indexed Array)*:
     - An array where each index corresponds to a character in the alphabet $Sigma$.
     - *Branching Time*: $O(1)$ (direct lookup).
@@ -177,14 +177,14 @@ $T(sigma)$ involves traversing the tree. Two main approaches are discussed:
 
   - *Slowscan Approach*:
     - After selecting an edge, compare the remaining characters of the pattern $iota[i+1:]$ with the characters $gamma[1:]$ on the edge label, character by character.
-    - *Time Complexity*: $O(B \cdot m)$, where $B$ is the time for branching (selecting an edge, e.g., $O(1)$, $O(log alpha)$, $O(alpha)$) and $m = |iota|$ is the length of the pattern. This can be slow if $m$ is large and $B$ is not $O(1)$.
+    - *Time Complexity*: $O(B dot m)$, where $B$ is the time for branching (selecting an edge, e.g., $O(1)$, $O(log alpha)$, $O(alpha)$) and $m = |iota|$ is the length of the pattern. This can be slow if $m$ is large and $B$ is not $O(1)$.
 
   - *Fastscan Approach (Optimized)*:
     - This approach is used when we assume the pattern $iota$ is already known to be a substring of $sigma$, and we only need to locate the corresponding node.
     - Instead of character-by-character comparison along the edge (Step 2 above), we only need to ensure the correct edge is chosen. Once an edge $gamma$ is chosen, we know how many characters ($|gamma|$) it consumes from the pattern.
     - If $|gamma| < |iota[i:]|$: Advance the pattern pointer $i$ by $|gamma|$ and continue the traversal from the child node.
     - If $|gamma| == |iota[i:]|$ (or $iota[i:]$ is a prefix of $gamma$): The search ends; the pattern is found (either at a node or implicitly along an edge).
-    - *Time Complexity*: $O(B \cdot k)$, where $B$ is the branching time, and $k$ is the number of visited nodes. Since $k <= |iota|$, this is more efficient as character comparisons along edges are avoided.
+    - *Time Complexity*: $O(B dot k)$, where $B$ is the branching time, and $k$ is the number of visited nodes. Since $k <= |iota|$, this is more efficient as character comparisons along edges are avoided.
 ])
 
 == Suffix Tree Construction Algorithms
@@ -195,13 +195,13 @@ Constructing a Suffix Tree efficiently is crucial for its practical applications
 
 #info_box(title: "Key In-Memory Algorithms", [
   - _Weiner (1973)_:
-    - *Time Complexity*: $O(n \cdot log alpha)$ over an ordered alphabet.
+    - *Time Complexity*: $O(n dot log alpha)$ over an ordered alphabet.
   - _McCreight (1976)_:
     - An improvement on Weiner's algorithm.
-    - *Time Complexity*: $O(n \cdot log alpha)$ over an ordered alphabet.
+    - *Time Complexity*: $O(n dot log alpha)$ over an ordered alphabet.
     - Constructs the tree by incrementally inserting suffixes $sigma[i:] + dollar$ for $i = 0..n$.
   - _Ukkonen (1992)_:
-    - *Time Complexity*: $O(n \cdot log alpha)$ over an ordered alphabet.
+    - *Time Complexity*: $O(n dot log alpha)$ over an ordered alphabet.
     - Often considered a bit slower than McCreight in practice but more space-efficient.
     - An _on-line algorithm_: It can construct $T(sigma + "char")$ from $T(sigma)$ in amortized $O(log alpha)$ time.
     - Constructs the tree by incrementally inserting prefixes $sigma[:i]$ for $i = 1..n$ and finally the #sym.dollar terminator.

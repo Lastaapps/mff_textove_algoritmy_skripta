@@ -25,8 +25,7 @@ The initialization of the DP matrix is slightly different:
 
 The complexity of this approach is $O(n m)$, where $n$ is the text length and $m$ is the pattern length.
 
-#example_box([
-  *Example: DP Matrix*
+#example_box(title: "Example: DP Matrix")[
 
   Let's find all approximate occurrences of the pattern $P = "stress"$ in the text $T = "rests"$ with at most $k=2$ errors using Levenshtein distance.
 
@@ -51,7 +50,7 @@ The complexity of this approach is $O(n m)$, where $n$ is the text length and $m
   - $c[5, 6] = 3 > 2$: No occurrence ending at position 5.
 
   We can see that $c[i, m] <= k$ indicates that a substring of $T$ ending at $i-1$ is a k-approximate match of $P$.
-])
+]
 
 == Approximate Shift-Or Algorithm
 
@@ -94,8 +93,7 @@ The operation $>>> B$ is a logical right shift of the entire state vector by $B$
   ```
 ])
 
-#example_box([
-  *Example: Counter-based Shift-Or*
+#example_box(title: "Example: Counter-based Shift-Or")[
 
   Let $P = "bbba"$, $T = "abbac... "$, $k=2$.
   Here $m=4$. We need $B = ceil(log_2(5)) = 3$ bits per counter. The state vector $s$ has $4 dot 3 = 12$ bits.
@@ -115,7 +113,7 @@ The operation $>>> B$ is a logical right shift of the entire state vector by $B$
     The last counter $s_1 [4]$ is 2, indicating 2 errors for matching "bbba" against "ab".
 
   This continues for the entire text. A match is reported whenever the last counter's value is $<= k$.
-])
+]
 
 *Complexity:* The complexity is $O(ceil(m B/w) n)$, where $w$ is the machine word size. Since $B$ is $O(log m)$, this is $O(n m log(m) / w)$.
 

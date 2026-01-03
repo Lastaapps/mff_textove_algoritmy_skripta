@@ -6,8 +6,7 @@
 
 The *Hamming distance* is defined for two strings of *equal length*. It is the number of positions at which the corresponding characters are different.
 
-#example_box[
-  *Example:*
+#example_box(title: "Example")[
   - $d_H ("karolin", "kathrin") = 3$ (differences at positions 2, 4, 5).
   - $d_H ("apple", "apply") = 1$.
 ]
@@ -53,8 +52,9 @@ $D\[i, j] = min(
 )$
 where $c$ is 0 if $A\[i] = B\[j]$ and 1 otherwise.
 
-#example_box[
-  *Example: Levenshtein Distance for "SUNDAY" and "SATURDAY"*
+#example_box(
+  title: "Example: Levenshtein Distance for \"SUNDAY\" and \"SATURDAY\"",
+)[
 
   We compute the matrix $D$. The final distance is $D[6, 8] = 3$.
 
@@ -95,8 +95,7 @@ A "diagonal" $d$ in the DP matrix consists of all cells $(i, j)$ where $j-i = d$
 
 This property means values along a diagonal are non-decreasing and only increase in steps of 0 or 1.
 
-#example_box[
-  *Example of the Diagonal Property*
+#example_box(title: "Example of the Diagonal Property")[
   Let $A = "KITTEN"$ and $B = "SITTING"$. Consider the main diagonal ($d=0$) of their DP matrix.
 
   #table(

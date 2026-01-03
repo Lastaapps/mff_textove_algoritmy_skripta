@@ -15,8 +15,7 @@ A suffix array `SA` for a text $T$ of length $n$ is an array of integers of leng
 - $"SA"[i]$ is the starting position of the $i$-th suffix in the lexicographically sorted list of all suffixes.
 - Formally, for a text $T$, let $T_j$ denote the suffix of $T$ starting at position $j$. Then $T_"SA"[0], dots, T_"SA"[n-1]$ is the sorted sequence of suffixes of $T$.
 
-#example_box[
-  *Example:*
+#example_box(title: "Example")[
   Let the text be $T = "banana"$. With the special character, $T = "banana\$"$. The suffixes are:
   - 0: "banana\$"
   - 1: "anana\$"
@@ -70,8 +69,7 @@ The *Inverse Suffix Array*, often denoted as "ISA" or "Rank", is an array that f
 - In other words, $"ISA"[i]$ stores the rank of the suffix starting at position $i$.
 - The $"ISA"$ can be computed from the $"SA"$ in $O(n)$ time and vice-versa.
 
-#example_box[
-  *Example:*
+#example_box(title: "Example")[
   For $T = "banana\$"$ and $"SA" = (6, 5, 3, 1, 0, 4, 2)$:
   - $"ISA"[6]$ (rank of "\$") = 0
   - $"ISA"[5]$ (rank of "a\$") = 1
@@ -90,8 +88,7 @@ The *LCP (Longest Common Prefix) array* stores the length of the longest common 
 - $"LCP"[i]$ is the length of the LCP between the suffixes starting at $"SA"[i-1]$ and $"SA"[i]$.
 - $"LCP"[0]$ is usually undefined or set to 0.
 
-#example_box[
-  *Example:*
+#example_box(title: "Example")[
   For $T = "banana\$"$ and $"SA" = (6, 5, 3, 1, 0, 4, 2)$.
   Sorted suffixes:
   - $i=0$: "\$"
