@@ -4,7 +4,7 @@
 
 == Introduction
 
-A *Suffix Array* is a data structure that provides a space-efficient alternative to suffix trees. It was introduced by Udi Manber and Gene Myers in 1990. A suffix array stores all suffixes of a text in lexicographical order. While it is slower for some operations than a suffix tree, its smaller memory footprint makes it a valuable tool for many string processing tasks, especially in bioinformatics.
+A _Suffix Array_ is a data structure that provides a space-efficient alternative to suffix trees. It was introduced by Udi Manber and Gene Myers in 1990. A suffix array stores all suffixes of a text in lexicographical order. While it is slower for some operations than a suffix tree, its smaller memory footprint makes it a valuable tool for many string processing tasks, especially in bioinformatics.
 
 To handle suffixes properly, we usually append a special character that is lexicographically smaller than any other character to the end of the text. Let's denote it with \$ This ensures that no suffix is a prefix of another, which simplifies certain algorithms.
 
@@ -16,7 +16,7 @@ A suffix array `SA` for a text $T$ of length $n$ is an array of integers of leng
 - Formally, for a text $T$, let $T_j$ denote the suffix of $T$ starting at position $j$. Then $T_"SA"[0], dots, T_"SA"[n-1]$ is the sorted sequence of suffixes of $T$.
 
 #example_box(title: "Example")[
-  Let the text be $T = "banana"$. With the special character, $T = "banana\$"$. The suffixes are:
+  Let the text be $T = "banana"$. With the special character, $T = "banana$"$. The suffixes are:
   - 0: "banana\$"
   - 1: "anana\$"
   - 2: "nana\$"
@@ -39,7 +39,7 @@ A suffix array `SA` for a text $T$ of length $n$ is an array of integers of leng
 
 == Suffix Array Construction
 
-=== Naive Construction (SASimple)
+=== Naive Construction
 
 The most straightforward way to construct a suffix array is to generate all suffixes and then sort them.
 
@@ -49,7 +49,7 @@ The most straightforward way to construct a suffix array is to generate all suff
 
 The complexity of this approach is dominated by the sorting step. Comparing two suffixes can take up to $O(n)$ time. With $n$ suffixes, sorting takes $O(n^2 log n)$ time using a comparison-based sort like quicksort.
 
-=== Advanced Construction: $O(n log n)$ Method (SAComplex)
+=== Advanced Construction $O(n log n)$
 
 A more efficient method builds the suffix array by iteratively comparing prefixes of increasing lengths. This is a simplified version of more complex linear-time algorithms. The main idea is to sort suffixes based on their first $2k$ characters, using the sort order from the first $k$ characters.
 
@@ -63,14 +63,14 @@ This method has a time complexity of $O(n log n)$.
 
 == Inverse Suffix Array (ISA)
 
-The *Inverse Suffix Array*, often denoted as "ISA" or "Rank", is an array that for each suffix, gives its lexicographical rank.
+The _Inverse Suffix Array_, often denoted as "ISA" or "Rank", is an array that for each suffix, gives its lexicographical rank.
 
 - $"ISA"[i] = j$ if and only if $"SA"[j] = i$.
 - In other words, $"ISA"[i]$ stores the rank of the suffix starting at position $i$.
 - The $"ISA"$ can be computed from the $"SA"$ in $O(n)$ time and vice-versa.
 
 #example_box(title: "Example")[
-  For $T = "banana\$"$ and $"SA" = (6, 5, 3, 1, 0, 4, 2)$:
+  For $T = "banana$"$ and $"SA" = (6, 5, 3, 1, 0, 4, 2)$:
   - $"ISA"[6]$ (rank of "\$") = 0
   - $"ISA"[5]$ (rank of "a\$") = 1
   - $"ISA"[3]$ (rank of "ana\$") = 2
@@ -83,13 +83,13 @@ The *Inverse Suffix Array*, often denoted as "ISA" or "Rank", is an array that f
 
 == LCP Array
 
-The *LCP (Longest Common Prefix) array* stores the length of the longest common prefix between adjacent suffixes in the sorted suffix array.
+The _LCP (Longest Common Prefix) array_ stores the length of the longest common prefix between adjacent suffixes in the sorted suffix array.
 
 - $"LCP"[i]$ is the length of the LCP between the suffixes starting at $"SA"[i-1]$ and $"SA"[i]$.
 - $"LCP"[0]$ is usually undefined or set to 0.
 
 #example_box(title: "Example")[
-  For $T = "banana\$"$ and $"SA" = (6, 5, 3, 1, 0, 4, 2)$.
+  For $T = "banana$"$ and $"SA" = (6, 5, 3, 1, 0, 4, 2)$.
   Sorted suffixes:
   - $i=0$: "\$"
   - $i=1$: "a\$" (LCP with "\$" is 0) $arrow.r$ $L[1]=0$
@@ -107,28 +107,41 @@ A naive way to compute the LCP array would be to compare adjacent suffixes in th
 
 === Kasai's Algorithm
 
-Kasai's algorithm computes the LCP array in $O(n)$ time, given the text, the suffix array (SA), and the inverse suffix array (ISA). The algorithm is based on the following observation:
+Kasai's algorithm computes the LCP array in $O(n)$ time, given the text, the suffix array (SA), and the inverse suffix array (ISA). The algorithm is based on the following observation. Recall that for growing index, the suffixes get shorter.
 
-Let $h$ be the LCP of a suffix $T_i$ and its predecessor in the sorted list of suffixes. The LCP of the next suffix $T_i+1$ and its predecessor is at least $h-1$.
+#info_box[
+  *Lemma:*
+  Let $h$ be the LCP of a suffix $T_i$ and its predecessor $T_j$,
+  $j="SA"["ISA"[i]-1]$, in the sorted list of suffixes.
+  The LCP of the next suffix
+  $T_(i+1)$ and its predecessor $T_j'$, $j'="SA"["ISA"[i+1]-1]$, is at least $h-1$.
+
+  *Proof:*
+  - For $h<=1$, trivial.
+  - For $h>=2$, $T_j'$ is lexicographically before $T_(i+1)$, and they have at least $h-1$ characters in common.
+    Equality holds when $j+1=j'$.
+]
 
 The algorithm iterates through the suffixes in the order of their starting positions in the text.
 
 *Algorithm:*
-1. Initialize an LCP array and a variable $h=0$.
+1. Initialize an LCP array and a variable $h:=0$.
 2. For $i$ from 0 to $n-1$:
-  a. Find the rank of the current suffix $T_i$: $"rank" = "ISA"[i]$.
-  b. If $"rank"=0$, continue (it has no predecessor).
-  c. Find the previous suffix in the sorted order: $j = "SA"["rank"-1]$.
-  d. While characters match between $T_i[h..]$ and $T_j[h..]$: $h = h+1$.
-  e. Set $"LCP"["rank"] = h$.
-  f. If $h>0$, $h = h-1$.
+  1. Find the rank of the current suffix $T_i$: $"rank" := "ISA"[i]$.
+  2. If $"rank":=0$, continue (it has no predecessor).
+  3. Find the previous suffix in the sorted order: $j := "SA"["rank"-1]$.
+  4. While characters match between $T_i [h..]$ and $T_j [h..]$: $h := h+1$.
+  5. Set $"LCP"["rank"] := h$.
+  6. If $h>0$, $h := h-1$.
+
+Linear time complexity goes from the fact that $h$ is decreased at most $n$ times and that $h$ is bounded: $0<=h<=n$.
 
 == Searching for a Pattern
 
 A pattern $P$ of length $m$ can be found in the text $T$ by performing a binary search on the suffix array.
 
-- A simple binary search takes $O(m log n)$ time, as each comparison between $P$ and a suffix takes $O(m)$ time.
-- With the LCP array, this can be accelerated. By keeping track of the LCP between the pattern and the suffixes at the low, mid, and high pointers of the binary search, we can avoid re-comparing the same prefixes. This improved binary search runs in $O(m + log n)$ time.
+- A simple binary search takes $O(m log n + k)$ time, as each comparison between $P$ and a suffix takes $O(m)$ time.
+- With the LCP array, this can be accelerated. By keeping track of the LCP between the pattern and the suffixes at the low, mid, and high pointers of the binary search, we can avoid re-comparing the same prefixes. This improved binary search runs in $O(m + log n + k)$ time.
 
 == Tasks
 
@@ -217,6 +230,8 @@ Final LCP array: $"LCP" = (0, 0, 1, 4, 1, 1, 0, 3, 0, 0, 0, 2)$.
 
 === Solution 4
 1. Binary search for "abra" in the suffix array.
+  - using LCA: $O(log n + m)$
+  - without LCA: $O(m log n)$
 2. All suffixes starting with "abra" will form a contiguous block in the sorted suffix array.
 3. We find the first occurrence ("abra\$") at $"SA"[2]=7$.
 4. We find the last occurrence ("abracadabra\$") at $"SA"[3]=0$.
