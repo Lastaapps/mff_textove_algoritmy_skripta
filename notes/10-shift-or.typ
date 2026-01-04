@@ -18,6 +18,10 @@ A bit vector $s$ of length $m$ is maintained. The $j$-th bit of $s$ is 0 if the 
 - $s[j] = 0$ means $T[i-j+1 dots i] == P[1..j]$.
 - $s[j] = 1$ otherwise.
 
+#figure(
+  image("../figures/shift-or.png", width: 80%) 
+)
+
 An occurrence of the full pattern is found at position $i$ if $s[m] = 0$.
 
 == Update Step

@@ -38,6 +38,10 @@ In each extension $j$ of phase $i$, we need to ensure the suffix $S[j..i]$ is in
   *Rule 3 (Show Stopper):* If the suffix $S[j..i]$ is already present in the tree (either ending at an internal node or implicitly on an edge), we do nothing. This is a "show stopper" because if this suffix is present, all shorter suffixes (for $j' > j$) must also be present. The active point is updated to the end of the path for $S[j..i]$.
 ]
 
+#figure(
+  image("../figures/ukkonnen-rules.png", width: 80%) 
+)
+
 === Suffix Links
 _Suffix links_ are the most important optimization for achieving linear time complexity. A suffix link from an internal node $u$ representing a string $alpha w$ (where $alpha$ is a single character and $w$ is a non-empty string) points to another node $v$ that represents the string $w$.
 

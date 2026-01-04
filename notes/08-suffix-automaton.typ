@@ -7,6 +7,10 @@
 A *Suffix Automaton*, also known as a *Directed Acyclic Word Graph (DAWG)*, is a powerful data structure used to represent all substrings of a given text. It is the smallest deterministic finite automaton (DFA) that recognizes all suffixes of the text. This means it can also recognize all substrings of the text.
 It's based on the idea of identification of common subtrees of suffix tree.
 
+#figure(
+  image("../figures/automata-relationship.png", width: 60%) 
+)
+
 == Definition
 
 For a given text $T$, its suffix automaton is a directed acyclic graph where:
