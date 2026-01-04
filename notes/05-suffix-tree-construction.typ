@@ -39,7 +39,7 @@ In each extension $j$ of phase $i$, we need to ensure the suffix $S[j..i]$ is in
 ]
 
 #figure(
-  image("../figures/ukkonnen-rules.png", width: 80%) 
+  image("../figures/ukkonnen-rules.png", width: 80%),
 )
 
 === Suffix Links

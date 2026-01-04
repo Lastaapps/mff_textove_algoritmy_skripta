@@ -8,7 +8,7 @@ A *Suffix Automaton*, also known as a *Directed Acyclic Word Graph (DAWG)*, is a
 It's based on the idea of identification of common subtrees of suffix tree.
 
 #figure(
-  image("../figures/automata-relationship.png", width: 60%) 
+  image("../figures/automata-relationship.png", width: 60%),
 )
 
 == Definition
