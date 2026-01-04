@@ -8,7 +8,9 @@ Constructing a suffix array naively by sorting all suffixes of a text $T$ of len
 
 One of the most famous linear time algorithms is the *DC3 (Difference Cover) algorithm*, also known as the *Kärkkäinen-Sanders algorithm*, introduced in 2003. This algorithm uses a divide and conquer approach.
 
-== DC3 (Kärkkäinen-Sanders) Algorithm
+== DC3 (Kärkkäinen-Sanders / Skew) Algorithm
+
+DC3 is discussed in Data Structures lecture recording by #link("https://mj.ucw.cz/vyuka/2324/ds1/")[Martin Mareš, 20th December 2023, 45:00].
 
 The algorithm consists of three main steps:
 

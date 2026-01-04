@@ -51,6 +51,8 @@ The complexity of this approach is dominated by the sorting step. Comparing two 
 
 === Advanced Construction $O(n log n)$
 
+This method is discussed in Data Structures lecture recording by #link("https://mj.ucw.cz/vyuka/2324/ds1/")[Martin Mareš, 20th December 2023, 27:40].
+
 A more efficient method builds the suffix array by iteratively comparing prefixes of increasing lengths. This is a simplified version of more complex linear-time algorithms. The main idea is to sort suffixes based on their first $2k$ characters, using the sort order from the first $k$ characters.
 
 The algorithm works as follows:
@@ -60,6 +62,8 @@ The algorithm works as follows:
 - This process is repeated $log n$ times, doubling the length of the considered prefixes in each step, until the prefixes are long enough to distinguish all suffixes.
 
 This method has a time complexity of $O(n log n)$.
+
+Fater $O(n)$ approach is discussed in the next lecture.
 
 == Inverse Suffix Array (ISA)
 
@@ -82,6 +86,8 @@ The _Inverse Suffix Array_, often denoted as "ISA" or "Rank", is an array that f
 ]
 
 == LCP Array
+
+LCP alongside it's construction discussed in Data Structures lecture recording by #link("https://mj.ucw.cz/vyuka/2324/ds1/")[Martin Mareš, 20th December 2023, 4:00].
 
 The _LCP (Longest Common Prefix) array_ stores the length of the longest common prefix between adjacent suffixes in the sorted suffix array.
 
