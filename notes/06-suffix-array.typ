@@ -37,6 +37,29 @@ A suffix array `SA` for a text $T$ of length $n$ is an array of integers of leng
   The suffix array is $"SA" = (6, 5, 3, 1, 0, 4, 2)$.
 ]
 
+== Suffix Array Construction
+
+=== Naive Construction
+
+The most straightforward way to construct a suffix array is to generate all suffixes and then sort them.
+
+- *Step 1:* Generate all $n$ suffixes of the text $T$.
+- *Step 2:* Sort these suffixes lexicographically. Standard sorting algorithms can be used.
+- *Step 3:* Store the original starting indices of the sorted suffixes in the suffix array.
+
+The complexity of this approach is dominated by the sorting step. Comparing two suffixes can take up to $O(n)$ time. With $n$ suffixes, sorting takes $O(n^2 log n)$ time using a comparison-based sort like quicksort.
+
+=== Advanced Construction $O(n log n)$
+
+A more efficient method builds the suffix array by iteratively comparing prefixes of increasing lengths. This is a simplified version of more complex linear-time algorithms. The main idea is to sort suffixes based on their first $2k$ characters, using the sort order from the first $k$ characters.
+
+The algorithm works as follows:
+- We start with sorting suffixes based on their first character. This gives us an initial ordering.
+- Then, in each step, we sort the suffixes based on their first $2k$ characters. To do this, we can represent each suffix by a pair of ranks: the rank of its first $k$ characters, and the rank of the following $k$ characters.
+- We can then sort the suffixes based on these pairs.
+- This process is repeated $log n$ times, doubling the length of the considered prefixes in each step, until the prefixes are long enough to distinguish all suffixes.
+
+This method has a time complexity of $O(n log n)$.
 
 == Inverse Suffix Array (ISA)
 
