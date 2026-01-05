@@ -152,6 +152,23 @@ To find a pattern $P$, the *FM-index* performs a backward search:
 4. If at any point the range becomes empty, the pattern does not exist.
 5. If the final range is not empty, it corresponds to all occurrences of the pattern in the text.
 
+== FM-Index in Bioinformatics: DNA Search
+
+One of the most significant applications of the FM-index is in bioinformatics, especially for searching in large genomes. The structure of DNA, with its small alphabet $Sigma = {A, C, G, T}$, makes the FM-index exceptionally space-efficient.
+
+#info_box(title: "Space Advantage for DNA")[
+  Consider a human genome with approximately $n = 3 dot 10^9$ base pairs.
+
+  - A traditional suffix array would require $n dot log n$ bits of space. For $n=3 dot 10^9$, this is roughly $3 dot 10^9 dot log_2(3 dot 10^9) approx 3 dot 10^9 dot 31.5$ bits, which is about *11.7 gigabytes*. This is only for the suffix array itself, not the full text.
+
+  - The *FM-index*, however, can be much smaller. For the DNA alphabet, the space complexity is dominated by the BWT and the Occ structure.
+    - The BWT can be compressed very effectively. Since there are only 4 characters, we only need 2 bits per character, so the BWT string takes $2n$ bits.
+    - The C-table is tiny, requiring space for only 4 characters: $O(|Sigma| log n) = O(log n)$.
+    - The Occ data structure, which is often the largest part, can be implemented in $O(n)$ bits.
+]
+
+The total space for an FM-index on a human genome can be less than *3 gigabytes*, a reduction of *4x or more* compared to a standard suffix array. This makes it possible to hold the entire index for a human genome in the RAM of a typical desktop computer, enabling extremely fast queries. This is why tools like Bowtie and BWA, which are standards in genomics, are built on the FM-index.
+
 == Tasks
 
 === Task 1
