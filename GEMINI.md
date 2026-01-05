@@ -23,7 +23,7 @@ If you want to use images, just add links to the images, do not try to download 
 
 ## Scope of Work
 
-0.  **Context:** Always read `./definitions.typ` before doing other tasks.
+0.  **Context:** Always read `./definitions.typ` before doing other tasks. Before starting to any kind of work/changes on a lecture, first read a corresponding lecture PDF file in context and stick to it as much as possible.
 1.  **Process each presentation:** Go through the PDF presentations in the `lectures/` directory one by one.
 2.  **Extract key concepts:** Identify and summarize the core algorithms, data structures, and theoretical concepts from each presentation.
 3.  **Translate and simplify:** Rewrite the extracted information in clear and concise B2 level English.

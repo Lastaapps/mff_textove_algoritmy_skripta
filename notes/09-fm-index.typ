@@ -29,7 +29,7 @@ The $"BWT"$ is a reversible permutation of a text. The $"BWT"$ of a text $T$ is 
   nana$ba
   ```
 
-  The last column is `"annb$aa"`. This is the BWT. The first column is `"$aaabnn"`.
+  The last column is `"annb$aa"`. This is the BWT.
 ]
 
 == Key Components of the FM-Index
@@ -42,13 +42,14 @@ The *FM-index* consists of:
 === C-Table
 
 The *C-table* for an alphabet $Sigma$ is an array where $C[c]$ stores the number of characters in the text that are lexicographically smaller than $c$.
-- It can be computed by scanning the text once.
+- It can be computed by scanning the text once and doing prefix sums.
 - It helps to map a character to the range of rows in the sorted matrix that start with that character.
+- It requires $O(|Sigma|)$ space.
 
 === Occ Function
 
 The $"Occ"(c, i)$ function returns the number of occurrences of character $c$ in the prefix of the $"BWT"$ string of length $i$, i.e., $"BWT"[0..i-1]$.
-- A naive implementation would take $O(i)$ time.
+- A naive implementation would take $O(i |Sigma|)$ time and space.
 - The *FM-index* uses a pre-computed data structure to answer $"Occ"$ queries much faster.
 
 === Efficient Occ Data Structure
@@ -62,22 +63,43 @@ A simple method is to store the full occurrence counts at regular intervals (che
 A more powerful and standard solution is to use a *wavelet tree*. A wavelet tree is a data structure built on the BWT string that can answer `rank` (Occ), `select`, and `access` queries in logarithmic time with respect to the alphabet size.
 
 #info_box(title: "Wavelet Tree for Occ")[
-  1. *Structure:* The wavelet tree is a binary tree where leaves represent characters of the alphabet. Each internal node represents a subset of the alphabet. At each node, a bit-vector stores, for each character in its sequence, whether that character belongs to the alphabet subset of its left child (bit 0) or right child (bit 1).
+  A *wavelet tree* provides a very efficient way to calculate `Occ` values. It's a single, compact data structure built from the BWT string.
 
-  2. *Querying Occ(c, i):* To find the number of occurrences of `c` up to position `i`, we traverse the tree from the root to the leaf for `c`.
-    - At the root, we check if `c` belongs to the left or right half of the alphabet. Suppose it's the right (bit 1). We compute the number of 1s up to position `i` in the root's bit-vector. Let this be $i'$. This tells us how many characters from the right half's alphabet appear in the prefix.
-    - We then move to the right child and recursively ask for the rank of the appropriate bit at the new position $i'$.
-    - This continues until we reach the leaf for `c`. The final rank is the answer.
+  - It's a binary (search, "decision") tree, where each node corresponds to a part of the alphabet. The root represents the whole alphabet.
+  - Each node contains a *bit-vector*. This bit-vector is the key to counting characters. It's size corresponds to the number of alphabet letters in the node.
+  - The counts are not stored directly. Instead, they are calculated very quickly from the bit-vectors at each node.
+  - At a node, the alphabet is split in half. The bit-vector at that node stores a `0` for each character that belongs to the first half of the node's alphabet, and a `1` for characters in the second half.
+  - By counting the 0s and 1s in a prefix of a bit-vector (using an operation called `rank`), we can determine how many characters from each half of the alphabet appeared up to a certain position.
+]
+#example_box[
+  - Let BWT string be `"annb$aa"` and the alphabet be `{"$", "a", "b", "n"}`.
+  - The root's alphabet is `{"$", "a", "b", "n"}`. Let's split it into `{"$", "a"}` (left, bit `0`) and `{"b", "n"}` (right, bit `1`).
+  - The bit-vector at the root will be created by looking at each character of `"annb$aa"`:
+    - 'a': in `{"$", "a"}` #sym.arrow 0
+    - 'n': in `{"b", "n"}` #sym.arrow 1
+    - 'n': in `{"b", "n"}` #sym.arrow 1
+    - 'b': in `{"b", "n"}` #sym.arrow 1
+    - '\$': in `{"$", "a"}` #sym.arrow 0
+    - 'a': in `{"$", "a"}` #sym.arrow 0
+    - 'a': in `{"$", "a"}` #sym.arrow 0
+  - So, the root's bit-vector is `0111000`.
+  - The characters for the left child (for alphabet `{"$", "a"}`) are `a$aa` (the ones that got a 0, in order). The characters for the right child (for `{"b", "n"}`) are `nnb`. The tree construction continues recursively on these sequences.
+]
+#info_box(title: [Query in a wavelet tree])[
+  To find $"Occ"(c, i)$, you traverse the tree from the root to the leaf for character $c$:
+  - At each node, you check if $c$ belongs to the left (0) or right (1) part of the alphabet.
+  - You use the `rank` operation on the node's bit-vector to count how many characters from that part appeared before position $i$. This gives you the new, smaller position for the query in the child node.
+  - When you reach the leaf for $c$, the final position you calculated is the $"Occ"$ value.
 
-  3. *Performance:* With a supporting structure for the bit-vectors that allows for $O(1)$ rank queries, the total time for an `Occ` query on the wavelet tree is $O(log|Sigma|)$. The space complexity is $O(n log|Sigma|)$.
+  With this structure, $"Occ"$ queries take $O(log|Sigma|)$ time (where $|Sigma|$ is the alphabet size), which is extremely fast. The space required is $O(n log|Sigma|)$.
 ]
 
 == LF-Mapping (Last-to-First Mapping)
 
-The core of the FM-index search is the LF-mapping property. For the $i$-th character of the BWT (which is $T["SA"[i]-1]$), its corresponding character in the first column is at index $j = C["BWT"[i]] + "Occ"("BWT"[i], i)$. This allows us to move from a character in the last column to its corresponding position in the first column.
+The core of the FM-index search is the LF-mapping property. For the $i$-th character of the BWT (which is $T["SA"[i]-1]$), its corresponding character (same character in a string one cyclic rotation away) in the first column is at index $j = C["BWT"[i]] + "Occ"("BWT"[i], i)$ (number of string's characters smaller than $"BWT"[i]$ + occurrences of the same character in $"BWT"$ before $i$). This allows us to move from a character in the last column to its corresponding position in the first column.
 
 #example_box(title: "LF-Mapping Example")[
-  Let's use our example where $T = "banana$"$ and BWT = "annb\$aa". The C-table is $C = ('\$': 0, 'a': 1, 'b': 4, 'n': 5)$.
+  Let's use our example where $T = "banana$"$ and BWT = "annb\$aa". The C-table is `C = ('$': 0, 'a': 1, 'b': 4, 'n': 5)`.
 
   Let's find the mapping for index $i=5$. The character is $"BWT"[5] = 'a'$.
   - We need to calculate $"Occ"('a', 5)$, which is the number of 'a's in the prefix $"BWT"[0..4] = "annb$"$. The count is 1.
@@ -116,8 +138,8 @@ The *Burrows-Wheeler Transform* groups identical characters together in the $"BW
 
 === Solution 2
 Given BWT = `"annb$aa"`.
-Let's assume a simplified C-table for the alphabet `{"\$", "a", "b", "n"}`:
-- $C["\$"] = 0$
+Let's assume a simplified C-table for the alphabet `{"$", "a", "b", "n"}`:
+- $C["$"] = 0$
 - $C[a] = 1$ (one '\$')
 - $C[b] = 4$ (one '\$' + three 'a's)
 - $C[n] = 5$ (one '\$' + three 'a's + one 'b')
