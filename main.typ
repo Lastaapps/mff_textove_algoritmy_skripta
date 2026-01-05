@@ -1,6 +1,6 @@
 #import "definitions.typ": *
 
-#set document(title: "Text Algorithms", author: "Gemini")
+#set document(title: "Text Algorithms", author: "Petr Laštovička, Gemini")
 #set text(lang: "en")
 #set heading(numbering: "1.1.")
 
