@@ -56,11 +56,45 @@ The $"Occ"(c, i)$ function returns the number of occurrences of character $c$ in
 
 To make $"Occ"$ queries efficient, a simple scan is not feasible. Two common approaches are checkpointing and wavelet trees.
 
-*Checkpointing:*
+==== Checkpointing
 A simple method is to store the full occurrence counts at regular intervals (checkpoints) in the BWT string. For a query $"Occ"(c, i)$, you find the nearest checkpoint before `i`, retrieve the stored counts, and then scan the remaining part of the string to `i`. This balances space and time but is not the most efficient.
 
-*Wavelet Trees:*
-A more powerful and standard solution is to use a *wavelet tree*. A wavelet tree is a data structure built on the BWT string that can answer `rank` (Occ), `select`, and `access` queries in logarithmic time with respect to the alphabet size.
+==== Block-based $O(1)$ Occ Structure
+
+To achieve a constant $O(1)$ query time for $"Occ"(a, i)$, a multi-level data structure is built for *each character* $a$ in the alphabet $Sigma$.
+
+1. *Conceptual Division:*
+  The BWT string (length $n$) is conceptually divided into a hierarchy of blocks:
+  - It is first split into $n / (log^2 n)$ large *blocks*, each of size $log^2 n$.
+  - Each large block is then divided into $log n$ smaller *sub-blocks*, each of size $log n$.
+
+2. *Pre-computed Count Tables:*
+  For a specific character $a$, two tables are pre-calculated to handle counts at the block and sub-block level:
+  - *$P$ table:* For each large block $i$, $P[i]$ stores the total count of character $a$ in the BWT string from the beginning up to the start of block $i$. This is the cumulative count across large blocks.
+  - *$Q$ table:* For each large block $i$ and sub-block $j$ within it, $Q[i, j]$ stores the count of $a$ from the start of block $i$ up to the start of sub-block $j$.
+
+3. *Rank within a sub-block:*
+  To get the final count inside a sub-block without scanning, we use a pre-computed `rank` function.
+  - A sub-block has size $log n$. We can represent the occurrences of $a$ within it using a bit-vector of length $log n$.
+  - To perform a `rank` query on this bit-vector in $O(1)$, we can build a lookup table. Since a table for all possible $log n$-bit vectors would be too large ($2^(log n) = n$), the bit-vector is split into smaller chunks (e.g., two halves of length $(log n)/2$).
+  - A pre-computed table then stores the rank for all possible bit-vectors of this smaller size. For any string of length $k = (log n)/2$ and any position $j < k$, the table stores the number of 1s in its $j$-prefix. This table is shared across all sub-blocks.
+
+4. *Querying $"Occ"(a, i)$ in $O(1)$:*
+  To answer $"Occ"(a, i)$, the index $i$ is decomposed to find the relevant block, sub-block, and offset:
+  - Block index: $i_1 = floor(i / log^2 n)$
+  - Sub-block index: $i_2 = floor((i mod log^2 n) / log n)$
+  - Offset in sub-block: $i_3 = i mod log n$
+
+  The final count is calculated by summing the pre-computed values and the rank in the final segment:
+  $"Occ"(a, i) = P[i_1] + Q[i_1, i_2] + "rank"_a("at sub-block", i_3)$
+  - $P[i_1]$ provides the count up to the boundary of the large block.
+  - $Q[i_1, i_2]$ adds the count up to the boundary of the sub-block.
+  - The `rank` function provides the final count within the last sub-block segment of length $i_3$.
+
+This structure is built for each character, allowing constant-time queries for any of them. The total space complexity can be optimized to $O(n)$ for the entire alphabet, making it very efficient in theory, though often more complex to implement than Wavelet Trees.
+
+==== Wavelet Trees\*
+A more powerful and standard solution is to use a *wavelet tree*. A wavelet tree is a data structure built on the BWT string that can answer `rank` (Occ), `select`, and `access` queries in logarithmic time with respect to the alphabet size. This topic is not discussed in the lectures.
 
 #info_box(title: "Wavelet Tree for Occ")[
   A *wavelet tree* provides a very efficient way to calculate `Occ` values. It's a single, compact data structure built from the BWT string.
