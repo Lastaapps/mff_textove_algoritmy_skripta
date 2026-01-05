@@ -17,12 +17,12 @@ The core idea is to compute a "signature" or hash value for the pattern and for 
 To be efficient, the algorithm needs a way to compute the hash of the next substring in constant time, rather than re-calculating it from scratch. This is achieved using a *rolling hash*.
 
 A common rolling hash function treats a string as a number in a base-`b` system, where `b` is the size of the alphabet. The hash of a string $S$ of length $m$ is:
-$h(S) = (S[0] dot b^(m-1) + S[1] dot b^(m-2) + ... + S[m-1] dot b^0) mod q$
+$ h(S) = (S[0] dot b^(m-1) + S[1] dot b^(m-2) + ... + S[m-1] dot b^0) mod q $
 where $q$ is a large prime number to keep the values manageable.
 
 To compute the hash of the next substring, we can subtract the term for the first character and add the term for the new last character in $O(1)$ time.
 If $h_i$ is the hash of $T[i..i+m-1]$, then $h_(i+1)$ can be computed as:
-$h_"new" = ((h_i - T[i] dot b^(m-1)) dot b + T[i+m]) mod q$
+$ h_"new" = ((h_i - T[i] dot b^(m-1)) dot b + T[i+m]) mod q. $
 
 == The Algorithm
 
@@ -56,10 +56,10 @@ The efficiency of Rabin-Karp depends on the number of spurious hits, `z`. By mak
 *Assumption:* The hash function distributes the hashes of strings uniformly over the range $[0, q-1]$. The probability of two different random strings having the same hash is approximately $1/q$.
 
 Under this assumption, the expected number of spurious hits is:
-$E[z] = (n-m+1) / q approx n/q$
+$ E[z] = (n-m+1) / q approx n/q $
 
 If we choose the prime modulus $q$ to be sufficiently large (e.g., larger than $n dot m$), the expected number of spurious hits becomes very small:
-$E[z] < (n-m+1) / (n dot m) < 1$
+$ E[z] < (n-m+1) / (n dot m) < 1 $
 
 With a negligible number of spurious hits, the verification cost becomes insignificant.
 - *Average-case (expected) time:* $O(n+m)$.
@@ -84,14 +84,14 @@ Why is the choice of the prime number $q$ important?
 === Solution 1
 Let the hash of $T[0..2]$ be $H = (T[0]*b^2 + T[1]*b^1 + T[2]*b^0) mod q$.
 To compute the hash of $T[1..3]$, we first remove the contribution of $T[0]$:
-$H' = H - T[0]*b^2$
+$ H' = H - T[0]*b^2 $
 Then, we shift the remaining part to the left (multiply by $b$) and add the new character $T[3]$:
-$H_"new" = (H' dot b + T[3]) mod q = ((H - T[0] dot b^2) dot b + T[3]) mod q$
+$ H_"new" = (H' dot b + T[3]) mod q = ((H - T[0] dot b^2) dot b + T[3]) mod q $
 The term $b^2$ can be pre-calculated. This update step takes $O(1)$ time.
 
 === Solution 2
 A "spurious hit" (or hash collision) occurs when the hash value of a text substring matches the hash value of the pattern, but the substring itself is different from the pattern.
-$hash("substring") = hash("pattern")$ but $"substring" != "pattern"$.
+$hash("substring") = hash("pattern")$ but $"substring" != "pattern".$
 Because hash functions map a large space of strings to a smaller space of numbers, collisions are possible. To handle this, the Rabin-Karp algorithm must perform a character-by-character comparison whenever the hash values match to confirm a true occurrence.
 
 === Solution 3
