@@ -4,7 +4,7 @@
 
 == Introduction
 
-The *Shift-Or* algorithm is an exact string matching algorithm that uses bit parallelism to make comparisons faster. It was introduced by Baeza-Yates and Gonnet in 1992. Instead of reducing the number of comparisons like Boyer-Moore or KMP, Shift-Or optimizes the comparison process itself. It is particularly efficient for small patterns and alphabets.
+The _Shift-Or_ algorithm is an exact string matching algorithm that uses bit parallelism to make comparisons faster. It was introduced by Baeza-Yates and Gonnet in 1992. Instead of reducing the number of comparisons like Boyer-Moore or KMP, Shift-Or optimizes the comparison process itself. It is particularly efficient for *small patterns and alphabets*.
 
 The time complexity is $O(ceil(m/w) dot n)$, where $m$ is the pattern length, $n$ is the text length, and $w$ is the machine word size (e.g., 64 bits).
 
@@ -14,8 +14,8 @@ The core idea is to use bitwise operations (like shift and OR) to simulate the b
 
 == The Bit Vector $s$
 
-A bit vector $s$ of length $m$ is maintained. The $j$-th bit of $s$ is 0 if the prefix of the pattern of length $j$ (i.e., $P[1..j]$) is a suffix of the text scanned so far.
-- $s[j] = 0$ means $T[i-j+1 dots i] == P[1..j]$.
+A bit vector $s$ of length $m$ is maintained. The $j$-th bit of $s$ is 0 if the prefix of the pattern of length $j$ (i.e., $P[1..j]$) is a suffix of the text scanned so far. Notice the inverted logic: true is 0, false is 1.
+- $s[j] = 0$ means $T[(i-j+1) dots i] = P[1..j]$.
 - $s[j] = 1$ otherwise.
 
 #figure(
@@ -26,19 +26,19 @@ An occurrence of the full pattern is found at position $i$ if $s[m] = 0$.
 
 == Update Step
 
-As we scan the text character by character, the bit vector $s$ is updated. Let $s_i$ be the bit vector after reading the $i$-th character of the text, $T[i]$. The new vector $s_{i+1}$ is computed from $s_i$ and $T[i+1]$.
+As we scan the text character by character, the bit vector $s$ is updated. Let $s_i$ be the bit vector after reading the $i$-th character of the text, $T[i]$. The new vector $s_(i+1)$ is computed from $s_i$ and $T[i+1]$.
 
 The update involves two main operations:
 1. A right shift of the old vector $s_i$. This corresponds to extending all previous prefix matches by one character.
 2. An OR operation with a precomputed mask for the current text character $T[i+1]$. This mask indicates which prefixes of the pattern end with this character.
 
-The formula is: $s_{i+1} = (s_i >> 1) | "mask"[T[i+1]]$
+The formula is: $s_(i+1) = (s_i >> 1) | "mask"[T[i+1]]$.
 
 == Precomputed Masks
 
 For each character $c$ in the alphabet, a bitmask of length $m$ is precomputed.
-- $"mask"[c][j] = 0$ if $P[j] == c$.
-- $"mask"[c][j] = 1$ if $P[j] != c$.
+- $"mask"[c,j] = 0$ if $P[j] = c$.
+- $"mask"[c,j] = 1$ if $P[j] != c$.
 
 This table can be precomputed in $O(alpha m)$ time, where $alpha$ is the size of the alphabet.
 
@@ -51,7 +51,14 @@ This table can be precomputed in $O(alpha m)$ time, where $alpha$ is the size of
 2. *Searching:*
   - For each character $T[i]$ of the text:
     - Update the state vector: $s = (s >> 1) | "mask"[T[i]]$.
-    - If $s[m] == 0$ (or after the update, the $m$-th bit is 0), an occurrence of the pattern has been found.
+    - If $s[m] = 0$ (or after the update, the $m$-th bit is 0), an occurrence of the pattern has been found.
+
+For additional intuition, here is the author's understanding.
+Array $s$ holds $m$ prefixes that are being evaluated at the same time.
+When new character is added, we want to check which pattern prefixes can be prolonged.
+The matrix $"mask"$ holds whether pattern prefixes of different lengths can be prolonged by specific character.
+Those that cannot, are permanently marked as invalid by setting them to 1.
+If 0 reaches end, corresponding prefix was successfully prolonged $m$ times.
 
 == Tasks
 
