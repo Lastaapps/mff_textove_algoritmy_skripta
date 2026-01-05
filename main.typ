@@ -14,6 +14,14 @@
 
 #include "title.typ"
 
+#align(center)[
+  This material is meant as a supplement to the presentations provided.
+  There may be some divergence from the slides, some problems or lemmas may be missing.
+  Still, I find it a great source to understand the topic,
+  while the details for the exam should be learned from the slides.
+]
+#pagebreak()
+
 #outline(title: "Table of Contents", depth: 2)
 #pagebreak()
 
