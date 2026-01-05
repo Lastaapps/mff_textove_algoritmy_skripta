@@ -25,7 +25,7 @@ In practice, a simpler version is often used where the shift is based on the rig
 
 #example_box(title: "Example: Bad Character Heuristic")[
 
-  Let Text `T = ...G*A*TTAG...` and Pattern `P = C*A*BTAA`.
+  Let Text `T = ...GATTAG...` and Pattern `P = CABTAA`.
   The scan goes from right to left.
   - `A` vs `G`: Mismatch. The bad character in the text is `G`. `G` does not appear in `P`. We can shift the entire pattern past this point. Shift = length of P = 6.
 ]
@@ -46,31 +46,68 @@ This heuristic is triggered when a mismatch occurs after a partial match. Let $t
 The algorithm always takes the maximum of the shifts proposed by the Bad Character and Good Suffix heuristics.
 
 #example_box(title: "Example: Good Suffix Heuristic (Case 1)")[
+  A "good suffix" is the part of the pattern that matched the text before a mismatch occurred.
 
-  Let Text `T = ...CTA*G*TAG...` and Pattern `P = GTA*A*TAG`.
-  - Mismatch at `A` vs `G`. The good suffix `t` that matched is `"TAG"`.
-  - The algorithm looks for another occurrence of `"TAG"` in `P`. It finds one at the beginning: `P = G*TAA*TAG`.
-  - The pattern is shifted right to align this second occurrence with the text. The shift is 4.
+  Let Text `T = ...AGCTAG...` and Pattern `P = TAGATAG`.
+  We align `P` with `T` and compare from right to left.
+  ```
+  Text:    ... A G C T A G
+  Pattern:   T A G A T A G
+  ```
+  1. `G` vs `G`: Match.
+  2. `A` vs `A`: Match.
+  3. `T` vs `T`: Match.
+  4. `C` vs `A`: Mismatch. The character `C` in the text is the "bad character".
+
+  The part that matched is `TAG`. This is our *good suffix*. It starts at index 4 in `P`.
+
+  The algorithm now looks for another occurrence of `TAG` within `P = TAGATAG`.
+  - It finds one at the very beginning (index 0).
+
+  To align this other occurrence with the `TAG` found in the text, the pattern is shifted.
+  The shift amount is the distance between the two occurrences in the pattern:
+  `shift = (start of good suffix) - (start of other occurrence) = 4 - 0 = 4`.
 
   ```
-  Text:    ...CTA*G*TAG...
-  Pattern:   GTA*A*TAG
-  Shift ->       GTAATAG
+  Text:      ... A G C T A G ...
+  Pattern:     T A G A T A G          (Before shift)
+  Pattern:             T A G A T A G  (After shift)
   ```
 ]
 
 #example_box(title: "Example: Good Suffix Heuristic (Case 2)")[
 
-  Let Text `T = ...GCA*T*AAGC...` and Pattern `P = TTA*A*AAGC`.
-  - Mismatch at `A` vs `T`. The good suffix is `t = "AAGC"`.
-  - Let's assume `"AAGC"` does not appear elsewhere in `P`.
-  - Now, we check for a prefix of `P` that is a suffix of `t`. The longest such prefix is `"AAGC"` -> `"AGC"` -> `"GC"` -> `"C"`. Let's say `P` starts with `GC...`: `P = GC...TAAAAGC`.
-  - The pattern is shifted to align the prefix `GC` with the suffix `GC` of the matched part of the text.
+  This case applies if the good suffix itself doesn't reappear in the pattern.
+
+  Let Text `T = ...ACXTATG...` and Pattern `P = GTAGGTATG`.
+  We align `P` with `T` and compare from right to left.
+  ```
+  Text:      ... A C X T A T G
+  Pattern:   G T A G G T A T G
+  ```
+  A right-to-left comparison finds a partial match.
+  - The suffix `TATG` of the pattern matches the text.
+  - A mismatch occurs at the next character: `X` in the text vs. `G` in the pattern.
+
+  The *good suffix* is `t = "TATG"`.
+
+  *Step 1: Check for another `TATG` in `P = GTAGGTATG`.*
+  There are no other occurrences. Case 1 does not apply.
+
+  *Step 2: Find the longest prefix of `P` that is a suffix of `t`.*
+  - Good Suffix `t`: `TATG`
+  - Suffixes of `t`: `TATG`, `ATG`, `TG`, `G`.
+  - Prefixes of `P`: `G`, `GT`, `GTA`, `GTAG`, ...
+
+  The longest string that is in both lists is `"G"`.
+
+  The algorithm shifts the pattern to align this prefix (`"G"`) with the corresponding suffix of the good suffix in the text.
+  The shift amount is `m - |prefix| = 9 - 1 = 8`.
 
   ```
-  Text:    ...GCATA*A*AGC...
-  Pattern:   TTAAA*A*AGC
-  Shift ->       TTAAAAGC  // (Assuming no other rule gives a larger shift)
+  Text:      ... A C X T A T G ...
+  Pattern:   G T A G G T A T G  (Before shift)
+  Pattern:                   G T A G G T A T G  (After shift)
   ```
 ]
 
@@ -129,9 +166,9 @@ How does the Boyer-Moore-Horspool algorithm simplify the original Boyer-Moore al
 
 === Solution 1
 Pattern $P = "needle"$. Let's say the comparison is with a text window and the mismatching character is 'e'.
-The last occurrence of 'e' in "needle" is at index 4 (0-indexed). The length of the pattern is 6.
-The distance from the end is $m - 1 - 4 = 6 - 1 - 4 = 1$.
-The Bad Character table for 'e' would indicate a shift of 1. So, the pattern would be shifted one position to the right.
+The last occurrence of 'e' in "needle" is at index 5 (0-indexed). The length of the pattern is 6.
+The distance from the end is $m - 1 - 5 = 6 - 1 - 5 = 0$.
+The Bad Character table for 'e' would indicate a shift of 0. That's why max has to be used.
 
 === Solution 2
 The right-to-left scan allows the algorithm to make larger jumps. When a mismatch occurs early in the comparison (i.e., far to the right of the pattern), the algorithm can use information about the text character to shift the pattern by a significant amount. For example, if the mismatched text character does not appear in the pattern at all, the pattern can be shifted completely past that character, skipping many potential alignments that a left-to-right scan would have to check.
