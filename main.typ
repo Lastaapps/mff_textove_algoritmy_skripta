@@ -33,5 +33,6 @@
 #include "notes/14-string-distance.typ"
 #include "notes/15-approximate-string-matching.typ"
 #include "notes/16-approximate-string-matching-2.typ"
+#include "notes/17-regular-expressions.typ"
 #include "notes/overview.typ"
 #include "notes/exam_tasks.typ"
