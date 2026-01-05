@@ -24,6 +24,8 @@ typst compile main.typ
 
 This will create the `main.pdf` file in the root directory.
 
+Before each commit, use `typstyle -i .` to format the code and avoid Git conflicts. You can setup a pre-commit hook.
+
 ## Disclaimer
 
 These materials are created with the help of an AI model and are intended for study purposes only. They may not be a perfect representation of the original lectures and may contain errors. Please use them in conjunction with the official course materials. The materials where human (student) reviewed, feel free to fix any mistakes or improve the text.

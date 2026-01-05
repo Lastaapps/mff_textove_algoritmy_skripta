@@ -58,11 +58,6 @@ they need to be enclosed in string and escaped.
 -   Multi-character subscripts or superscripts in math mode should be enclosed in parentheses, e.g., `$h_(new)$`, `$T^(text)$`.
 -   Literal strings within math mode must be enclosed in double quotes, e.g., `$"substring"$.
 
-## Process
-
-- Always generate a single lecture only (you may use previous lectures as a reference) and include it in the main document.
-- After each attempt, compile the project and after that format it using `typstyle -i .`.
-
 ## Versioning
 
 After every significant change, a new git commit should be created and pushed. The `lectures/` directory and `*.pdf` files should not be versioned.
