@@ -16,7 +16,7 @@ The core idea is to compute a "signature" or hash value for the pattern and for 
 
 To be efficient, the algorithm needs a way to compute the hash of the next substring in constant time, rather than re-calculating it from scratch. This is achieved using a *rolling hash*.
 
-A common rolling hash function treats a string as a number in a base-`b` system, where `b` is the size of the alphabet. The hash of a string $S$ of length $m$ is:
+A common rolling hash function treats a string as a number in a base-$b$ system, where $b$ is the size of the alphabet. The hash of a string $S$ of length $m$ is:
 $ h(S) = (S[0] dot b^(m-1) + S[1] dot b^(m-2) + ... + S[m-1] dot b^0) mod q $
 where $q$ is a large prime number to keep the values manageable.
 
@@ -44,22 +44,22 @@ $ h_"new" = ((h_i - T[i] dot b^(m-1)) dot b + T[i+m]) mod q. $
   The total time complexity can be broken down into hashing and verification.
   - The initial hash computations take $O(m)$.
   - The rolling hash updates for the entire text take $O(n)$.
-  - For each hash match, a verification step of $O(m)$ is required. Let `occ` be the number of true occurrences and `z` be the number of spurious hits (false positives). The total verification cost is $O(m("occ"+z))$.
+  - For each hash match, a verification step of $O(m)$ is required. Let $"occ"$ be the number of true occurrences and $z$ be the number of spurious hits (false positives). The total verification cost is $O(m("occ"+z))$.
   - The total time complexity is $O(n + m("occ"+z))$.
-  - *Worst case:* $O(m dot n)$. This occurs if `z` is large, i.e., there are many spurious hits. For example, if all substrings have the same hash value.
+  - *Worst case:* $O(m dot n)$. This occurs if $z$ is large, i.e., there are many spurious hits. For example, if all substrings have the same hash value.
 
 - *Space Complexity:* $O(1)$ (excluding the storage for text and pattern).
 
 === Probabilistic Analysis
-The efficiency of Rabin-Karp depends on the number of spurious hits, `z`. By making a reasonable assumption about the hash function, we can analyze the expected performance.
+The efficiency of Rabin-Karp depends on the number of spurious hits, $z$. By making a reasonable assumption about the hash function, we can analyze the expected performance.
 
-*Assumption:* The hash function distributes the hashes of strings uniformly over the range $[0, q-1]$. The probability of two different random strings having the same hash is approximately $1/q$.
+*Assumption:* The hash function distributes the hashes of $m$-character strings uniformly over the range $[0, q-1]$. The probability of two different random strings having the same hash is approximately $1/q$.
 
 Under this assumption, the expected number of spurious hits is:
-$ E[z] = (n-m+1) / q approx n/q $
+$ E[z] = (n-m+1) / q approx n/q. $
 
 If we choose the prime modulus $q$ to be sufficiently large (e.g., larger than $n dot m$), the expected number of spurious hits becomes very small:
-$ E[z] < (n-m+1) / (n dot m) < 1 $
+$ E[z] < (n-m+1) / (n dot m) < 1. $
 
 With a negligible number of spurious hits, the verification cost becomes insignificant.
 - *Average-case (expected) time:* $O(n+m)$.
