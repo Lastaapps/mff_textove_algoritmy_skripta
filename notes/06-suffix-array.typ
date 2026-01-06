@@ -149,6 +149,57 @@ A pattern $P$ of length $m$ can be found in the text $T$ by performing a binary 
 - A simple binary search takes $O(m log n + k)$ time, as each comparison between $P$ and a suffix takes $O(m)$ time.
 - With the LCP array, this can be accelerated. By keeping track of the LCP between the pattern and the suffixes at the low, mid, and high pointers of the binary search, we can avoid re-comparing the same prefixes. This improved binary search runs in $O(m + log n + k)$ time.
 
+== Burrows-Wheeler Transform (BWT)
+
+The Burrows-Wheeler Transform (BWT) is a reversible permutation of a string that is extremely useful for compression. While not a compression algorithm itself, it groups similar characters together, making the transformed string much more compressible by algorithms like run-length encoding or move-to-front transform followed by Huffman or arithmetic coding. You will learn more on BTW in Chapter 9.
+
+The BWT of a text $T$ is created as follows:
+1. Create a matrix where each row is a cyclic shift of $T$.
+2. Sort the rows of this matrix lexicographically.
+3. The BWT is the last column of the sorted matrix.
+
+The connection to suffix arrays is that the sorted rows of the BWT matrix are equivalent to the sorted suffixes of the text (if we consider the cyclic shifts as suffixes). The last column of the BWT matrix corresponds to the character preceding each suffix in the original text.
+
+#example_box(title: "Example")[
+  Let $T = "banana$"$.
+  Sorted matrix of cyclic shifts:
+  1. "\$banana"
+  2. "a\$banan"
+  3. "ana\$ban"
+  4. "anana\$b"
+  5. "banana\$"
+  6. "na\$bana"
+  7. "nana\$ba"
+
+  The first column (F) is "\$aaabnn", and the last column (L) is "annb\$aa".
+]
+
+=== Encoding
+
+The output of the BWT is the transformed string (the last column, $L$) and the index ($I$) of the original string in the sorted matrix.
+
+For $T = "banana$"$, the original string is the 5th row, so $I=4$ (0-indexed). The output is `("annb$aa", 4)`.
+
+=== Decoding
+
+To reverse the BWT, we only need the transformed string $L$ and the index $I$. The key insight is that the first column $F$ of the sorted matrix can be obtained by sorting the characters of $L$.
+Once we have $F$ and $L$, we can reconstruct the original string. The $k$-th occurrence of a character in $L$ corresponds to the $k$-th occurrence of the same character in $F$.
+This can be seen from the fact that after a single cyclic rotation, suffixes starting at the second character (previously first) decide the order, which is therefore preserved.
+We build the original text from found first-last character pairs, starting with the last character.
+
+*Algorithm:*
+1. Let $L$ be the BWT string.
+2. Construct $F$ by sorting the characters of $L$.
+3. Create a mapping from the characters in $L$ to their corresponding characters in $F$.
+4. Start with the row index $I$. The first character of the original string is $L[I]$.
+5. To find the next character, find the character $F[I]$ and its rank. Then find the same occurrence of that character in $L$. The index of this character in $L$ is the new row index.
+6. Repeat $n$ times to reconstruct the full string.
+
+#info_box(title: "BWT and Compression")[
+  The BWT is not a compression algorithm on its own, but it's a crucial preprocessing step for many compression tools, most notably `bzip2`. By grouping identical characters together, BWT increases the effectiveness of other compression techniques that thrive on runs of identical characters, like Move-to-Front (MTF) and Run-Length Encoding (RLE).
+]
+
+
 == Tasks
 
 === Task 1
@@ -162,6 +213,9 @@ Construct the LCP array for $T = "abracadabra$"$ using Kasai's algorithm. Show t
 
 === Task 4
 How would you find the number of occurrences of the pattern "abra" in "abracadabra\$" using the suffix array?
+
+=== Task 5
+Compute the Burrows-Wheeler Transform (BWT) of the string $T = "abracadabra$"$.
 
 #pagebreak()
 
@@ -244,5 +298,28 @@ Final LCP array: $"LCP" = (0, 0, 1, 4, 1, 1, 0, 3, 0, 0, 0, 2)$.
 5. The suffixes from index 2 to 3 in the SA start with "abra".
 6. The number of occurrences is $3 - 2 + 1 = 2$.
 7. The starting positions are $"SA"[2]=7$ and $"SA"[3]=0$.
+
+=== Solution 5
+To compute the BWT of $T = "abracadabra$"$, we list all cyclic shifts and sort them lexicographically.
+The last column of the sorted matrix is the BWT.
+Original string has index 3 in the sorted list of shifts.
+
+| Sorted Rotations       | Last Char |
+|------------------------|-----------|
+| \$abracadabra          | a         |
+| a\$abracadabr          | r         |
+| abra\$abracad          | d         |
+| abracadabra\$          | a         |
+| acadabra\$abr          | r         |
+| adabra\$abrac          | c         |
+| bra\$abracada          | a         |
+| bracadabra\$a          | a         |
+| cadabra\$abra          | a         |
+| dabra\$abrac           | c         |
+| ra\$abracadab          | b         |
+| racadabra\$ab          | b         |
+
+BWT string (L): "ardracaaabba"
+Index (I): 3
 
 #pagebreak()
