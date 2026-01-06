@@ -114,21 +114,44 @@ The algorithm always takes the maximum of the shifts proposed by the Bad Charact
 
 === Preprocessing
 
-==== Bad Character Table
-A table `bc` of size $|Sigma|$ is created. `bc[c]` stores the index of the rightmost occurrence of character `c` in the pattern. If `c` is not in the pattern, it's set to -1. This takes $O(m + |Sigma|)$ time.
+==== Bad Character Table ($"bc"$)
+A table $"bc"$ of size $|Sigma|$ is created. For each character $c$ in the alphabet, $"bc"[c]$ stores the index of its rightmost occurrence in the pattern $P$. If $c$ is not in the pattern, its entry is typically set to -1. The shift is then calculated as $max(1, j - "bc"[T[i]])$, where $j$ is the mismatch position in the pattern and $T[i]$ is the "bad character" in the text.
 
-==== Good Suffix Table
-This is more complex and requires two arrays, `gs` (the good suffix shifts) and a helper array `suff`.
+This table can be computed in $O(m + |Sigma|)$ time:
+1. Initialize all entries in $"bc"$ to -1.
+  $"for" c "in" Sigma: "bc"[c] = -1$
+2. Iterate through the pattern from left to right, and for each character, record its index.
+  $"for" j "from" 0 "to" m-1: "bc"[P[j]] = j$
 
-1. *Compute `suff` array:* `suff[i]` is the length of the longest suffix of $P$ that starts at position $i$. This can be computed in $O(m)$ time by comparing the pattern with its suffixes. A simpler way is to note that `suff[i]` is the length of the longest common prefix between $P$ and $P[i..m-1]$.
+Since the loop proceeds from left to right, any character that appears multiple times will have its entry in $"bc"$ correctly overwritten with the index of its rightmost occurrence.
 
-2. *Compute `gs` for Case 1:*
-  For each $i$ from $0$ to $m-1$, if `suff[i] > 0`, it means we found a good suffix of length `k = suff[i]` ending at position $i+k-1$. We can set `gs[m-k]` to the shift `m - 1 - i`. We iterate from right to left to ensure we get the rightmost occurrence.
+==== Good Suffix Table ($"gs"$)
+The computation of the good suffix table is the most complex part of the preprocessing. The goal is to create a table $"gs"$ where $"gs"[j]$ stores the shift for the pattern when a mismatch occurs at position $j-1$ and the suffix $P[j..m-1]$ (the "good suffix") has matched. The computation can be done in $O(m)$ time using border arrays.
 
-3. *Compute `gs` for Case 2:*
-  For this case, we need the lengths of the pattern's borders (prefixes that are also suffixes). Let `j` be the length of the longest border of $P$. For all positions in `gs` that were not filled by Case 1, we set the shift to `m - j`. This is the safe shift that aligns the pattern's border with the tail of the good suffix.
+The overall shift is the maximum of the shifts proposed by the two cases of the good suffix heuristic. A common way to implement this involves two auxiliary arrays.
 
-This entire preprocessing for the `gs` table can be done in $O(m)$ time.
+*Case 1 Preprocessing (Aligning with Another Occurrence)*
+
+This case handles finding another occurrence of the good suffix $t = P[j..m-1]$ in the pattern.
+
+- To find all suffixes of $P$ that match other substrings of $P$ efficiently, we can use a clever trick involving the border array of the *reversed* pattern, $P^R$.
+- By computing the border array for $P^R$, we can determine, for each position, the length of the suffix of $P$ ending there that also appears elsewhere.
+- Using this information, we can populate table $"gs"_1$, which stores the shift value for each good suffix length covered by Case 1.
+
+*Case 2 Preprocessing (Aligning with a Border)*
+
+This case handles situations where the good suffix does not reappear, so we must align a *border* of the pattern (a prefix that is also a suffix) with the end of the good suffix in the text.
+
+- First, we compute the standard `border` array (often denoted $b$) for the pattern $P$, where $b[i]$ is the length of the longest proper border of $P[0..i]$. This can be done in $O(m)$ time using an algorithm similar to KMP's prefix function.
+- Let the good suffix be $t = P[j..m-1]$. We are looking for the longest border of the whole pattern $P$, say $p_"border"$, that is also a suffix of $t$.
+- We can precompute a table, say $"gs"_2$, where $"gs"_2[j]$ stores the length of the longest border of $P$ that is a suffix of $P[j..m-1]$.
+- This can be computed by iterating through the border array of $P$. The $"gs"$ table is filled from right to left with $m - b[m-1]$ for the longest border, then $m - b[b[m-1]-1]$ for the next longest, and so on.
+
+*3. Combining for the Final $"gs"$ Table*
+
+The final $"gs"$ table is constructed by taking the maximum of the shifts from both cases for each position.
+
+This ensures that for any good suffix, we take the shift that moves the pattern the furthest to the right. The entire process, while intricate, can be optimized to run in $O(m)$ time.
 
 == The Algorithm
 
@@ -143,11 +166,60 @@ This entire preprocessing for the `gs` table can be done in $O(m)$ time.
   - If a mismatch occurs at $T[i]$ with $P[j]$, shift the pattern by the maximum of the values given by $"BC"[T[i]]$ and $"GS"[j]$.
   - Repeat until the end of the text is reached.
 
-== Boyer-Moore-Horspool
+== Boyer-Moore-Horspool Variant
 
-A simpler variant of the Boyer-Moore algorithm, proposed by Nigel Horspool in 1980. It uses only a modified version of the bad character heuristic.
-- When a mismatch occurs, the shift is determined by the text character corresponding to the *last* character of the pattern, regardless of where the mismatch happened.
-- This is simpler to implement and performs well in practice, though its worst-case complexity is higher.
+A popular and practical simplification of the Boyer-Moore algorithm was proposed by R. Nigel Horspool in 1980. It eliminates the complex Good Suffix heuristic, making it easier to implement while maintaining excellent performance on average.
+
+=== The Core Idea
+
+The Horspool algorithm uses only one heuristic, which is a modified version of the Bad Character rule. The key insight is that the Good Suffix heuristic's main role is to guarantee that the pattern always shifts to the right. Horspool modifies the Bad Character rule to ensure this, removing the need for the Good Suffix table.
+
+=== The Horspool Heuristic
+
+The shift is *always* determined by the text character aligned with the *last* character of the pattern, let's call this character $c$. This is true regardless of where the mismatch (if any) occurred during the right-to-left comparison.
+
+The shift amount is the distance from the end of the pattern to the rightmost occurrence of $c$ in the prefix of the pattern, i.e., excluding the last character.
+
+=== Preprocessing - The Shift Table
+
+A single shift table (let's call it `shift`) is precomputed. It stores the shift value for each character in the alphabet.
+
+1. Initialize the shift table for all characters to the length of the pattern, $m$.
+  $ "for" c "in" Sigma: "shift"[c] = m $
+
+2. For each character in the pattern's prefix (all but the last character), update its entry in the shift table. The value is the distance from that character's position to the end of the pattern's prefix.
+  $ "for" j "from" 0 "to" m-2: "shift"[P[j]] = m - 1 - j $
+
+#example_box(title: "Shift Table for P = 'TAGATAG'")[
+  Let `P = TAGATAG`, so `m=7`.
+  - The prefix is `TAGATA` (length 6).
+  - Initialize all shifts to 7.
+  - `for j from 0 to 5`: `shift[P[j]] = 7 - 1 - j`
+    - `j=0, P[0]='T'`: `shift['T'] = 6`
+    - `j=1, P[1]='A'`: `shift['A'] = 5`
+    - `j=2, P[2]='G'`: `shift['G'] = 4`
+    - `j=3, P[3]='A'`: `shift['A'] = 3` (overwrites previous)
+    - `j=4, P[4]='T'`: `shift['T'] = 2` (overwrites previous)
+    - `j=5, P[5]='A'`: `shift['A'] = 1` (overwrites previous)
+  - The final table (for relevant chars): $"shift"['T']=2, "shift"['A']=1, "shift"['G']=4$. All other alphabet characters have a shift of 7.
+]
+
+=== The Search Algorithm
+
+1. Align the pattern with the start of the text.
+2. Repeat until the pattern goes past the end of the text:
+  - Let $c$ be the character in the text aligned with the last character of the pattern, $P[m-1]$.
+  - Compare the pattern with the text from right to left.
+  - If the whole pattern matches, report an occurrence.
+  - Regardless of whether there was a match or a mismatch, shift the pattern to the right by $"shift"[c]$.
+
+=== Complexity
+
+- *Preprocessing:* $O(m + |Sigma|)$
+- *Worst-Case Performance:* $O(n m)$. This is worse than the original Boyer-Moore and happens with periodic patterns (e.g., text $a^n$ and pattern $a^m$).
+- *Average Performance:* Excellent, often approaching $O(n/m)$ for random text and large alphabets, making it one of the fastest algorithms in practice.
+
+Because of its simplicity and great average-case speed, the Horspool variant is often preferred over the full Boyer-Moore algorithm for many applications.
 
 == Tasks
 
