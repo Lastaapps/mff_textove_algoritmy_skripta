@@ -40,14 +40,14 @@ The complexity of this approach is $O(n m)$, where $n$ is the text length and $m
     [*#sym.epsilon*], [0], [1], [2], [3], [4], [5], [6],
     [*r*], [0], [1], [2], [2], [3], [4], [5],
     [*e*], [0], [1], [2], [3], [2], [3], [4],
-    [*s*], [0], [1], [2], [3], [3], [2], [3],
-    [*t*], [0], [1], [1], [2], [3], [3], [4],
-    [*s*], [0], [1], [2], [2], [3], [4], [3],
+    [*s*], [0], [0], [1], [2], [3], [2], [3],
+    [*t*], [0], [1], [0], [1], [2], [3], [4],
+    [*s*], [0], [0], [1], [2], [3], [2], [3],
   )
 
-  The last row of the matrix is $[0, 1, 2, 2, 3, 4, 3]$. We look for values less than or equal to $k=2$.
-  - $c[3, 6] = 2 <= 2$: An occurrence ending at text position 3 ("res") corresponding to "stres" with 2 errors.
-  - $c[5, 6] = 3 > 2$: No occurrence ending at position 5.
+  The last row of the matrix is $[0, 0, 1, 2, 3, 2, 3]$. We look for values less than or equal to $k=2$.
+  - $c[3, 5] = 2 <= 2$: An occurrence ending at text position 3 ("res") corresponding to "stres" with 2 errors.
+  - $c[5, 5] = 2 <= 2$: An occurrence ending at text position 5 ("rests") corresponding to "stres" with 2 errors.
 
   We can see that $c[i, m] <= k$ indicates that a substring of $T$ ending at $i-1$ is a k-approximate match of $P$.
 ]
