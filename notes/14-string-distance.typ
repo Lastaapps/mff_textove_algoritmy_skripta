@@ -4,7 +4,7 @@
 
 == Hamming Distance
 
-The *Hamming distance* is defined for two strings of *equal length*. It is the number of positions at which the corresponding characters are different.
+The *Hamming distance* is defined for two strings of *equal length*. It is the number of positions at which the corresponding characters are different. It also represent the number of spelling mistakes.
 
 #example_box(title: "Example")[
   - $d_H ("karolin", "kathrin") = 3$ (differences at positions 2, 4, 5).
@@ -17,11 +17,12 @@ The *Levenshtein distance*, in some strict definitions, considers the minimum nu
 
 This metric is equivalent to the *LCS distance*, which is based on the Longest Common Subsequence. The distance is the total number of characters in both strings that are not part of the LCS:
 $ d_L(A, B) = |A| + |B| - 2 |"LCS"(A, B)|. $
+Read this as that the distance (number of errors) is equal to the original strings with the correct positions subtracted, once for each of the strings.
 
 == Edit Distance
 
 A more common metric, also frequently referred to as Levenshtein distance, is the general *Edit Distance*. This metric includes *substitution* as a third basic operation.
-- $d_E(A, B)$ = minimum number of insertions, deletions, or substitutions to transform $A$ to $B$.
+- $d_E (A, B)$ = minimum number of insertions, deletions, or substitutions to transform $A$ to $B$.
 
 This is the version for which the Wagner-Fischer algorithm is typically presented, and it's generally assumed that the cost of each of these three operations is 1.
 
@@ -30,9 +31,30 @@ This is the version for which the Wagner-Fischer algorithm is typically presente
 The concept of Edit Distance can be further generalized to *Weighted Edit Distance*, where each operation can have a different cost.
 - Cost of inserting character $c$: $"cost"_"ins"(c)$
 - Cost of deleting character $c$: $"cost"_"del"(c)$
-- Cost of substituting character $c_1$ with $c_2$: $"cost"_"sub"(c_1, c_2)$
+- Cost of substituting character $c_1$ with $c_2$: $"cost"_"sub" (c_1, c_2)$
 
 The goal is to find the sequence of operations with the minimum total cost. The standard Levenshtein distance (with substitutions) is a special case where all costs are uniformly 1.
+
+#info_box(title: "When is Weighted Edit Distance a Metric?")[
+  For the weighted edit distance to be considered a true *metric*, its cost functions must satisfy certain properties, which mirror the axioms of a metric space:
+
+  1. *Non-negativity:* All costs must be non-negative.
+    - $"cost"_"ins"(c) >= 0$
+    - $"cost"_"del"(c) >= 0$
+    - $"cost"_"sub"(c_1, c_2) >= 0$
+
+  2. *Identity of indiscernibles:* The distance between a string and itself must be zero, and only zero.
+    - This implies that $"cost"_"sub" (c, c) = 0$ for any character $c$.
+    - If $"cost"_"ins" (c) > 0$ or $"cost"_"del" (c) > 0$, then $d(x,y)=0$ if and only if $x=y$.
+
+  3. *Symmetry:* The distance from string A to string B must be the same as from B to A.
+    - $"cost"_"del" (c) = "cost"_"ins" (c)$ for all characters $c$.
+    - $"cost"_"sub" (c_1, c_2) = "cost"_"sub" (c_2, c_1)$ for all characters $c_1, c_2$.
+
+  4. *Triangle inequality:* For any three strings A, B, C, the distance $d(A, C)$ must be less than or equal to $d(A, B) + d(B, C)$.
+    - This requires that $"cost"_"sub" (c_1, c_3) <= "cost"_"sub" (c_1, c_2) + "cost"_"sub" (c_2, c_3)$ for all $c_1, c_2, c_3$.
+    - Additionally, $"cost"_"sub" (c_1, c_2) <= "cost"_"del" (c_1) + "cost"_"ins" (c_2)$ (a substitution should not be more expensive than a deletion and an insertion).
+]
 
 == The Wagner-Fischer Algorithm
 
@@ -40,9 +62,9 @@ The *Wagner-Fischer algorithm* is the classic dynamic programming solution for c
 
 The recurrence relation for the general weighted case is:
 $
-  D\[i, j] = min(D\[i-1, j] + "cost"_"del"(A\[i]),
-  D\[i, j-1] + "cost"_"ins"(B\[j]),
-  D\[i-1, j-1] + "cost"_"sub"(A\[i], B\[j])
+  D\[i, j] = min(D\[i-1, j] + "cost"_"del" (A\[i]),
+  D\[i, j-1] + "cost"_"ins" (B\[j]),
+  D\[i-1, j-1] + "cost"_"sub" (A\[i], B\[j])
   ).
 $
 
@@ -54,7 +76,7 @@ $
     D\[i-1, j-1] + c
   ).
 $
-where $c$ is 0 if $A\[i] = B\[j]$ and 1 otherwise.
+where $c$ is 0 if $A\[i] = B\[j]$ and *2 otherwise* (insert and delete), 1 is used for *Edit distance*.
 
 #example_box(
   title: "Example: Levenshtein Distance for \"SUNDAY\" and \"SATURDAY\"",
@@ -87,15 +109,15 @@ A "diagonal" $d$ in the DP matrix consists of all cells $(i, j)$ where $j-i = d$
 #info_box(title: "Lemma: Diagonal Property")[
   For any cell $(i, j)$ in the DP matrix for Levenshtein distance:
   $D\[i, j] - D\[i-1, j-1]$ is either 0 or 1.
-
-  *Intuitive Proof:*
-  - The value $D\[i, j]$ is the minimum of three possibilities: $D\[i-1, j]+1$, $D\[i, j-1]+1$, and $D\[i-1, j-1] + c$.
-  - Both $D\[i-1, j]$ and $D\[i, j-1]$ are at least $D\[i-1, j-1]-1$. So the first two options in the `min` function are at least $D\[i-1, j-1]$.
-  - The third option is either $D\[i-1, j-1]$ (if characters match) or $D\[i-1, j-1]+1$ (if they don't).
-  - Therefore, the minimum, $D\[i, j]$, must be at least $D\[i-1, j-1]$.
-  - We can also get from prefix $A[..i-1], B[..j-1]$ to $A[..i], B[..j]$ with at most one extra operation (a substitution, or a delete+insert pair). So, $D\[i, j] <= D\[i-1, j-1] + 1$.
-  - Combining these, $D\[i-1, j-1] <= D\[i, j] <= D\[i-1, j-1] + 1$.
 ]
+
+*Proof:*
+- The value $D\[i, j]$ is the minimum of three possibilities: $D\[i-1, j]+1$, $D\[i, j-1]+1$, and $D\[i-1, j-1] + c$.
+- Both $D\[i-1, j]$ and $D\[i, j-1]$ are at least $D\[i-1, j-1]-1$. So the first two options in the `min` function are at least $D\[i-1, j-1]$.
+- The third option is either $D\[i-1, j-1]$ (if characters match) or $D\[i-1, j-1]+1$ (if they don't).
+- Therefore, the minimum, $D\[i, j]$, must be at least $D\[i-1, j-1]$.
+- We can also get from prefix $A[..i-1], B[..j-1]$ to $A[..i], B[..j]$ with at most one extra operation (a substitution, or a delete+insert pair). So, $D\[i, j] <= D\[i-1, j-1] + 1$.
+- Combining these, $D\[i-1, j-1] <= D\[i, j] <= D\[i-1, j-1] + 1$.
 
 This property means values along a diagonal are non-decreasing and only increase in steps of 0 or 1.
 
