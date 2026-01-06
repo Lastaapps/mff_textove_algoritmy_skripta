@@ -86,12 +86,12 @@ To achieve a constant $O(1)$ query time for $"Occ"(a, i)$, a multi-level data st
   - Offset in sub-block: $i_3 = i mod log n$
 
   The final count is calculated by summing the pre-computed values and the rank in the final segment:
-  $"Occ"(a, i) = P[i_1] + Q[i_1, i_2] + "rank"_a("at sub-block", i_3)$
+  $"Occ"(a, i) = P[i_1] + Q[i_1, i_2] + "rank"_a ("at sub-block", i_3)$
   - $P[i_1]$ provides the count up to the boundary of the large block.
   - $Q[i_1, i_2]$ adds the count up to the boundary of the sub-block.
   - The `rank` function provides the final count within the last sub-block segment of length $i_3$.
 
-This structure is built for each character, allowing constant-time queries for any of them. The total space complexity can be optimized to $O(n)$ for the entire alphabet, making it very efficient in theory, though often more complex to implement than Wavelet Trees.
+This structure is built for each character, allowing constant-time queries for any of them. The total space complexity can be optimized to $O(|Sigma| n)$ for the entire alphabet, making it very efficient in theory, though often more complex to implement than Wavelet Trees.
 
 ==== Wavelet Trees\*
 A more powerful and standard solution is to use a *wavelet tree*. A wavelet tree is a data structure built on the BWT string that can answer `rank` (Occ), `select`, and `access` queries in logarithmic time with respect to the alphabet size. This topic is not discussed in the lectures.
@@ -125,12 +125,12 @@ A more powerful and standard solution is to use a *wavelet tree*. A wavelet tree
   - You use the `rank` operation on the node's bit-vector to count how many characters from that part appeared before position $i$. This gives you the new, smaller position for the query in the child node.
   - When you reach the leaf for $c$, the final position you calculated is the $"Occ"$ value.
 
-  With this structure, $"Occ"$ queries take $O(log|Sigma|)$ time (where $|Sigma|$ is the alphabet size), which is extremely fast. The space required is $O(n log|Sigma|)$.
+  With this structure, $"Occ"$ queries take $O(log|Sigma|)$ time, which is extremely fast. The space required is $O(n log|Sigma|)$.
 ]
 
 == LF-Mapping (Last-to-First Mapping)
 
-The core of the FM-index search is the LF-mapping property. For the $i$-th character of the BWT (which is $T["SA"[i]-1]$), its corresponding character (same character in a string one cyclic rotation away) in the first column is at index $j = C["BWT"[i]] + "Occ"("BWT"[i], i)$ (number of string's characters smaller than $"BWT"[i]$ + occurrences of the same character in $"BWT"$ before $i$). This allows us to move from a character in the last column to its corresponding position in the first column.
+The core of the FM-index search is the LF-mapping property. For the $i$-th character of the BWT (which is $T["SA"[i]-1]$, the predecessor of the first character of $i$-th row), its corresponding character (same character in a string one cyclic rotation away) in the first column is at index $j = C["BWT"[i]] + "Occ"("BWT"[i], i)$ (number of string's characters smaller than $"BWT"[i]$ + occurrences of the same character in $"BWT"$ before $i$). Using array $C$, all the preceding characters are skipped. Then notice that the relative position of same characters in BWT stays the same (stable) after cyclic rotation and sorting, as the second characters are in the same order as before rotation, when they were first. This allows us to move from a character in the last column to its corresponding position in the first column.
 
 #example_box(title: "LF-Mapping Example")[
   Let's use our example where $T = "banana$"$ and BWT = "annb\$aa". The C-table is `C = ('$': 0, 'a': 1, 'b': 4, 'n': 5)`.
