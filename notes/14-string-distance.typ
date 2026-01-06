@@ -98,69 +98,100 @@ where $c$ is 0 if $A\[i] = B\[j]$ and *2 otherwise* (insert and delete), 1 is us
   )
 ]
 
-== Optimizing the Dynamic Programming Approach
+== Problem of Prospective Diagonals
 
-The $O(n m)$ complexity of the Wagner-Fischer algorithm can be too slow for very long strings. Faster algorithms exploit properties of the DP matrix.
+The $O(n m)$ complexity of the Wagner-Fischer algorithm can be too slow. A key optimization is to realize that not all cells of the DP matrix need to be computed. The path corresponding to the optimal sequence of edits does not stray too far from the main diagonal.
 
-=== The Diagonal Property
-
-A "diagonal" $d$ in the DP matrix consists of all cells $(i, j)$ where $j-i = d$. This property is key to many optimizations.
+Let's define a diagonal $d$ as the set of all cells $(i, j)$ such that $j - i = d$, denoted by $Delta_(i,j)$.
+- A purely diagonal move corresponds to a substitution (or a match).
+- A move from $(i-1, j)$ to $(i, j)$ is a deletion, which moves from diagonal $j-i+1$ to $j-i$. It *decreases* the diagonal index.
+- A move from $(i, j-1)$ to $(i, j)$ is an insertion, which moves from diagonal $j-1-i$ to $j-i$. It *increases* the diagonal index.
 
 #info_box(title: "Lemma: Diagonal Property")[
-  For any cell $(i, j)$ in the DP matrix for Levenshtein distance:
-  $D\[i, j] - D\[i-1, j-1]$ is either 0 or 1.
+  Every vertex $[i,j]$ on an optimal path from $[0,0]$ to $[n_1, n_2]$ satisfies:
+  $|j - i| <= c[i, j]$
+  This means the distance of any cell from the main diagonal is at most its edit distance cost. If the total edit distance is $d$, then we only need to explore cells within a band of width $2d+1$ around the main diagonal.
 ]
 
-*Proof:*
-- The value $D\[i, j]$ is the minimum of three possibilities: $D\[i-1, j]+1$, $D\[i, j-1]+1$, and $D\[i-1, j-1] + c$.
-- Both $D\[i-1, j]$ and $D\[i, j-1]$ are at least $D\[i-1, j-1]-1$. So the first two options in the `min` function are at least $D\[i-1, j-1]$.
-- The third option is either $D\[i-1, j-1]$ (if characters match) or $D\[i-1, j-1]+1$ (if they don't).
-- Therefore, the minimum, $D\[i, j]$, must be at least $D\[i-1, j-1]$.
-- We can also get from prefix $A[..i-1], B[..j-1]$ to $A[..i], B[..j]$ with at most one extra operation (a substitution, or a delete+insert pair). So, $D\[i, j] <= D\[i-1, j-1] + 1$.
-- Combining these, $D\[i-1, j-1] <= D\[i, j] <= D\[i-1, j-1] + 1$.
+This leads to a stronger statement:
 
-This property means values along a diagonal are non-decreasing and only increase in steps of 0 or 1.
+#info_box(title: "Lemma: Prospective Diagonals")[
+  For every vertex $[i,j]$ on an arbitrary path from $[0,0]$ to $[n_1, n_2]$, we have:
+  $-q <= Delta_(i,j) <= q + n_2 - n_1$
+  where $q = floor((d - (n_2 - n_1))/2)$ and $d$ is the final edit distance.
 
-#example_box(title: "Example of the Diagonal Property")[
-  Let $A = "KITTEN"$ and $B = "SITTING"$. Consider the main diagonal ($d=0$) of their DP matrix.
+  This corollary tells us that all vertices on the optimal path lie within a specific, limited range of diagonals.
+]
+
+This insight is the core of the Ukkonen-Myers algorithm. We don't know the final distance $d$ in advance, but we can search for it.
+
+== Ukkonen-Myers Algorithm
+
+The Ukkonen-Myers algorithm, developed independently by Esko Ukkonen and Gene Myers, computes the edit distance in $O(d n)$ time, where $d$ is the edit distance and $n$ is the string length. It's highly efficient when the strings are similar (i.e., $d$ is small).
+
+*Core Idea:* The algorithm works by iteratively guessing a maximum edit distance `D` and checking if the true distance is less than or equal to `D`. It does this by only computing the values in the "prospective diagonals" implied by the maximum distance `D`.
+
+=== The `trial_distance` Function
+The algorithm uses a function, let's call it `trial_distance(D)`, which computes the edit distance assuming it is no more than `D`. It only fills the parts of the DP table that are within the prospective diagonals.
+
+- It calculates the range of relevant diagonals based on a "trial" distance `D`.
+- It then runs the standard DP recurrence, but the inner loop for `j` only iterates over the limited range of columns in the prospective diagonals.
+- If the value `c[n1, n2]` computed by `trial_distance(D)` is greater than `D`, it means our guess for the maximum distance was too small.
+
+=== The Main Algorithm
+The main algorithm works as follows:
+1. Initialize the first row and column of the DP table.
+2. Start with an initial guess for the maximum distance, e.g., $D = n_2 - n_1$.
+3. In a loop, call `trial_distance(D)`.
+4. If `trial_distance(D)` returns a value less than or equal to `D`, then we have found the true edit distance.
+5. If not, our guess `D` was too small. We increase `D` (e.g., by doubling it: $D = 2 D$) and repeat.
+
+=== Complexity
+- The `trial_distance(D)` function runs in $O(n D)$ time because the inner loop runs at most $D+1$ times.
+- The main loop calls function with exponentially increasing `D` values ($1, 2, 4, ..., 2^h$) until $2^h >= d$.
+- The total time complexity is $O(n dot (1+2+4+...+d)) = O(n d)$.
+- The space complexity remains $O(n m)$, but can be optimized.
+
+#example_box(title: "Example: `d_L(rests, stress)`")[
+  Let $A = "rests"$ ($n_1=5$) and $B = "stress"$ ($n_2=6$). The Levenshtein distance is 3.
+
+  The Ukkonen-Myers algorithm would test values of D. Let's say it tests D=2.
+  $q = floor((2 - (6-5))/2) = floor(0.5) = 0$.
+  The algorithm would only explore diagonals $Delta$ in $[-0, 0+6-5] = [0, 1]$. This is not enough.
+
+  Let's say it then tests D=3.
+  $q = floor((3 - (6-5))/2) = floor(1) = 1$.
+  The diagonals to be explored are $Delta$ in $[-1, 1+6-5] = [-1, 2]$.
+  The algorithm computes the DP table only for these diagonals and finds the correct distance of 3.
+
+  The DP table for `d_L(rests, stress)` shows the optimal path. The cells on this path are all within diagonals -1, 0, 1, and 2.
+  - `[0,0]` diag 0
+  - `[0,1]` diag 1 (Insert s)
+  - `[1,2]` diag 1 (Subst r -> t)
+  - `[2,3]` diag 1 (Subst e -> r)
+  - `[3,4]` diag 1 (Subst s -> e)
+  - `[4,5]` diag 1 (Subst t -> s)
+  - `[5,6]` diag 1 (Subst s -> s, match)
+  The final distance is 3.
 
   #table(
-    columns: 9,
+    columns: 8,
     align: center,
-    [], [*ε*], [*S*], [*I*], [*T*], [*T*], [*I*], [*N*], [*G*],
-    [*ε*], [*0*], [1], [2], [3], [4], [5], [6], [7],
-    [*K*], [1], [*1*], [2], [3], [4], [5], [6], [7],
-    [*I*], [2], [2], [*1*], [2], [3], [4], [5], [6],
-    [*T*], [3], [3], [2], [*1*], [2], [3], [4], [5],
-    [*T*], [4], [4], [3], [2], [*1*], [2], [3], [4],
-    [*E*], [5], [5], [4], [3], [2], [*2*], [3], [4],
-    [*N*], [6], [6], [5], [4], [3], [3], [*2*], [3],
+    [], [*ε*], [*s*], [*t*], [*r*], [*e*], [*s*], [*s*],
+    [*ε*], [0], [1], [2], [3], [4], [5], [6],
+    [*r*], [1], [1], [2], [2], [3], [4], [5],
+    [*e*], [2], [2], [2], [3], [2], [3], [4],
+    [*s*], [3], [2], [3], [3], [3], [2], [3],
+    [*t*], [4], [3], [2], [3], [4], [3], [4],
+    [*s*], [5], [4], [3], [3], [4], [3], [3],
   )
-
-  The values along the main diagonal are: 0, 1, 1, 1, 1, 2, 2.
-  Let's check the difference property:
-  - $D\[1,1] - D\[0,0] = 1-0 = 1$
-  - $D\[2,2] - D\[1,1] = 1-1 = 0$
-  - $D\[3,3] - D\[2,2] = 1-1 = 0$
-  - $D\[4,4] - D\[3,3] = 1-1 = 0$
-  - $D\[5,5] - D\[4,4] = 2-1 = 1$
-  - $D\[6,6] - D\[5,5] = 2-2 = 0$
-
-  As the lemma states, the difference is always 0 or 1.
 ]
-
-=== The Ukkonen-Myers Algorithm
-This property is the foundation for faster algorithms like the *Ukkonen-Myers algorithm*.
-
-*Core Idea:* Instead of computing the value for every cell, the algorithm finds the furthest-reaching cell on each diagonal $d$ that can be computed with at most $k$ edits. Let this be row `r`. The algorithm then only needs to compute the values for the next edit count, `k+1`, starting from these frontier cells.
-
-This changes the problem from filling a matrix to a search over the diagonals. The resulting time complexity is $O(k(m+n))$ or simply $O(k n)$ if $n$ is the length of the longer string, where $k$ is the edit distance between the strings (or a specified maximum threshold). This is much faster if the strings are similar (i.e., $k$ is small).
 
 == Longest Common Subsequence (LCS) Distance
 
 The *Longest Common Subsequence (LCS)* of two strings is the longest sequence of characters that appears in the same order in both strings, but not necessarily consecutively.
 
-==== LCS Length Calculation
+=== LCS Length Calculation
 The length of the LCS can be found using dynamic programming, similar to edit distance. Let $L\[i,j]$ be the length of the LCS of prefixes $A[1..i]$ and $B[1..j]$.
 
 #info_box(title: "Recurrence Relation for LCS Length")[
@@ -169,9 +200,9 @@ The length of the LCS can be found using dynamic programming, similar to edit di
   - If $A\[i] != B\[j]$: $L\[i, j] = max(L\[i-1, j], L\[i, j-1])$
 ]
 
-==== LCS Distance
+=== LCS Distance
 The LCS length can be used to define a distance metric. This metric counts the number of characters that are *not* part of the LCS.
-$ d_"LCS"(A, B) = |A| + |B| - 2 |"LCS"(A, B)|. $
+$ d_"LCS" (A, B) = |A| + |B| - 2 |"LCS"(A, B)|. $
 This value represents the total number of insertions and deletions needed to transform A to B if no substitutions are allowed.
 
 == Tasks
