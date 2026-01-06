@@ -171,13 +171,14 @@ To find maximal palindromic substrings:
 
 - Construct a generalized suffix tree for $sigma$ and its reverse $sigma^R$, i.e., $T(sigma, sigma^R)$.
 - Precompute LCP arrays for constant-time LCP queries.
-- Iterate through each position $i$ in $sigma$:
+- Iterate through each position $i$ in $sigma$. Each possible palindromic center is checked.
   - For odd length palindromes:
     - $k = "lcp"(sigma[i:], sigma^R [N-i:])$
     - The maximal palindrome is $sigma[i-k+1 : i+k]$.
   - For even length palindromes:
     - $k = "lcp"(sigma[i:], sigma^R [N-i+1:])$
     - The maximal palindrome is $sigma[i-k : i+k]$.
+  - Realize that $sigma[i] = sigma^R [N-i+1$ (odd strings).
 - _Time complexity:_ $O(N)$ after $O(N)$ preprocessing.
 
 == Maximal Bi-palindromes
