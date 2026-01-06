@@ -151,14 +151,12 @@ A pattern $P$ of length $m$ can be found in the text $T$ by performing a binary 
 
 == Burrows-Wheeler Transform (BWT)
 
-The Burrows-Wheeler Transform (BWT) is a reversible permutation of a string that is extremely useful for compression. While not a compression algorithm itself, it groups similar characters together, making the transformed string much more compressible by algorithms like run-length encoding or move-to-front transform followed by Huffman or arithmetic coding. You will learn more on BTW in Chapter 9.
-
 The BWT of a text $T$ is created as follows:
 1. Create a matrix where each row is a cyclic shift of $T$.
 2. Sort the rows of this matrix lexicographically.
 3. The BWT is the last column of the sorted matrix.
 
-The connection to suffix arrays is that the sorted rows of the BWT matrix are equivalent to the sorted suffixes of the text (if we consider the cyclic shifts as suffixes). The last column of the BWT matrix corresponds to the character preceding each suffix in the original text.
+The connection to suffix arrays is that the sorted rows of the BWT matrix are equivalent to the sorted suffixes of the text (if we consider the cyclic shifts as suffixes). The last column of the BWT matrix corresponds to the character preceding each suffix in the original text. BWT is discussed further in Chapter 09.
 
 #example_box(title: "Example")[
   Let $T = "banana$"$.
@@ -196,7 +194,13 @@ We build the original text from found first-last character pairs, starting with 
 6. Repeat $n$ times to reconstruct the full string.
 
 #info_box(title: "BWT and Compression")[
-  The BWT is not a compression algorithm on its own, but it's a crucial preprocessing step for many compression tools, most notably `bzip2`. By grouping identical characters together, BWT increases the effectiveness of other compression techniques that thrive on runs of identical characters, like Move-to-Front (MTF) and Run-Length Encoding (RLE).
+  The BWT is not a compression algorithm on its own, but it's a crucial preprocessing step for many compression tools, most notably `bzip2`. The reason for its effectiveness lies in its ability to group identical characters together, which makes the transformed string highly compressible.
+
+  This grouping happens because the BWT sorts all cyclic shifts of the text. If a text contains multiple occurrences of the same word, for example, "the", then the rows starting with "he " (from "the ") will be adjacent in the sorted matrix. The preceding characters (the last column of the BWT) will all be 't'. This creates long runs of identical characters in the BWT's output string.
+
+  This property is then exploited by other compression algorithms:
+  - *Move-to-Front (MTF):* After BWT, the transformed string is often processed with MTF. In MTF, recently seen characters are moved to the front of a list. Since BWT creates runs of identical characters, MTF will output a sequence of small numbers (often zeros), which can be very efficiently compressed using an entropy coder like Huffman or arithmetic coding.
+  - *Run-Length Encoding (RLE):* RLE is effective at compressing sequences with long runs of identical characters. The output of BWT is often full of such runs, which RLE can compress significantly.
 ]
 
 
