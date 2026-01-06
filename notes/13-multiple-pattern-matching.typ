@@ -14,15 +14,34 @@ The algorithm first builds a finite automaton from the set of patterns and then 
 
 === Core Concepts
 
-1. *Trie:* A trie (prefix tree) is built from all the patterns. Each node represents a prefix. Paths from the root spell out prefixes of the patterns.
+1. *Trie:* A trie (prefix tree) is built from all the patterns. Each node represents a prefix. Paths from the root spell out prefixes of the patterns. Special null node is added as the root.
 
-2. *Failure Links (fail function):* Each node $u$ has a failure link, $f(u)$, that points to another node. $f(u)$ points to the node corresponding to the longest proper suffix of the string represented by $u$ that is also a prefix of some pattern in the dictionary. This is a generalization of the KMP failure function.
+2. *Failure Links (fail function):* Each node $u$ has a failure link, $f(u)$, that points to another node $w$, such that $w$ is suffix of prefix $u$. This is a generalization of the KMP failure function.
 
-3. *Output Function (out):* Each node $u$ has an output set, $"out"(u)$, which contains any patterns that end at state $u$. To find all possible matches, we must also consider patterns ending at states reachable by following failure links.
+3. *Output Function (out):* Each node $u$ has an output set, $"out"(u)$, which contains any patterns that end at state $u$.
 
 === Preprocessing: Building the Automaton
 
 The preprocessing phase constructs the trie and computes the failure and output links.
+
+#code_box[
+  ```
+  Build Trie(P) with an extra vertex nil
+  fail(root) = nil; out(root) = {}
+  Q := empty queue, Enqueue(Q, root)
+
+  while Q not empty:
+    u = Dequeue(Q)
+    for all v in children(u):
+      a = label of the edge (u, v)
+      w = fail(u)
+      while no a-edge from w: # we would fail again, shorten the suffix once more
+        w = fail(w)
+      fail(v) = target of the a-edge from w
+      out(v) = (v if v is one of the needles) U out(fail(v))
+      Enqueue(Q, v)
+  ```
+]
 
 ==== Trie Construction
 This is a standard procedure. We iterate through each pattern in the dictionary and add it to the trie. For each node, we also initialize its $"out"$ set.
@@ -31,6 +50,10 @@ This is a standard procedure. We iterate through each pattern in the dictionary 
   - Start from the root. For each character in $p$, follow the corresponding edge. If an edge doesn't exist, create a new node.
   - Add the pattern $p$ to the $"out"$ set of the final node for $p$.
 This takes $O(M)$ time, where $M$ is the total length of all patterns.
+
+#info_box(title: "A Note on Complexity")[
+  The $O(M)$ complexity for trie construction assumes that we can transition from one node to another in constant time. This is typically achieved by using a direct-address table (an array indexed by character codes) for each node's children. If the alphabet size $alpha$ is large, this may be memory-intensive. A more space-efficient alternative is to use a hash map or a balanced binary search tree, which would change the time complexity for trie construction to $O(M log alpha)$.
+]
 
 ==== Failure Function Computation
 The failure links are computed using a Breadth-First Search (BFS) starting from the root.
@@ -45,6 +68,10 @@ This process also takes $O(M)$ time.
 The initial `out(u)` only contains patterns that *exactly* end at state `u`. However, a match also occurs if a suffix of the current string is a pattern. For example, if we match `"she"`, we have also matched `"he"`. This is handled by "chaining" the outputs along the failure links.
 
 During the search, when we are at a state `u`, we report all patterns in `out(u)`, then we traverse the failure links `f(u)`, `f(f(u))`, and so on, reporting all patterns in their `out` sets until we reach the root. This ensures all dictionary suffixes are found. The cost of this is accounted for by the $z$ term in the search complexity.
+
+#figure(
+  image("../figures/multistring-aho-automaton.png", width: 70%),
+)
 
 === Example of Aho-Corasick
 Let the dictionary be $P = {"he", "she", "his", "hers"}$.
@@ -109,7 +136,23 @@ This makes the Aho-Corasick algorithm extremely efficient for a fixed dictionary
 
 == Commentz-Walter Algorithm
 
-The *Commentz-Walter algorithm*, developed by Beate Commentz-Walter in 1979, is a generalization of the Boyer-Moore algorithm for multiple patterns. It uses the same right-to-left scanning approach and combines the bad character and good suffix heuristics, adapted for a set of patterns stored in a trie.
+The *Commentz-Walter algorithm*, developed by Beate Commentz-Walter in 1979, ingeniously combines the right-to-left matching strategy of the Boyer-Moore algorithm with the multi-pattern matching capability of the Aho-Corasick algorithm.
+
+=== Core Idea
+The algorithm aims to achieve the "jump-ahead" efficiency of Boyer-Moore when searching for multiple patterns. It does this by:
+1. Building a single, unified trie from the set of all patterns, just like Aho-Corasick. However, the patterns are *reversed* before being inserted into the trie.
+2. Performing a right-to-left scan of the text window.
+3. Using two shift heuristics, similar to Boyer-Moore, to determine how far to slide the search window along the text after a mismatch.
+
+#figure(
+  image("../figures/mutlistring-comments-walter-authomaton.png", width: 70%),
+)
+
+=== Complexity
+- *Preprocessing:* The preprocessing complexity is dominated by the construction of the trie and the shift tables, which is proportional to the total length of all patterns, $O(M)$.
+- *Search Time:*
+  - *Worst-case:* $O(N * m_{min} + z)$, where $m_{min}$ is the length of the shortest pattern and $z$ is the number of matches. The worst case is rarely encountered in practice.
+  - *Average-case:* Sublinear, often approaching $O(N / m_{min})$, making it very fast on average, especially for large alphabets and long patterns. It frequently outperforms Aho-Corasick in typical use cases.
 
 == Rabin-Karp for Multiple Patterns
 
