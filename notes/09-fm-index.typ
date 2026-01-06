@@ -66,7 +66,7 @@ To achieve a constant $O(1)$ query time for $"Occ"(a, i)$, a multi-level data st
 1. *Conceptual Division:*
   The BWT string (length $n$) is conceptually divided into a hierarchy of blocks:
   - It is first split into $n / (log^2 n)$ large *blocks*, each of size $log^2 n$.
-  - Each large block is then divided into $log n$ smaller *sub-blocks*, each of size $log n$.
+  - Each large block is then divided into $2log n$ smaller *sub-blocks*, each of size $(log n)/2$.
 
 2. *Pre-computed Count Tables:*
   For a specific character $a$, two tables are pre-calculated to handle counts at the block and sub-block level:
@@ -92,6 +92,33 @@ To achieve a constant $O(1)$ query time for $"Occ"(a, i)$, a multi-level data st
   - The `rank` function provides the final count within the last sub-block segment of length $i_3$.
 
 This structure is built for each character, allowing constant-time queries for any of them. The total space complexity can be optimized to $O(|Sigma| n)$ for the entire alphabet, making it very efficient in theory, though often more complex to implement than Wavelet Trees.
+
+===== Space Complexity of Occ
+The total space complexity of the structure is $O(|Sigma|n)$ bits. Let's break it down for a single character $a$:
+
+- *$P$ table:*
+  - There are $n / (log^2 n)$ large blocks.
+  - Each entry stores a count up to $n$, requiring $log n$ bits.
+  - Total space: $(n / (log^2 n)) dot log n = n / (log n) = o(n)$ bits.
+
+- *$Q$ table:*
+  - There are $n / (log^2 n)$ large blocks, each with $2 log n$ sub-blocks.
+  - Each entry stores a count up to $log^2 n$, requiring $log(log^2 n) = 2 log log n$ bits.
+  - Total space: $(n / (log^2 n)) dot log n dot 2 log log n = (2n log log n) / (log n) = o(n)$ bits.
+
+- *Rank lookup table:*
+  - The lookup table is for strings of length $(log n) / 2$. There are $2^((log n)/2) = sqrt(n)$ such strings.
+  - For each string, we store $(log n) / 2$ rank values. Each value is at most $(log n) / 2$, requiring $log((log n)/2) = log log n - 1$ bits.
+  - Total space: $sqrt(n) dot (log n)/2 dot (log log n - 1) = O(sqrt(n) log n log log n) = o(n)$ bits.
+
+- *Pointers to Rank lookup table:*
+  - We need pointers from each half of each sub-block to the rank lookup table.
+  - There are $2n / (log n)$ sub-blocks in total.
+  - Total pointers: $2n / log n$.
+  - Each pointer needs to address $sqrt(n)$ entries, requiring $log(sqrt(n)) = (log n)/2$ bits.
+  - Total space: $(2n / (log n)) dot (log n)/2 = n$ bits.
+
+Summing these up, the dominant term is the space for the pointers, which is $O(n)$ bits. The other components are sub-linear, $o(n)$. Therefore, the total space complexity for a single character is $O(n)$ bits. For an alphabet of size $|Sigma|$, the total space is $O(|Sigma|n)$ bits.
 
 ==== Wavelet Trees\*
 A more powerful and standard solution is to use a *wavelet tree*. A wavelet tree is a data structure built on the BWT string that can answer `rank` (Occ), `select`, and `access` queries in logarithmic time with respect to the alphabet size. This topic is not discussed in the lectures.
