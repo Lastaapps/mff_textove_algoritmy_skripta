@@ -25,17 +25,19 @@ A match of the entire pattern $P$ with at most $k$ errors is found at text posit
 The recurrence relation from the DP matrix can be translated into a series of bitwise operations. For each character $T[i]$, the new state vectors $s'_q$ are computed from the old state vectors $s_q$.
 
 The update for $s'_q$ involves several components:
-- *Substitution*: Handled by OR-ing the previous state $s_q-1$ with the character mask $t[T[i]]$.
+- *Substitution*: Handled by OR-ing the previous state $s_(q-1)$ with the character mask $t[T[i]]$.
 - *Deletion*: A right shift of the current state $s_q$.
-- *Insertion*: A right shift of the previous state $s_q-1$.
+- *Insertion*: A right shift of the previous state $s_(q-1)$.
 
-Combining these for the Levenshtein distance ($d_L$, where substitution costs 2) gives a complex but efficient update formula. A simplified version for edit distance ($d_E$, sub cost = 1) is:
+For the Levenshtein distance $d_L$, the substitution costs $S=2$, for edit distance $d_E$ it is $S=1$. The formula goes as follows:
 
 $
-  s'_q = ((s_q <<< 1) | t[T[i]]) & ((s_q-1 <<< 1)) & (s_q-1 <<< 1 | t[T[i]]) & s_q-1
+  s_i[q,j] = s_(i-1) [q-1,j] and s_i [q-1,j-1] and (s_(i-1) [q-S, j-1] and (s_(i-1) [q,j-1] or t[T[i],j-1]))
 $
 
 where $t[c]$ is the precomputed character mask for character $c$.
+We try all the values that have less errors than us corresponding to regular update equations.
+If there is an error propagating and one new coming from or, number of errors is increased.
 
 == Algorithm Pseudocode
 
@@ -98,10 +100,31 @@ where $t[c]$ is the precomputed character mask for character $c$.
 
 The Wu-Manber framework is highly flexible.
 
+=== Finding the Minimal $k$ for a Match
+
+Instead of searching for a match with a fixed number of errors $k$, we can also solve the problem of finding the *minimal* number of errors $k^*$ for which an approximate match of pattern $P$ in text $T$ exists.
+
+- *Problem:* Find the minimal $k^*$ such that there is at least one $k^*$-approximate occurrence of $P$ in $T$.
+
+- *Solution:* The solution involves an iterative application of the Wu-Manber algorithm.
+  1. First, test for an exact match ($k=0$) using a fast algorithm like Shift-Or.
+  2. If no exact match is found, iterate the Wu-Manber algorithm for exponentially increasing values of $k$. For example, test $k = 1, 3, 7, ..., 2^B-1$.
+  3. Stop when a match is found for some $k=2^B -1$. We then know that the minimal $k^*$ is in the range $[2^(B-1), 2^B -1]$. A binary search can be performed in this range to find the exact $k^*$, but simply running WM for each value in the range is often sufficient.
+
+- *Time Complexity:* If the minimal number of errors is $k^*$, the total work is dominated by the last successful iteration. The total complexity is $O(4k^* ceil(m/w) n)$, where $w$ is the word size. This is very efficient if the best match is a good one (i.e., $k^*$ is small).
+
 === Searching with Wildcards
-The algorithm can be adapted to handle wildcards like `?` (matches any single character) or `*` (matches any sequence of characters).
+The algorithm can be adapted to handle wildcards like `?` (matches any single character) or the Kleene star `*` (matches any sequence of zero or more characters).
 - For `?`, the corresponding position in all character masks $t[c]$ is set to 0, ensuring it always matches.
-- For `*`, the logic must be modified to allow zero-cost transitions that span multiple text characters, typically by manipulating an additional bitmask representing the wildcard positions.
+- For `*`, the logic is more involved. Let the pattern be $P = p_1 * p_2 * ... * p_r$.
+
+We introduce a new bit vector $t^*$ of length $m$, where $t^*[j] = 0$ if $P[j]$ is a `*` and 1 otherwise.
+
+The definition of the state vectors `s[q]` is modified to handle the zero-cost matching of `*`. An observation is that if we have a q-approximate match ending just before a `*`, we can extend this to a q-approximate match at the `*` position, and also at any position after it, for free.
+
+The update rule for the state vector $s[q]$ is adjusted to reflect this. The new state $s'[q]$ is computed, and then it is AND-ed with a mask derived from the previous state and the $t^*$ vector.
+$ s'_q = s'_q and (s_(q-1) or t^*) $
+This operation effectively says that if a q-1 approximate match was possible at the previous step, we can treat the current position as a match regardless of the character, provided it's a wildcard position.
 
 === Multiple Patterns
 To search for a finite set of patterns, the Wu-Manber algorithm can be adapted by concatenating all patterns into a single, long super-pattern. The core algorithm is then run on this super-pattern, but it requires special handling to manage the boundaries between the original patterns.
@@ -119,12 +142,6 @@ To search for a finite set of patterns, the Wu-Manber algorithm can be adapted b
 
 This technique allows the algorithm to find all occurrences of any of the patterns from the set, while maintaining its efficiency.
 
-=== Finding Minimal $k$
-Instead of a fixed $k$, we can find the best match for a pattern. This is done by running the algorithm iteratively.
-1. Test for $k=0$ (exact match).
-2. If no match, run WM for $k=1$, then $k=2, 3, ...$
-3. Stop at the first $k$ for which a match is found. This $k$ is the minimum edit distance.
-
 === Combining Exact and Approximate Matching
 The algorithm can be modified to enforce that some parts of the pattern must match exactly, while others can match approximately. This is useful for patterns where certain characters are more significant than others.
 
@@ -137,9 +154,9 @@ The state update formula is then modified to incorporate this mask. The original
 
 The simplified update part $(s^1 & s^2 & s^3)$ (which combines the results of deletion, insertion, and substitution from the previous states) is OR-ed with the exact mask $e$. This forces the bits corresponding to exact-match positions to $1$, effectively preventing an approximate match from being considered valid at those positions.
 
-The modified update looks like this:
+The modified update looks like this: (approx, see the slides)
 $
-  s'_q = ((s_q <<< 1) | t[T[i]]) & (((s_q-1 <<< 1)) & (s_q-1 <<< 1 | t[T[i]]) & s_q-1) | e
+  s'_q = ((((s_q <<< 1) or t[T[i]]) and (((s_q-1 <<< 1))) or e) and (s_q-1 <<< 1 or t[T[i]]) and s_q-1)
 $
 
 This ensures that for any position $j$ where $e[j]=1$, the state bit $s'[q, j]$ can only become 0 if there is an exact match path, not through an error-introducing path.
