@@ -2,7 +2,6 @@
 
 #set document(title: "Text Algorithms", author: "Petr Laštovička, Gemini")
 #set text(lang: "en")
-#set heading(numbering: "1.1.")
 
 #show outline.entry.where(
   level: 1,
@@ -19,11 +18,18 @@
   There may be some divergence from the slides, some problems or lemmas may be missing.
   Still, I find it a great source to understand the topic,
   while the details for the exam should be learned from the slides.
+
+  The lecture notes start with overview, continue with lectures numbered the same way
+  as in the subject slides. Lastly, set of exam tasks is added and solved.
 ]
 #pagebreak()
 
 #outline(title: "Table of Contents", depth: 2)
 #pagebreak()
+
+#include "notes/overview.typ"
+
+#set heading(numbering: "1.1.")
 
 #include "notes/01-introduction-to-stringology.typ"
 #include "notes/02-kmp-algorithm.typ"
@@ -42,5 +48,8 @@
 #include "notes/15-approximate-string-matching.typ"
 #include "notes/16-approximate-string-matching-2.typ"
 #include "notes/17-regular-expressions.typ"
-#include "notes/overview.typ"
+
+#set heading(numbering: "A.1")
+#counter(heading).update(0)
+
 #include "notes/exam_tasks.typ"

@@ -1,6 +1,5 @@
 #import "../definitions.typ": *
 
-#pagebreak()
 = Exam Tasks
 
 This chapter contains a selection of tasks that have appeared in exams for the Text Algorithms course. Each task includes a problem statement, a proposed solution, and notes on what the examiner might focus on.
