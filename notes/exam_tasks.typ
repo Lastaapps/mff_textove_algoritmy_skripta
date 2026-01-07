@@ -2,6 +2,15 @@
 
 = Exam Tasks
 
+#info_box(title: "Disclaimer")[
+  This chapter was generated using AI and was not yet human reviewed.
+  Expect *more errors/mistakes/differences* than in the rest of the text
+  until someone finds some time to human review this.
+
+  For the original questions, see `./exam_task_raw.md`.
+  The tasks are usually quite easy and repetitive, so this chapter may not be needed at all.
+]
+
 This chapter contains a selection of tasks that have appeared in exams for the Text Algorithms course. Each task includes a problem statement, a proposed solution, and notes on what the examiner might focus on.
 
 #pagebreak()
