@@ -16,7 +16,7 @@ The *Hamming distance* is defined for two strings of *equal length*. It is the n
 The *Levenshtein distance*, in some strict definitions, considers the minimum number of single-character *insertions* and *deletions* required to change one string into the other. This version does not allow substitutions.
 
 This metric is equivalent to the *LCS distance*, which is based on the Longest Common Subsequence. The distance is the total number of characters in both strings that are not part of the LCS:
-$ d_L(A, B) = |A| + |B| - 2 |"LCS"(A, B)|. $
+$ d_L (A, B) = |A| + |B| - 2 dot |"LCS"(A, B)|. $
 Read this as that the distance (number of errors) is equal to the original strings with the correct positions subtracted, once for each of the strings.
 
 == Edit Distance
