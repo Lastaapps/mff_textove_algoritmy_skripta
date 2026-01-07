@@ -30,19 +30,20 @@ The KMP algorithm is faster because it cleverly uses information from mismatches
   The core of KMP is a _border array_ (or _failure function_), let's call it `b`.
 
   - *Definition*:
+    $b[0] = -1$,
     For each position $j$ in the pattern, $b[j]$ is the length of the longest _proper prefix_ of $P[0...j]$ that is also a _suffix_ of $P[0...j]$.
   - *Proper Prefix*:
     A proper prefix is not the whole string.
 ]
 
 #example_box(title: "Example")[
-  For pattern `ababaca`, the border array is ${0, 0, 1, 2, 3, 0, 1}$.
+  For pattern `ababaca`, the border array is ${-1, 0, 0, 1, 2, 3, 0, 1}$.
   - `aba`:
-    The longest proper prefix that is also a suffix is `"a"`. Length is 1. $b[2] = 1$.
+    The longest proper prefix that is also a suffix is `"a"`. Length is 1. $b[3] = 1$.
   - `abab`:
-    The longest is `"ab"`. Length is 2. $b[3] = 2$.
+    The longest is `"ab"`. Length is 2. $b[4] = 2$.
   - `ababa`:
-    The longest is `"aba"`. Length is 3. $b[4] = 3$.
+    The longest is `"aba"`. Length is 3. $b[5] = 3$.
 ]
 
 
@@ -66,14 +67,14 @@ The KMP algorithm is faster because it cleverly uses information from mismatches
   j = 0  // Length of current match
   for i from 0 to n-1:
     while j > 0 and T[i] != P[j]:
-      j = b[j-1]  // Fall back using border array
+      j = b[j]  // Fall back using border array
 
     if T[i] == P[j]:
       j = j + 1
 
     if j == m:
       report match at i - m + 1
-      j = b[j-1] // Continue searching for more matches
+      j = b[j] // Continue searching for more matches
   ```
 ])
 
@@ -157,10 +158,10 @@ Because of its efficiency, KMP is a very important algorithm for pattern matchin
 For the pattern `abacaba`, construct its border array (failure function) step-by-step. Explain the reasoning for each value.
 
 === Task 2
-Given the text `ABABDABACDABABCABAB` and the pattern `ABABCABAB`,
-explain how the KMP algorithm would process a mismatch if the mismatch occurs at
-the 6th character of the pattern (`C` in `ABABCABAB`) while comparing against
-the text. Assume the KMP algorithm has already matched `ABAB` successfully.
+Given the text `ABABABC` and the pattern `ABABC`,
+explain how the KMP algorithm would process its first mismatch at
+the 5th character of the pattern (`C` in `ABABC`) against the 5th character of the text (`D`).
+Assume the KMP algorithm has already matched `ABAB` successfully, and that the algorithm does not use the improved border array.
 
 === Task 3
 Compare the time complexity of the naive string matching algorithm with the KMP algorithm. Under what conditions does KMP offer a significant advantage?
@@ -171,26 +172,25 @@ Compare the time complexity of the naive string matching algorithm with the KMP 
 
 === Solution 1
 For the pattern `abacaba`:
-- `P[0] = 'a'`: No proper prefix. `b[0] = 0`.
-- `P[0...1] = "ab"`: No proper prefix that is also a suffix. `b[1] = 0`.
-- `P[0...2] = "aba"`: Longest proper prefix "a" is also a suffix. Length 1. `b[2] = 1`.
-- `P[0...3] = "abac"`: No proper prefix that is also a suffix. `b[3] = 0`.
-- `P[0...4] = "abaca"`: Longest proper prefix "a" is also a suffix. Length 1. `b[4] = 1`.
-- `P[0...5] = "abacab"`: Longest proper prefix "ab" is also a suffix. Length 2. `b[5] = 2`.
-- `P[0...6] = "abacaba"`: Longest proper prefix "aba" is also a suffix. Length 3. `b[6] = 3`.
+- `P[0] = 'a'`: No proper prefix. `b[1] = 0`.
+- `P[0...1] = "ab"`: No proper prefix that is also a suffix. `b[2] = 0`.
+- `P[0...2] = "aba"`: Longest proper prefix "a" is also a suffix. Length 1. `b[3] = 1`.
+- `P[0...3] = "abac"`: No proper prefix that is also a suffix. `b[4] = 0`.
+- `P[0...4] = "abaca"`: Longest proper prefix "a" is also a suffix. Length 1. `b[5] = 1`.
+- `P[0...5] = "abacab"`: Longest proper prefix "ab" is also a suffix. Length 2. `b[6] = 2`.
+- `P[0...6] = "abacaba"`: Longest proper prefix "aba" is also a suffix. Length 3. `b[7] = 3`.
 
-The border array for `abacaba` is `{0, 0, 1, 0, 1, 2, 3}`.
+The border array for `abacaba` is `{-1, 0, 0, 1, 0, 1, 2, 3}`.
 
 === Solution 2
-- *Text:* `ABABDABACDABABCABAB`
-- *Pattern:* `ABABCABAB`
-- *Border Array (for `ABABCABAB`):* `{0, 0, 1, 2, 0, 1, 2, 3, 4}`
-- Assume `ABABA` has matched. The pattern pointer $j$ is at index 5 (pointing to 'C').
-- A mismatch occurs at the 6th character of the pattern (index 5, which is 'C').
-- The current matched prefix length is 5 (`ABABA`).
-- We look up $b[j-1] = b[5-1] = b[4]$. $b[4]$ corresponds to the prefix `ABABC`. The value $b[4]$ is 0.
-- This means the pattern will slide forward by $j - b[j-1] = 5 - 0 = 5$ positions. More accurately, the pattern pointer $j$ resets to $b[4] = 0$. The text pointer remains unchanged.
-- The comparison then restarts from the current text position with the pattern pointer at index 0.
+- *Text:* `ABABABC`
+- *Pattern:* `ABABC`
+- *Border Array (for `ABABC`):* `{-1, 0, 0, 1, 2, 0}`
+- Assume `ABAB` has matched. The text pointer $i$ is at index 4 (pointing to 'A').
+- The pattern pointer $j$ is at index 4 (pointing to 'C').
+- We look up $b[j] = b[4]$. $b[4]$ corresponds to the border length of `ABAB`. The value $b[4]$ is 2.
+- This means the pattern will slide forward by $j - b[j] = 4 - 2 = 2$ positions.
+- In the next iteration of the while loop $i=4, j=2$, the algorithm will successfully match the 3rd character of the pattern to the 5th character of the text (`A`).  
 
 === Solution 3
 - *Naive Algorithm Time Complexity:* $O(n dot m)$, where $n$ is text length and $m$ is pattern length.
