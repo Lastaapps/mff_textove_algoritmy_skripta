@@ -64,7 +64,7 @@ Several key properties emerge from these definitions.
   For a string $sigma dollar$ (with a unique terminal character), the subtrees of the suffix trie rooted at substrings $u_1$ and $u_2$ are isomorphic if and only if $u_1$ and $u_2$ belong to the same equivalence class, i.e., $u_1 equiv_sigma u_2$.
 ]
 
-All all suffixes end at the same position $n$, they all belong to a common class. This class becomes the only finite state of the automaton.
+All suffixes of $sigma$ end at the same position $n$, they all belong to a common class. This class becomes the only finite state of the automaton.
 
 #info_box(
   title: "Lemma 2: Relationship between Terminal Sets",
@@ -80,6 +80,16 @@ A direct consequence of Lemma 2 is a bound on the number of states.
   title: "Corollary: Number of States",
 )[
   The number of equivalence classes (and thus states in the DAWG) for a string $sigma$ of length $n$ is at most $2n - 1$.
+]
+
+#info_box(
+  title: "Proof",
+)[
+  Lemma 2 implies that the equivalence classes form a tree structure based on the inclusion of their terminal sets.
+  - We can imagine a tree where each node is an equivalence class. An edge exists from class $[u_1]$ to $[u_2]$ if $Pi_sigma (u_2)$ is a proper subset of $Pi_sigma(u_1)$ and there is no other class in between.
+  - The number of states is the number of nodes in this tree.
+  - The leaves of this tree correspond to classes of substrings whose terminal sets are disjoint from each other. There can be at most $n$ such disjoint sets (one for each position in the string).
+  - A tree with at most $n$ leaves can have at most $2n - 1$ nodes in total. This gives the upper bound on the number of states.
 ]
 
 
