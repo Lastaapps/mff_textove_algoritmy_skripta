@@ -190,7 +190,7 @@ The border array for `abacaba` is `{-1, 0, 0, 1, 0, 1, 2, 3}`.
 - The pattern pointer $j$ is at index 4 (pointing to 'C').
 - We look up $b[j] = b[4]$. $b[4]$ corresponds to the border length of `ABAB`. The value $b[4]$ is 2.
 - This means the pattern will slide forward by $j - b[j] = 4 - 2 = 2$ positions.
-- In the next iteration of the while loop $i=4, j=2$, the algorithm will successfully match the 3rd character of the pattern to the 5th character of the text (`A`).  
+- In the next iteration of the while loop $i=4, j=2$, the algorithm will successfully match the 3rd character of the pattern to the 5th character of the text (`A`).
 
 === Solution 3
 - *Naive Algorithm Time Complexity:* $O(n dot m)$, where $n$ is text length and $m$ is pattern length.
