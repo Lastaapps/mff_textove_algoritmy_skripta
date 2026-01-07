@@ -104,6 +104,33 @@ This observation is fundamental and is sometimes called the *Periodicity Lemma*.
 ]
 
 
+=== Finding the Normal Form from the Border Array
+
+The normal form can also be found using the border array. The key is the relationship between the length of the longest border and the smallest period of a string.
+
+1. First, compute the border array `b` for the string $alpha$ of length $n$.
+2. The length of the longest border of $alpha$ is $b_max = b[n]$.
+3. A potential smallest period is $p = n - b_max$.
+4. If $p > 0$ and $n$ is perfectly divisible by $p$ (i.e., $n mod p == 0$), then the string is periodic.
+  - The minimum period is $p^* = p$.
+  - The generator is $gamma = alpha[:p^*]$.
+  - The exponent is $r^* = n / p^*$.
+5. If $n$ is not divisible by $p$, or if $b_max = 0$, the string is primitive.
+  - $p^* = n$
+  - $gamma = alpha$
+  - $r^* = 1$
+
+#example_box(title: "Example: Normal Form of 'ababab'")[
+  - For $alpha = "ababab"$, $n=6$.
+  - The border array for "ababab" gives $b[6] = 4$ (the longest border is "abab").
+  - The potential period is $p = 6 - 4 = 2$.
+  - $6$ is divisible by $2$, so the string is periodic with $p^*=2$.
+  - $gamma = alpha[:2] = "ab"$.
+  - $r^* = 6/2 = 3$.
+  - The normal form is $("ab")^3$.
+]
+
+
 #pagebreak()
 == Border Array
 
