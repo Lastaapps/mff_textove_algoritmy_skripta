@@ -132,6 +132,7 @@ A trivial algorithm that re-scans prefixes to find borders for each position tak
 #info_box(title: "Key Lemma for Border Array Construction")[
   1. If $gamma$ is a border of $beta$, and $beta$ is a border of $alpha$, then $gamma$ is a border of $alpha$.
   2. This implies that all borders of a prefix can be found by following the chain of longest borders. The second-longest border of $alpha[:i]$ is the longest border of the longest border of $alpha[:i]$, i.e., $b[b[i]]$.
+  3. Any border of $alpha[:i+1]$ of length $>0$ can be obtained by extending a border of $alpha[:i]$ with the character $alpha[i]$.
 ]
 
 The algorithm computes $b[i+1]$ based on the already computed values $b[0...i]$. It tries to extend the longest border of the previous prefix, $alpha[:i]$.
