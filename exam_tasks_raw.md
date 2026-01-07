@@ -1,8 +1,8 @@
 ## Zkouška ze stránky předmětu
-- Nalézt dvojice podslov slova x v suffixovém stromě. (viz. slide číslo7)
+- Nalézt opakující se podslovo slova x v suffixovém stromě. (viz. slide číslo7)
 - Kódovat slovo pomocí suffixového pole (viz. slide číslo 24) (slovo bylo stejné)
 - Konstrukce DAWG / CDAWG na slovo cocoa (jak se konstruují, jaká je prostorová složitost, porovnání se suffix stromem)
-- Problém nejdelší společnépodposloupnosti - najít nějaký rozumný algoritmus ... Wagner - Fischer (viz. slide číslo 14,15)
+- Problém nejdelší společné podposloupnosti - najít nějaký rozumný algoritmus ... Wagner - Fischer (viz. slide číslo 14,15)
 - Problém palindromu (viz. slide číslo 13)
 
 
@@ -99,7 +99,7 @@ regina at 2019-02-06 11:52:56
 ### Písemná část - čas byl 60 minut
 
 - prostorová složitost (včetně odůvodnění) - sufixový trie, strom, pole, CDAWG (+ FM index)
-- myšlenka LCS
+- myšlenka Longest Common Subsequence (LCS)
 - myšlenka a použití bitového paralelismu
 
 ### Ústní část - 30 minut
