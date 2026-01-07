@@ -60,6 +60,21 @@ A famous method for building an NFA from a regular expression. The resulting NFA
   - Each state has at most two outgoing $epsilon$-transitions or one non-$epsilon$-transition.
 ]
 
+#info_box(title: "Lemmas on NFA(e) Construction and Size")[
+  *Claim:* A regular expression $e$ of size $m$ (number of character occurrences from the alphabet) can be constructed to contain at most:
+  - $2m$ parentheses
+  - $m$ binary operators (union `|` and concatenation, e.g., in `(ab)`)
+  - $2m$ occurrences of the Kleene star operator `*`
+
+  *Corollary:* The total length of such a regular expression $e$, denoted as $|e|$, is at most $6m$.
+
+  *Claim:* If NFA($e$) = $(V, E)$ is the NFA constructed from $e$ using Thompson's construction, then:
+  - The number of states $|V|$ is at most $8m$.
+  - The number of edges $|E|$ is at most $13m$.
+
+  *Corollary:* An NFA for a regular expression $e$ of size $m$ can be constructed in $O(m)$ time.
+]
+
 === NFA Simulation
 
 To find matches of a regex $v$ in a text $T$, we *build an NFA for the regex $Sigma^* v$*. This allows a match to begin at any point in the text.
@@ -164,3 +179,5 @@ The subset construction creates a DFA state for every possible *subset* of NFA s
 The primary advantage is speed, especially for large files and complex patterns. Regex engines, particularly NFA-based ones, can be relatively slow ($O(m n)$). Many patterns contain simple, literal substrings (or "necessary factors") that must exist for a match to be possible.
 1. *Fast Pre-filtering:* Searching for a simple, fixed string is extremely fast (e.g., using algorithms like Boyer-Moore or Aho-Corasick, which are often close to $O(n)$).
 2. *Reducing Expensive Work:* By first identifying the locations of these mandatory substrings, the expensive, full regex engine only needs to be run on a few, small portions of the text. If the necessary factor is rare, this can eliminate over 99% of the text from consideration, leading to a massive performance improvement.
+
+#pagebreak()
