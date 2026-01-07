@@ -80,9 +80,9 @@ The KMP algorithm is faster because it cleverly uses information from mismatches
 
 === The `while` loop
 A common question is why the algorithm uses a `while` loop to handle mismatches, rather than a simple `if` statement.
-- When a mismatch occurs at `T[i]` and `P[j]`, we shift the pattern by setting `j = b[j-1]`.
+- When a mismatch occurs at `T[i]` and `P[j]`, we shift the pattern by setting `j = b[j]`.
 - An `if` statement would perform this shift once and then proceed to the next character in the text.
-- However, the new prefix of the pattern (of length `b[j-1]`) might *still* not match the character `T[i]`.
+- However, the new prefix of the pattern (of length `b[j]`) might *still* not match the character `T[i]`.
 - The `while` loop is necessary to handle this. It repeatedly applies the border array logic, effectively trying all possible shorter prefixes of the pattern that are also suffixes, until it finds one that can be extended by `T[i]`, or until the pattern is fully reset (`j=0`).
 
 
@@ -116,9 +116,9 @@ The linear time complexity of the KMP search phase is not immediately obvious be
 
 The standard KMP algorithm can be optimized to avoid some redundant comparisons.
 
-- When a mismatch occurs between `P[j]` and `T[i]`, the algorithm sets `j = b[j-1]`.
+- When a mismatch occurs between `P[j]` and `T[i]`, the algorithm sets `j = b[j]`.
 - It then compares `P[j]` with `T[i]` again.
-- However, if `P[j]` (the new `j`) is the same as `P[b[j-1]]` (the old `j`), this comparison is guaranteed to fail if the original mismatch was with a character different from `P[j]`.
+- However, if `P[j]` (the new `j`) is the same as `P[b[j]]` (the old `j`), this comparison is guaranteed to fail if the original mismatch was with a character different from `P[j]`.
 
 #info_box(
   title: "The Solution: Improved Border Array (b')",
