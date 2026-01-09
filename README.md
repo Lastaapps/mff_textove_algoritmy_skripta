@@ -21,6 +21,8 @@ The foundation for these materials are the lecture presentations from the "Text 
 To compile the project and generate the `main.pdf` file, you need to have [Typst](https://typst.app/) installed. Then, run the following command from the project's root directory:
 
 ```bash
+make build
+# or
 typst compile main.typ
 ```
 

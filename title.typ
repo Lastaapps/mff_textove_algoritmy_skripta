@@ -4,8 +4,9 @@
   margin: (top: 3cm, bottom: 3cm, left: 2.5cm, right: 2.5cm),
 )
 
+#let commit = read("version.txt")
+
 #let today = datetime.today()
-#let commit = "2d31591"
 
 #align(center)[
   #v(2cm)
