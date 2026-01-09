@@ -1,3 +1,8 @@
+# Zkouška 8. 1. 2026
+- Normální forma - jak jde nalézt normální formu, časová a prostorová složitost.
+- LCF vs LCS - porovnejte časové složitosti a vysvětlete.
+- Popište nějakou metodu na matchování ? a * symbolů.
+
 ## Zkouška ze stránky předmětu
 - Nalézt opakující se podslovo slova x v suffixovém stromě. (viz. slide číslo7)
 - Kódovat slovo pomocí suffixového pole (viz. slide číslo 24) (slovo bylo stejné)
