@@ -142,12 +142,103 @@ The algorithm iterates through the suffixes in the order of their starting posit
 
 Linear time complexity goes from the fact that $h$ is decreased at most $n$ times and that $h$ is bounded: $0<=h<=n$.
 
-== Searching for a Pattern
+== Searching for a Pattern in a Suffix Array
 
-A pattern $P$ of length $m$ can be found in the text $T$ by performing a binary search on the suffix array.
+Once a suffix array is built, it can be used to efficiently find all occurrences of a pattern $P$ of length $m$ in the text $T$. The core idea is to use binary search on the sorted suffix array. All suffixes that start with the pattern $P$ will form a contiguous block in the suffix array. The goal is to find the boundaries of this block.
 
-- A simple binary search takes $O(m log n + k)$ time, as each comparison between $P$ and a suffix takes $O(m)$ time.
-- With the LCP array, this can be accelerated. By keeping track of the LCP between the pattern and the suffixes at the low, mid, and high pointers of the binary search, we can avoid re-comparing the same prefixes. This improved binary search runs in $O(m + log n + k)$ time.
+=== Naive Binary Search (SANaive)
+
+The most straightforward approach is a standard binary search. In each step, we compare the pattern $P$ with the suffix at the middle of the current search interval.
+
+*Algorithm:*
+1. Initialize search interval boundaries, $L = -1$ and $R = n$.
+2. While the interval is valid ($R - L > 1$):
+  1. Compute the midpoint $M = floor((L+R)/2)$.
+  2. Compare the pattern $P$ with the suffix starting at $"SA"[M]$ character by character.
+  3. If $P$ is lexicographically smaller than the suffix, set $R = M$.
+  4. If $P$ is lexicographically larger, set $L = M$.
+  5. If they are equal, we have found one occurrence. We then need to perform two more binary searches to find the leftmost and rightmost occurrences, defining the full range of matches.
+
+#code_box([
+  #smallcaps([SA-Naive-Search]) ($P$, $T$, $"SA"$)
+  ```
+  L, R = -1, n
+  while R - L > 1:
+    M = floor((L+R) / 2)
+    // Direct comparison of P with the suffix
+    suffix = T[SA[M]:]
+    if P == suffix[:m]:
+      // Found one, now find boundaries
+      return "Found at", M
+    elif P < suffix:
+      R = M
+    else:
+      L = M
+  return "Not found"
+  ```
+])
+
+- *Complexity:* The binary search performs $O(log n)$ iterations. In each iteration, we compare the pattern with a suffix, which takes up to $O(m)$ time. This results in a total time complexity of $O(m log n)$. After finding one match, two more binary searches are needed to find the block of all occurrences, but this does not change the overall complexity.
+
+=== Simple Accelerated Search (SASimple)
+
+We can improve the naive search by avoiding re-comparing prefixes that we already know match. This version makes use of the Longest Common Prefix (LCP) between the pattern and the boundaries of our search interval.
+
+*Algorithm:*
+Let $"lcp"(p, s)$ be the length of the longest common prefix of pattern $p$ and suffix $s$.
+1. Initialize $L = -1, R = n$. Let $"lcp_L"$ be $"lcp"(P, T["SA"[L]:])$ and $"lcp_R"$ be $"lcp"(P, T["SA"[R]:])$. (Initially these are 0 or handled as edge cases).
+2. Let $"lcp"_"known" = min("lcp_L", "lcp_R")$. We already know the first $"lcp"_"known"$ characters of any suffix in the interval $(L, R)$ match the pattern.
+3. In each binary search step, when comparing $P$ with the suffix at $"SA"[M]$, we only need to start the comparison from character $"lcp"_"known"$.
+4. The LCP of $P$ with the middle suffix, $"lcp"_M$, is $"lcp"_"known" + "lcp"(P["lcp"_"known":], T["SA"[M]+"lcp"_"known":])$.
+5. We then update $L$ or $R$ and the corresponding $"lcp"_L$ or $"lcp"_R$ value with $"lcp"_M$.
+
+#code_box([
+  #smallcaps([SA-Simple-Search]) ($P$, $T$, $"SA"$)
+  ```
+  L, R = -1, n
+  lcpL, lcpR = 0, 0
+  while R - L > 1:
+    M = floor((L+R)/2)
+    lcp_known = min(lcpL, lcpR)
+
+    // Compare from the first differing character
+    lcpM = lcp_known + lcp(P[lcp_known:], T[SA[M]+lcp_known:])
+
+    if lcpM == m:
+      return "Found at", M // Found a full match
+
+    // Decide which way to go based on the next character
+    if P[lcpM] > T[SA[M]+lcpM]:
+      L, lcpL = M, lcpM
+    else:
+      R, lcpR = M, lcpM
+  return "Not found"
+  ```
+])
+
+- *Complexity:* Although this optimization significantly speeds up the search in practice by avoiding redundant comparisons, the worst-case time complexity remains $O(m log n)$. This is because the LCP between the pattern and the suffixes could be small in every step, forcing a near-full comparison each time.
+
+=== Complex Accelerated Search (SAComplex)
+
+This is the most advanced approach, achieving a search time of $O(m + log n)$. The key idea is to precompute LCP information for *all intervals* that will be examined during the binary search.
+
+*Core Idea:*
+The binary search process on an array of size $n$ always explores the same set of intervals. We can model this as a "binary search comparison tree". This tree has $O(n)$ nodes, where each node corresponds to an interval $(L, R)$ that the binary search would examine. For any such interval, we can precompute the LCP between the suffix at $"SA"[L]$ and $"SA"[R]$. The crucial recursive relationship for LCPs simplifies this: $"lcp"(T["SA"[L]:], T["SA"[R]:]) = min("lcp"(T["SA"[L]:], T["SA"[M]:]), "lcp"(T["SA"[M]:], T["SA"[R]:]))$, where $M$ is the midpoint of $(L, R)$.
+
+1. *Preprocessing:*
+  - Construct the standard LCP array (length of LCP between adjacent suffixes $"SA"[i-1]$ and $"SA"[i]$) in $O(n)$ time using Kasai's algorithm.
+  - Traverse the conceptual binary search comparison tree. For each node (interval $L, R$) in this tree, precompute and store the value $"lcp"(T["SA"[L]:], T["SA"[R]:])$. This entire precomputation can be done in $O(n)$ time by utilizing the recursive LCP property. A Range Minimum Query (RMQ) data structure over the LCP array can alternatively be used to find the LCP of any two suffixes $"SA"[i]$ and $"SA"[j]$ in $O(1)$ time, providing a different way to access these LCP values during the search.
+
+2. *Searching:*
+  - The search now proceeds like `SASimple`, but instead of re-computing LCPs between interval boundaries at each step, this information is retrieved in $O(1)$ time from the precomputed data structure.
+  - The total number of character comparisons is reduced to $O(m + log n)$.
+
+- *Complexity:*
+  - Preprocessing: $O(n)$
+  - Searching: $O(m + log n)$ to find the first occurrence, plus $O(k)$ to list all $k$ occurrences. This is asymptotically optimal.
+  - Space: The precomputed data structures require $O(n)$ additional space.
+
+While `SAComplex` has the best asymptotic complexity, `SASimple` is often faster in practice due to its simpler logic and lower constant factors, as noted by Manber and Myers themselves.
 
 == Burrows-Wheeler Transform (BWT)
 
