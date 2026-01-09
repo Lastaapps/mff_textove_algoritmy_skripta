@@ -69,6 +69,36 @@ Finding occurrences of a set of patterns $P = {p_1, dots, p_r}$ in text $x$. Her
   [Hashes all patterns into a set and checks text window.],
 )
 
+== String Distance Metrics
+Measuring the "difference" between two strings.
+
+#table(
+  columns: (auto, auto, auto, 1fr),
+  inset: 8pt,
+  align: horizon,
+  fill: (x, y) => if y == 0 { luma(230) },
+  table.header([*Metric/Algorithm*], [*Measures*], [*Time*], [*Key Insight*]),
+  [Hamming Distance],
+  [Mismatches in strings of equal length.],
+  [$O(n)$],
+  [Simple character-by-character comparison.],
+
+  [Levenshtein / Edit Distance],
+  [Insertions, Deletions, Substitutions.],
+  [$O(n m)$],
+  [Classic DP solution (Wagner-Fischer algorithm).],
+
+  [Ukkonen-Myers],
+  [Edit Distance],
+  [$O(d n)$],
+  [Optimizes DP by only computing prospective diagonals. Fast when distance $d$ is small.],
+
+  [LCS Distance],
+  [Insertions and Deletions only.],
+  [$O(n m)$],
+  [$d_L = |A| + |B| - 2 |"LCS"(A, B)|$],
+)
+
 == Approximate Pattern Matching (Local Alignment)
 Finding occurrences of $p$ in $x$ with at most $k$ errors.
 
@@ -92,6 +122,36 @@ Finding occurrences of $p$ in $x$ with at most $k$ errors.
   [$O(k ceil(m/w) n)$],
   [$O(|Sigma| ceil(m/w))$],
   [Flexible bit-parallel DP. Can handle Levenshtein distance and regular expressions.],
+)
+
+== Regular Expression Matching
+Finding substrings that match a pattern defined by a regular expression $v$ of size $m$.
+
+#table(
+  columns: (auto, auto, auto, 1fr),
+  inset: 8pt,
+  align: horizon,
+  fill: (x, y) => if y == 0 { luma(230) },
+  table.header([*Method*], [*Strategy*], [*Complexity*], [*Key Insight*]),
+  [NFA Simulation],
+  [Regex -> NFA -> Simulation],
+  [Search: $O(m n)$],
+  [Build NFA (e.g., Thompson's) and simulate active states for each text character.],
+
+  [DFA Simulation],
+  [Regex -> NFA -> DFA -> Simulation],
+  [Search: $O(n)$],
+  [Convert NFA to an equivalent DFA for linear-time search. Construction can be exponential.],
+
+  [Bit-Parallel NFA],
+  [Bitwise NFA Simulation],
+  [Search: $O(m n / w)$],
+  [Simulates the NFA using bit vectors, very fast for $m <= w$.],
+
+  [Filtering],
+  [Filter + Verify],
+  [Varies (often sublinear)],
+  [Quickly find mandatory substrings, then verify full regex match locally (e.g., grep).],
 )
 
 == Text Indexing (Offline)
