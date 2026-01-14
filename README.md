@@ -14,7 +14,7 @@ while the details for the exam should be learned from the slides.
 
 ## Source Materials
 
-The foundation for these materials are the lecture presentations from the "Text Algorithms" course at MFF CUNI.
+The foundation for these materials are the lecture presentations from the "Data Compression Algorithms" course at MFF CUNI created by doc. RNDr. Tomáš Dvořák, CSc.
 
 ## How to Build
 
@@ -28,7 +28,7 @@ typst compile main.typ
 
 This will create the `main.pdf` file in the root directory.
 
-Before each commit, use `typstyle -i .` to format the code and avoid Git conflicts. You can setup a pre-commit hook.
+Before each commit, use `typstyle -i .` to format the code and avoid Git conflicts. You can set up a pre-commit hook.
 
 ## Disclaimer
 
