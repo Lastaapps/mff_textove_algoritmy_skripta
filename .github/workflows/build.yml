@@ -26,4 +26,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: text-algorithms-notes
-          path: main.pdf
+          path: "Text Algorithms.pdf"
