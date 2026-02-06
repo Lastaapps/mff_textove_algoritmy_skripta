@@ -2,6 +2,11 @@
 
 = Overview
 
+== Other sources
+- #link("https://github.com/Lastaapps/mff_textove_algoritmy_skripta")[Latest version] of this lecture notes.
+- #link("https://wiki.matfyz.cz/NTIN087")[Matfyz Wiki] page.
+- Martin Mareš lecture notes on #link("https://mj.ucw.cz/vyuka/dsnotes/")[Strings].
+
 == Exact String Matching (Online)
 These algorithms find occurrences of a pattern $p$ (length $m$) in a text $x$ (length $n$) without preprocessing the text $x$.
 #table(
